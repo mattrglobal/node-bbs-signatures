@@ -1,0 +1,29 @@
+[package]
+authors = ["Michael Lodder <redmike7@gmail.com>"]
+build = "build.rs"
+description = "A node wrapper for libzmix from hyperledger ursa"
+edition = "2018"
+license = "Apache-2.0"
+name = "zmix-nodejs-wrapper"
+version = "0.1.0"
+readme =  "README.md"
+repository = "https://github.com/mikelodder7/zmix-nodejs-wrapper"
+documentation = "https://docs.rs/zmix-nodejs-wrapper"
+homepage = "https://crates.io/crates/zmix-nodejs-wrapper"
+keywords = ["wrapper", "javascript", "cryptography"]
+exclude = [
+    ".gitignore",
+    "Cargo.lock"
+]
+
+[lib]
+name = "zmixnode"
+crate-type = ["cdylib"]
+
+[dependencies]
+neon = "0.4.0"
+# TODO This will move to a released version of zmix once available
+zmix = { version = "0.3.1", path = "../../ursa/libzmix" }
+
+[build-dependencies]
+neon-build = "0.4.0"

@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "sourceMap": true,
+        "allowJs": false,
+        "moduleResolution": "node",
+        "strict": true,
+        "declaration": true,
+        "downlevelIteration": true,
+        "baseUrl": ".",
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "outDir": "./lib"
+    },
+    "include": ["./src"]
+}

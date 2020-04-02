@@ -1,0 +1,43 @@
+{
+  "name": "zmix-nodejs-wrapper",
+  "version": "0.1.0",
+  "description": "",
+  "homepage": "https://github.com/mattrglobal/zmix-node-wrapper",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "typings": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattrglobal/zmix-node-wrapper.git"
+  },
+  "scripts": {
+    "test": "jest",
+    "benchmark": "ts-node ./bench/index.ts",
+    "build": "yarn build:neon && yarn build:ts",
+    "build:ts": "tsc --pretty",
+    "build:neon": "neon build --release",
+    "format": "prettier --write \"**/*.ts\" \"**/*.md\"  \"!**/lib/**\"",
+    "lint": "prettier --check \"**/*.ts\" \"**/*.md\" \"!**/lib/**\" && tslint --project ./tsconfig.json",
+    "lint:fix": "prettier --check \"**/*.ts\" \"**/*.md\" \"!**/lib/**\" && tslint --project ./tsconfig.json --fix"
+  },
+  "devDependencies": {
+    "@types/jest": "24.0.18",
+    "@types/node": "12.7.2",
+    "jest": "24.9.0",
+    "neon-cli": "^0.4.0",
+    "prettier": "1.19.1",
+    "ts-jest": "24.0.2",
+    "tslint": "5.16.0",
+    "tslint-config-prettier": "1.18.0",
+    "tslint-consistent-codestyle": "1.15.1",
+    "tslint-immutable": "6.0.0",
+    "typescript": "3.7.5",
+    "ts-node": "8.4.1"
+  },
+  "dependencies": {
+    "@stablelib/benchmark": "^1.0.0"
+  }
+}

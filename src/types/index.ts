@@ -1,0 +1,1 @@
+export { BlsKeyPair } from "./BlsKeyPair";
