@@ -25,6 +25,14 @@ With [Yarn] run:
 yarn test
 ```
 
+### Benchmarking
+
+With [Yarn] run:
+
+```
+yarn benchmark
+```
+
 ## Contributing
 
 Read our [contributing guide](./CONTRIBUTING.md) to learn about our development process.
