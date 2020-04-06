@@ -13,7 +13,7 @@
         "resolveJsonModule": true,
         "outDir": "./lib",
         "types": [
-            "jasmine",
+            "jest",
             "node"
           ]
     },
