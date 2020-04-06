@@ -159,11 +159,9 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 
     match signature.verify(claims.as_slice(), &pk) {
         Ok(b) => Ok(cx.boolean(b)),
-        Err(_) => Err(Throw)
+        Err(_) => Err(Throw),
     }
 }
-
-
 
 /// Computes `u` = `generator`^`value`
 /// `generator` is expected to be in G1 and `value` is handled in Fp
