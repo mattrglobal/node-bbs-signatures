@@ -11,7 +11,11 @@
         "baseUrl": ".",
         "esModuleInterop": true,
         "resolveJsonModule": true,
-        "outDir": "./lib"
+        "outDir": "./lib",
+        "types": [
+            "jasmine",
+            "node"
+          ]
     },
     "include": ["./src"]
 }
