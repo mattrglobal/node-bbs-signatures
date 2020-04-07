@@ -1,16 +1,8 @@
 use neon::prelude::*;
 use neon::register_module;
 use neon::result::Throw;
-use zmix::amcl_wrapper::{field_elem::FieldElement, group_elem::GroupElement, group_elem_g1::G1};
-use zmix::hash2curve::{bls381g1::Bls12381G1Sswu, HashToCurveXmd};
 use zmix::signatures::bbs::prelude::*;
 use zmix::signatures::SignatureMessage;
-use zmix::ursa::keys::PrivateKey;
-
-// pub struct BlsKeyPair {
-//     pk: DeterministicPublicKey,
-//     sk: Option<SecretKey>
-// }
 
 /// Generate a BLS key pair where secret key `x` in Fp
 /// and public key `w` = `g2` ^ `x`
@@ -55,7 +47,7 @@ fn bls_generate_key(mut cx: FunctionContext) -> JsResult<JsObject> {
 /// The remaining values are the messages to be signed.
 /// If no messages are supplied, an error is thrown.
 ///
-/// `dst`: `String` the domain separation tag, e.g. "BBS-Sign-NewZealand2020"
+/// `dst`: `ArrayBuffer` the domain separation tag, e.g. "BBS-Sign-NewZealand2020"
 /// `x`: `ArrayBuffer` The private key
 /// `messages`: `ArrayBuffer` one for each message
 /// `return`: `ArrayBuffer` the signature
@@ -76,8 +68,7 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
         return Err(Throw);
     }
 
-    let sk = PrivateKey(x.to_vec());
-    let (pk, sk) = DeterministicPublicKey::new(Some(KeyGenOption::FromSecretKey(sk)));
+    let (pk, sk) = DeterministicPublicKey::new(Some(KeyGenOption::FromSecretKey(x.to_vec())));
 
     let dst =
         DomainSeparationTag::new(protocol_id, None, None, None).map_err(|_| Throw)?;
@@ -112,7 +103,7 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
 /// The third argument is the signature to be verified.
 /// The remaining values are the messages that were signed
 ///
-/// `dst`: `String` the domain separation tag, e.gg. "BBS-Sign-NewZealand2020
+/// `dst`: `ArrayBuffer` the domain separation tag, e.gg. "BBS-Sign-NewZealand2020
 /// `w`: `ArrayBuffer` The public key
 /// `signature`: `ArrayBuffer` The signature to be verified
 /// `messages`: `ArrayBuffer` one for each message
@@ -164,13 +155,32 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
     }
 }
 
+/// Creates the commitment and proof to be used in a blinded signature.
+/// First, caller's should extract the blinding factor and use this to unblind
+/// the signature once the other party has generated the signature. Everything
+/// else should be sent to the signer. The signer needs the commitment to finish
+/// the signature and the proof of knowledge of committed values. The blinding
+/// requires the public key and the message indices to be blinded.
+///
+/// `blind_signature_context`: `Object` the context for the blind signature creation
+/// The context object model is as follows:
+/// {
+///     "messages": [ArrayBuffer, ArrayBuffer], // The messages that will be blinded as ArrayBuffers
+///     "hidden": [0, 1],                       // The indices to generators in the public key for the messages.
+///     "session_id": ArrayBuffer                // This is an optional nonce from the signer and will be used in the proof of committed values if present
+/// }
+fn bbs_prep_blind_signature(mut cx: FunctionContext) -> JsResult<JsObject> {
+    unimplemented!();
+}
+
 /// Computes `u` = `generator`^`value`
 /// `generator` is expected to be in G1 and `value` is handled in Fp
 ///
 /// `generator`: `ArrayBuffer` length must be `COMMITMENT_SIZE`
 /// `value`: `ArrayBuffer` length must be `MESSAGE_SIZE`
 /// `return`: `ArrayBuffer`
-// fn bls_commitment(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
+fn bls_commitment(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
+    unimplemented!();
 //     let generator: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(0)?;
 //     let value: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(1)?;
 //
@@ -196,7 +206,7 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 //         bytes.copy_from_slice(res.to_bytes().as_slice());
 //     });
 //     Ok(commitment)
-// }
+}
 
 /// Create a generator in G1
 /// `seed`: `ArrayBuffer` [opt]
@@ -339,6 +349,9 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 register_module!(mut m, {
     m.export_function("bls_generate_key", bls_generate_key)?;
     m.export_function("bbs_sign", bbs_sign)?;
+    m.export_function("bbs_verify", bbs_verify)?;
+    m.export_function("bbs_commitment", bbs_commitment)?;
+    m.export_function("bbs_prep_blind_signature", bbs_prep_blind_signature)?;
     // m.export_class::<JsBlsKeyPair>("BbsKeyPair")?;
     Ok(())
 });
