@@ -1,8 +1,13 @@
 use neon::prelude::*;
 use neon::register_module;
 use neon::result::Throw;
+use std::collections::BTreeMap;
+use zmix::amcl_wrapper::{
+    group_elem::{GroupElement, GroupElementVector},
+    group_elem_g1::G1Vector,
+};
 use zmix::signatures::bbs::prelude::*;
-use zmix::signatures::SignatureMessage;
+use zmix::signatures::{SignatureBlinding, SignatureMessage, SignatureMessageVector};
 
 /// Generate a BLS key pair where secret key `x` in Fp
 /// and public key `w` = `g2` ^ `x`
@@ -70,8 +75,7 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
 
     let (pk, sk) = DeterministicPublicKey::new(Some(KeyGenOption::FromSecretKey(x.to_vec())));
 
-    let dst =
-        DomainSeparationTag::new(protocol_id, None, None, None).map_err(|_| Throw)?;
+    let dst = DomainSeparationTag::new(protocol_id, None, None, None).map_err(|_| Throw)?;
 
     let pk = pk.to_public_key(message_count as usize, dst);
 
@@ -165,12 +169,214 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 /// `blind_signature_context`: `Object` the context for the blind signature creation
 /// The context object model is as follows:
 /// {
+///     "publicKey": ArrayBuffer                // The public key of signer
+///     "messageCount": Number                  // The total number of messages that will be signed––both hidden and known.
 ///     "messages": [ArrayBuffer, ArrayBuffer], // The messages that will be blinded as ArrayBuffers
-///     "hidden": [0, 1],                       // The indices to generators in the public key for the messages.
-///     "session_id": ArrayBuffer                // This is an optional nonce from the signer and will be used in the proof of committed values if present
+///     "hidden": [0, 1],                       // The zero based indices to generators in the public key for the messages.
+///     "sessionId": ArrayBuffer                // This is an optional nonce from the signer and will be used in the proof of committed messages if present
+///     "dst": ArrayBuffer                      // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
 /// }
-fn bbs_prep_blind_signature(mut cx: FunctionContext) -> JsResult<JsObject> {
-    unimplemented!();
+///
+/// `return`: `Object` with the following fields
+/// {
+///     "commitment": ArrayBuffer,
+///     "proofOfCommittedMessages": ArrayBuffer,
+///     "challengeHash": ArrayBuffer,
+///     "blindingFactor": ArrayBuffer
+/// }
+///
+/// The caller must make sure that "blinding_factor" is not passed to the signer. This
+/// would allow the issuer to unblind the signature but would still not know the hidden message
+/// values.
+fn bbs_send_blind_commitment(mut cx: FunctionContext) -> JsResult<JsObject> {
+    let bcx = extract_blinding_context(&mut cx)?;
+    let bcx = generate_blind_values(bcx);
+    get_result(cx, bcx)
+}
+
+fn get_result(mut cx: FunctionContext, bcx: BlindedContext) -> JsResult<JsObject> {
+    let co_bytes = bcx.commitment.to_bytes();
+    let mut commitment = JsArrayBuffer::new(&mut cx, co_bytes.len() as u32)?;
+
+    cx.borrow_mut(&mut commitment, |slice| {
+        let bytes = slice.as_mut_slice::<u8>();
+        for i in 0..co_bytes.len() {
+            bytes[i] = co_bytes[i];
+        }
+    });
+
+    let ch_bytes = bcx.challenge_hash.to_bytes();
+    let mut challenge_hash = JsArrayBuffer::new(&mut cx, ch_bytes.len() as u32)?;
+
+    cx.borrow_mut(&mut challenge_hash, |slice| {
+        let bytes = slice.as_mut_slice::<u8>();
+        for i in 0..ch_bytes.len() {
+            bytes[i] = ch_bytes[i];
+        }
+    });
+
+    let bf_bytes = bcx.blinding_factor.to_bytes();
+    let mut blinding_factor = JsArrayBuffer::new(&mut cx, bf_bytes.len() as u32)?;
+
+    cx.borrow_mut(&mut blinding_factor, |slice| {
+        let bytes = slice.as_mut_slice::<u8>();
+        for i in 0..bf_bytes.len() {
+            bytes[i] = bf_bytes[i];
+        }
+    });
+
+    let pf_bytes = bcx.proof.to_bytes();
+    let mut proof = JsArrayBuffer::new(&mut cx, pf_bytes.len() as u32)?;
+
+    cx.borrow_mut(&mut proof, |slice| {
+        let bytes = slice.as_mut_slice::<u8>();
+        for i in 0..pf_bytes.len() {
+            bytes[i] = pf_bytes[i];
+        }
+    });
+
+    let result = JsObject::new(&mut cx);
+    result.set(&mut cx, "commitment", commitment)?;
+    result.set(&mut cx, "challengeHash", challenge_hash)?;
+    result.set(&mut cx, "blindingFactor", blinding_factor)?;
+    result.set(&mut cx, "proofOfCommittedMessages", proof)?;
+    Ok(result)
+}
+
+fn generate_blind_values(bcx: BlindingContext) -> BlindedContext {
+    let pk = bcx
+        .public_key
+        .to_public_key(bcx.message_count, bcx.dst.clone());
+
+    let blinding_factor = Signature::generate_blinding();
+
+    let mut points = G1Vector::with_capacity(bcx.messages.len() + 1);
+    let mut scalars = SignatureMessageVector::with_capacity(bcx.messages.len() + 1);
+    // h0^blinding_factor*hi^mi.....
+    points.push(pk.h0.clone());
+    scalars.push(blinding_factor.clone());
+    let mut committing = ProverCommittingG1::new();
+    committing.commit(&pk.h0, None);
+
+    for (i, m) in &bcx.messages {
+        points.push(pk.h[*i].clone());
+        scalars.push(m.clone());
+        committing.commit(&pk.h[*i], None);
+    }
+
+    //User creates a random commitment, computes challenges and response. The proof of knowledge consists of a commitment and responses
+    //User and signer engage in a proof of knowledge for `commitment`
+    let commitment = points
+        .multi_scalar_mul_const_time(scalars.as_slice())
+        .unwrap();
+    let committed = committing.finish();
+
+    let mut extra = Vec::new();
+    extra.extend_from_slice(commitment.to_bytes().as_slice());
+    if let Some(b) = bcx.session_id {
+        extra.extend_from_slice(b.as_slice());
+    }
+    let challenge_hash = committed.gen_challenge(extra);
+    let proof = committed
+        .gen_proof(&challenge_hash, scalars.as_slice())
+        .unwrap();
+
+    BlindedContext {
+        blinding_factor,
+        challenge_hash,
+        commitment,
+        proof,
+    }
+}
+
+fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext, Throw> {
+    let js_obj = cx.argument::<JsObject>(0)?;
+
+    let message_count = js_obj
+        .get(cx, "messageCount")?
+        .downcast::<JsNumber>()
+        .unwrap_or(cx.number(-1))
+        .value();
+
+    if message_count < 0f64 {
+        return Err(Throw);
+    }
+
+    let arg: Handle<JsArrayBuffer> = js_obj
+        .get(cx, "publicKey")?
+        .downcast::<JsArrayBuffer>()
+        .or_throw(cx)?;
+    let public_key = DeterministicPublicKey::from_bytes(cx.borrow(&arg, |d| d.as_slice::<u8>()))
+        .map_err(|_| Throw)?;
+    let session_id: Option<Vec<u8>> = match js_obj
+        .get(cx, "sessionId")?
+        .downcast::<JsArrayBuffer>()
+        .or_throw(cx)
+    {
+        Err(_) => None,
+        Ok(arg) => Some(cx.borrow(&arg, |d| d.as_slice::<u8>()).to_vec()),
+    };
+    let arg: Handle<JsArrayBuffer> = js_obj
+        .get(cx, "dst")?
+        .downcast::<JsArrayBuffer>()
+        .or_throw(cx)?;
+    let protocol_id = cx.borrow(&arg, |d| d.as_slice::<u8>());
+    let dst = DomainSeparationTag::new(protocol_id, None, None, None).map_err(|_| Throw)?;
+    let hidden: Vec<Handle<JsValue>> = js_obj
+        .get(cx, "hidden")?
+        .downcast::<JsArray>()
+        .or_throw(cx)?
+        .to_vec(cx)?;
+    let message_bytes: Vec<Handle<JsValue>> = js_obj
+        .get(cx, "messages")?
+        .downcast::<JsArray>()
+        .or_throw(cx)?
+        .to_vec(cx)?;
+    if hidden.len() != message_bytes.len() {
+        return Err(Throw);
+    }
+
+    let mut messages = BTreeMap::new();
+
+    for i in 0..hidden.len() {
+        let index = hidden[i]
+            .downcast::<JsNumber>()
+            .unwrap_or(cx.number(-1))
+            .value();
+
+        if index < 0f64 || index > message_count {
+            return Err(Throw);
+        }
+        let arg = message_bytes[i].downcast::<JsArrayBuffer>().or_throw(cx)?;
+        let message = SignatureMessage::from_bytes(cx.borrow(&arg, |d| d.as_slice::<u8>()))
+            .map_err(|_| Throw)?;
+
+        messages.insert(index as usize, message);
+    }
+    let message_count = message_count as usize;
+
+    Ok(BlindingContext {
+        public_key,
+        message_count,
+        messages,
+        session_id,
+        dst,
+    })
+}
+
+struct BlindedContext {
+    blinding_factor: SignatureBlinding,
+    challenge_hash: SignatureMessage,
+    commitment: BlindedSignatureCommitment,
+    proof: ProofG1,
+}
+
+struct BlindingContext {
+    public_key: DeterministicPublicKey,
+    message_count: usize,
+    messages: BTreeMap<usize, SignatureMessage>,
+    session_id: Option<Vec<u8>>,
+    dst: DomainSeparationTag,
 }
 
 /// Computes `u` = `generator`^`value`
@@ -181,31 +387,31 @@ fn bbs_prep_blind_signature(mut cx: FunctionContext) -> JsResult<JsObject> {
 /// `return`: `ArrayBuffer`
 fn bls_commitment(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     unimplemented!();
-//     let generator: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(0)?;
-//     let value: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(1)?;
-//
-//     let base = cx.borrow(&generator, |data| { data.as_slice::<u8>() });
-//
-//     if base.len() != COMMITMENT_SIZE {
-//         return Err(Throw);
-//     }
-//
-//     let exponent = cx.borrow(&value, |data| { data.as_slice::<u8>() });
-//
-//     if exponent.len() != MESSAGE_SIZE {
-//         return Err(Throw);
-//     }
-//
-//     let g = G1::from_bytes(base).map_err(|_| Throw)?;
-//     let e = amcl_wrapper::field_elem::FieldElement::from_bytes(exponent).map_err(|_| Throw)?;
-//     let res = g.scalar_mul_const_time(&e);
-//
-//     let mut commitment = JsArrayBuffer::new(&mut cx, SECRET_KEY_SIZE as u32)?;
-//     cx.borrow_mut(&mut commitment, |slice| {
-//         let bytes = slice.as_mut_slice::<u8>();
-//         bytes.copy_from_slice(res.to_bytes().as_slice());
-//     });
-//     Ok(commitment)
+    //     let generator: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(0)?;
+    //     let value: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(1)?;
+    //
+    //     let base = cx.borrow(&generator, |data| { data.as_slice::<u8>() });
+    //
+    //     if base.len() != COMMITMENT_SIZE {
+    //         return Err(Throw);
+    //     }
+    //
+    //     let exponent = cx.borrow(&value, |data| { data.as_slice::<u8>() });
+    //
+    //     if exponent.len() != MESSAGE_SIZE {
+    //         return Err(Throw);
+    //     }
+    //
+    //     let g = G1::from_bytes(base).map_err(|_| Throw)?;
+    //     let e = amcl_wrapper::field_elem::FieldElement::from_bytes(exponent).map_err(|_| Throw)?;
+    //     let res = g.scalar_mul_const_time(&e);
+    //
+    //     let mut commitment = JsArrayBuffer::new(&mut cx, SECRET_KEY_SIZE as u32)?;
+    //     cx.borrow_mut(&mut commitment, |slice| {
+    //         let bytes = slice.as_mut_slice::<u8>();
+    //         bytes.copy_from_slice(res.to_bytes().as_slice());
+    //     });
+    //     Ok(commitment)
 }
 
 /// Create a generator in G1
@@ -350,8 +556,8 @@ register_module!(mut m, {
     m.export_function("bls_generate_key", bls_generate_key)?;
     m.export_function("bbs_sign", bbs_sign)?;
     m.export_function("bbs_verify", bbs_verify)?;
-    m.export_function("bbs_commitment", bbs_commitment)?;
-    m.export_function("bbs_prep_blind_signature", bbs_prep_blind_signature)?;
+    m.export_function("bbs_commitment", bls_commitment)?;
+    m.export_function("bbs_send_blind_commitment", bbs_send_blind_commitment)?;
     // m.export_class::<JsBlsKeyPair>("BbsKeyPair")?;
     Ok(())
 });
