@@ -44,30 +44,33 @@ fn bls_generate_key(mut cx: FunctionContext) -> JsResult<JsObject> {
 /// The remaining values are the messages to be signed.
 /// If no messages are supplied, an error is thrown.
 ///
-/// `dst`: `ArrayBuffer` the domain separation tag, e.g. "BBS-Sign-NewZealand2020"
-/// `x`: `ArrayBuffer` The private key
-/// `messages`: `ArrayBuffer` one for each message
+/// `signature_context`: `Object` the context for the signature creation
+/// The context object model is as follows:
+/// {
+///     "secretKey": ArrayBuffer                 // The private key of signer
+///     "messages": [ArrayBuffer, ArrayBuffer], // The messages to be signed as ArrayBuffers
+///     "dst": ArrayBuffer                      // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
+/// }
+///
 /// `return`: `ArrayBuffer` the signature
 fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
-    let message_count = cx.len() - 2;
+    let js_obj = cx.argument::<JsObject>(0)?;
 
-    if message_count <= 0 {
-        return Err(Throw);
-    }
-
-    let sk = SecretKey::from_bytes(&arg_to_slice!(cx, 1)).map_err(|_| Throw)?;
+    let sk = SecretKey::from_bytes(&obj_field_to_slice!(&mut cx, js_obj, "secretKey")).map_err(|_| Throw)?;
     let (pk, sk) = DeterministicPublicKey::new(Some(KeyGenOption::FromSecretKey(sk)));
-    let dst = DomainSeparationTag::new(&arg_to_slice!(cx, 0), None, None, None).map_err(|_| Throw)?;
-    let pk = pk.to_public_key(message_count as usize, dst);
+    let dst = DomainSeparationTag::new(&obj_field_to_slice!(&mut cx, js_obj, "dst"), None, None, None).map_err(|_| Throw)?;
 
-    let mut claims = Vec::new();
-    for i in 0..message_count {
-        claims.push(SignatureMessage::from_bytes(&arg_to_slice!(cx, i + 2)).map_err(|_| Throw)?);
+    let message_bytes = obj_field_to_vec!(&mut cx, js_obj, "messages");
+
+    let mut messages = Vec::new();
+    for i in 0..message_bytes.len() {
+        let message = SignatureMessage::from_bytes(&cast_to_slice!(&mut cx, message_bytes[i])).map_err(|_| Throw)?;
+        messages.push(message);
     }
+    let pk = pk.to_public_key(messages.len(), dst);
 
-    let signature = Signature::new(claims.as_slice(), &sk, &pk).map_err(|_| Throw)?;
-    let signature_bytes = signature.to_bytes();
-    let result = slice_to_js_array_buffer!(signature_bytes.as_slice(), cx);
+    let signature = Signature::new(messages.as_slice(), &sk, &pk).map_err(|_| Throw)?;
+    let result = slice_to_js_array_buffer!(signature.to_bytes().as_slice(), cx);
     Ok(result)
 }
 
@@ -77,45 +80,33 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
 /// The third argument is the signature to be verified.
 /// The remaining values are the messages that were signed
 ///
-/// `dst`: `ArrayBuffer` the domain separation tag, e.gg. "BBS-Sign-NewZealand2020
-/// `w`: `ArrayBuffer` The public key
-/// `signature`: `ArrayBuffer` The signature to be verified
-/// `messages`: `ArrayBuffer` one for each message
-/// `return`: true if valid `signature` of `messages`
+/// `signature_context`: `Object` the context for verifying the signature
+/// {
+///     "publicKey": ArrayBuffer                // The public key
+///     "signature": ArrayBuffer                // The signature
+///     "messages": [ArrayBuffer, ArrayBuffer], // The messages that were signed as ArrayBuffers
+///     "dst": ArrayBuffer                      // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
+/// }
+///
+/// `return`: true if valid `signature` on `messages`
 fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
-    let message_count = cx.len() - 3;
+    let js_obj = cx.argument::<JsObject>(0)?;
 
-    if message_count <= 0 {
-        return Err(Throw);
+    let w = DeterministicPublicKey::from_bytes(&obj_field_to_slice!(&mut cx, js_obj, "publicKey")).map_err(|_| Throw)?;
+    let signature = Signature::from_bytes(&obj_field_to_slice!(&mut cx, js_obj, "signature")).map_err(|_| Throw)?;
+    let dst = DomainSeparationTag::new(&obj_field_to_slice!(&mut cx, js_obj, "dst"), None, None, None).map_err(|_| Throw)?;
+
+    let message_bytes = obj_field_to_vec!(&mut cx, js_obj, "messages");
+
+    let mut messages = Vec::new();
+    for i in 0..message_bytes.len() {
+        let message = SignatureMessage::from_bytes(&cast_to_slice!(&mut cx, message_bytes[i])).map_err(|_| Throw)?;
+        messages.push(message);
     }
 
-    let w = arg_to_slice!(cx, 1);
+    let pk = w.to_public_key(messages.len(), dst);
 
-    if w.len() != PUBLIC_KEY_SIZE {
-        return Err(Throw);
-    }
-
-    let pk = DeterministicPublicKey::from_bytes(&w).map_err(|_| Throw)?;
-
-    let sig = arg_to_slice!(cx, 2);
-
-    if sig.len() != SIGNATURE_SIZE {
-        return Err(Throw);
-    }
-
-    let signature = Signature::from_bytes(&sig).map_err(|_| Throw)?;
-
-    let dst =
-        DomainSeparationTag::new(&arg_to_slice!(cx, 0), None, None, None).map_err(|_| Throw)?;
-
-    let pk = pk.to_public_key(message_count as usize, dst);
-
-    let mut claims = Vec::new();
-    for i in 0..message_count {
-        claims.push(SignatureMessage::from_bytes(&arg_to_slice!(cx, i + 3)).map_err(|_| Throw)?);
-    }
-
-    match signature.verify(claims.as_slice(), &pk) {
+    match signature.verify(messages.as_slice(), &pk) {
         Ok(b) => Ok(cx.boolean(b)),
         Err(_) => Err(Throw),
     }
