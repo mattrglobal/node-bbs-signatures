@@ -8,6 +8,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use zmix::amcl_wrapper::{
     group_elem::{GroupElement, GroupElementVector},
     group_elem_g1::G1Vector,
+    field_elem::FieldElement,
 };
 use zmix::signatures::bbs::prelude::*;
 use zmix::signatures::{SignatureBlinding, SignatureMessage, SignatureMessageVector};

@@ -1,13 +1,14 @@
 [package]
 authors = ["Michael Lodder <redmike7@gmail.com>"]
 build = "build.rs"
-description = "A node wrapper for libzmix from hyperledger ursa"
+description = "A node wrapper for bbs-signatures"
 edition = "2018"
 license = "Apache-2.0"
-name = "zmix-node-wrapper"
+name = "node-bbs-signatures"
 version = "0.1.0"
 readme =  "README.md"
-repository = "https://github.com/mattrglobal/zmix-node-wrapper"
+repository = "https://github.com/mattrglobal/node-bbs-signatures"
+# TODO clarify whether this will actually be published as a crate?
 documentation = "https://docs.rs/zmix-node-wrapper"
 homepage = "https://crates.io/crates/zmix-node-wrapper"
 keywords = ["wrapper", "javascript", "cryptography"]
