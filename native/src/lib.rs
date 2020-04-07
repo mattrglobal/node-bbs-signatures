@@ -55,7 +55,7 @@ fn bls_generate_key(mut cx: FunctionContext) -> JsResult<JsObject> {
 /// The remaining values are the messages to be signed.
 /// If no messages are supplied, an error is thrown.
 ///
-/// `dst`: `String` the domain separation tag, e.g. "BBS-Sign-NewZealand2020"
+/// `dst`: `ArrayBuffer` the domain separation tag, e.g. "BBS-Sign-NewZealand2020"
 /// `x`: `ArrayBuffer` The private key
 /// `messages`: `ArrayBuffer` one for each message
 /// `return`: `ArrayBuffer` the signature
