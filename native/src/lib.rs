@@ -66,7 +66,8 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
         return Err(Throw);
     }
 
-    let protocol_id = cx.argument::<JsString>(0)?.value();
+    let arg: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(0)?;
+    let protocol_id = cx.borrow(&arg, |data| data.as_slice::<u8>());
 
     let arg: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(1)?;
     let x = cx.borrow(&arg, |data| data.as_slice::<u8>());
@@ -79,7 +80,7 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     let (pk, sk) = DeterministicPublicKey::new(Some(KeyGenOption::FromSecretKey(sk)));
 
     let dst =
-        DomainSeparationTag::new(protocol_id.as_bytes(), None, None, None).map_err(|_| Throw)?;
+        DomainSeparationTag::new(protocol_id, None, None, None).map_err(|_| Throw)?;
 
     let pk = pk.to_public_key(message_count as usize, dst);
 
