@@ -20,12 +20,13 @@
     "build:ts": "tsc --pretty",
     "build:neon": "neon build --release",
     "format": "prettier --write \"**/*.ts\" \"**/*.md\"  \"!**/lib/**\"",
+    "pre-pr": "yarn format && yarn lint:fix && yarn build && yarn test",
     "lint": "prettier --check \"**/*.ts\" \"**/*.md\" \"!**/lib/**\" && tslint --project ./tsconfig.json",
     "lint:fix": "prettier --check \"**/*.ts\" \"**/*.md\" \"!**/lib/**\" && tslint --project ./tsconfig.json --fix"
   },
   "devDependencies": {
-    "@stablelib/benchmark": "^1.0.0",
-    "@stablelib/random": "^1.0.0",
+    "@stablelib/benchmark": "1.0.0",
+    "@stablelib/random": "1.0.0",
     "@types/jest": "24.0.18",
     "@types/node": "12.7.2",
     "jest": "24.9.0",
