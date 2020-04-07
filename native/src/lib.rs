@@ -456,13 +456,13 @@ fn bbs_get_unblinded_signature(mut cx: FunctionContext) -> JsResult<JsArrayBuffe
 ///     "dst": ArrayBuffer                      // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
 /// }
 ///
-/// `return`: `Object` with the following fields
+/// `return`: `ArrayBuffer` the proof to send to the verifier
 fn bbs_create_proof(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     let pcx = extract_create_proof_context(&mut cx)?;
     let proof = generate_proof(pcx)?;
-    let result = slice_to_js_array_buffer!(proof.to_bytes().as_slice(), cx);
-    Ok(result)
+    Ok(slice_to_js_array_buffer!(proof.to_bytes().as_slice(), cx))
 }
+
 fn generate_proof(pcx: CreateProofContext) -> Result<PoKOfSignatureProof, Throw> {
     let pk = pcx.public_key.to_public_key(pcx.messages.len(), pcx.dst);
 
@@ -522,6 +522,109 @@ struct CreateProofContext {
     revealed: BTreeSet<usize>,
     session_id: Option<Vec<u8>>,
     dst: DomainSeparationTag
+}
+
+/// Verify a signature proof of knowledge. This includes checking some revealed messages.
+/// The proof will have been created by `bbs_create_proof`
+///
+/// `verify_proof_context`: `Object` the context for verifying a proof
+/// The context object model is as follows:
+/// {
+///     "proof": ArrayBuffer,                   // The proof from `bbs_create_proof`
+///     "publicKey": ArrayBuffer,               // The public key of the signer
+///     "messageCount": Number                  // The total number of messages that were included in the signature
+///     "messages": [ArrayBuffer, ArrayBuffer]  // The revealed messages.
+///     "revealed": [2, 3]                      // The zero based indices to the generators in the public key for the messages to be revealed.
+///     "sessionId": ArrayBuffer                // This is an optional nonce from the verifier and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
+///     "dst": ArrayBuffer                      // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
+/// }
+///
+/// `return`: true if valid
+fn bbs_verify_proof(mut cx: FunctionContext) -> JsResult<JsBoolean> {
+    let vcx = extract_verify_proof_context(&mut cx)?;
+
+    match verify_proof(vcx) {
+        Ok(b) => Ok(cx.boolean(b)),
+        Err(_) => Err(Throw),
+    }
+}
+
+fn verify_proof(vcx: VerifyProofContext) -> Result<bool, Throw> {
+    let pk = vcx.public_key.to_public_key(vcx.message_count, vcx.dst.clone());
+    let mut revealed_msgs = BTreeMap::new();
+    for i in &vcx.revealed {
+        revealed_msgs.insert(i.clone(), vcx.messages[*i].clone());
+    }
+    // The verifier generates the challenge on its own.
+    let mut challenge_bytes = vcx.proof.get_bytes_for_challenge(vcx.revealed.clone(), &pk);
+
+    if let Some(b) = vcx.session_id {
+        challenge_bytes.extend_from_slice(b.as_slice());
+    }
+    let challenge_verifier = SignatureMessage::from_msg_hash(&challenge_bytes);
+    Ok(vcx.proof.verify(&pk, revealed_msgs.clone(), &challenge_verifier).map_err(|_| Throw)?)
+}
+
+fn extract_verify_proof_context(cx: &mut FunctionContext) -> Result<VerifyProofContext, Throw> {
+    let js_obj = cx.argument::<JsObject>(0)?;
+
+    let message_count = js_obj
+        .get(cx, "messageCount")?
+        .downcast::<JsNumber>()
+        .unwrap_or(cx.number(-1))
+        .value();
+
+    if message_count < 0f64 {
+        return Err(Throw);
+    }
+
+    let proof = PoKOfSignatureProof::from_bytes(&obj_field_to_slice!(cx, js_obj, "proof")).map_err(|_| Throw)?;
+    let public_key = DeterministicPublicKey::from_bytes(&obj_field_to_slice!(cx, js_obj, "publicKey")).map_err(|_| Throw)?;
+    let session_id = obj_field_to_opt_bytes!(cx, js_obj, "sessionId");
+    let dst = DomainSeparationTag::new(&obj_field_to_slice!(cx, js_obj, "dst"), None, None, None).map_err(|_| Throw)?;
+    let revealed_indices = obj_field_to_vec!(cx, js_obj, "revealed");
+    let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
+
+    let mut messages = Vec::new();
+    for i in 0..message_bytes.len() {
+        let message = SignatureMessage::from_bytes(&cast_to_slice!(cx, message_bytes[i])).map_err(|_| Throw)?;
+        messages.push(message);
+    }
+
+    let mut revealed = BTreeSet::new();
+    for i in 0..revealed_indices.len() {
+        let index = revealed_indices[i]
+            .downcast::<JsNumber>()
+            .unwrap_or(cx.number(-1))
+            .value();
+
+        if index < 0f64 || index > message_count {
+            return Err(Throw);
+        }
+        revealed.insert(index as usize);
+    }
+
+    let message_count = message_count as usize;
+
+    Ok(VerifyProofContext {
+        proof,
+        public_key,
+        messages,
+        message_count,
+        revealed,
+        session_id,
+        dst
+    })
+}
+
+struct VerifyProofContext {
+    dst: DomainSeparationTag,
+    messages: Vec<SignatureMessage>,
+    message_count: usize,
+    proof: PoKOfSignatureProof,
+    public_key: DeterministicPublicKey,
+    revealed: BTreeSet<usize>,
+    session_id: Option<Vec<u8>>,
 }
 
 /// Computes `u` = `generator`^`value`
@@ -706,6 +809,7 @@ register_module!(mut m, {
     m.export_function("bbs_blind_sign", bbs_blind_sign)?;
     m.export_function("bbs_get_unblinded_signature", bbs_get_unblinded_signature)?;
     m.export_function("bbs_create_proof", bbs_create_proof)?;
+    m.export_function("bbs_verify_proof", bbs_verify_proof)?;
     // m.export_class::<JsBlsKeyPair>("BbsKeyPair")?;
     Ok(())
 });
