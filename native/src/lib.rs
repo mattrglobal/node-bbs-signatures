@@ -47,29 +47,30 @@ fn bls_generate_key(mut cx: FunctionContext) -> JsResult<JsObject> {
 /// `signature_context`: `Object` the context for the signature creation
 /// The context object model is as follows:
 /// {
-///     "secretKey": ArrayBuffer                 // The private key of signer
-///     "messages": [ArrayBuffer, ArrayBuffer], // The messages to be signed as ArrayBuffers
-///     "dst": ArrayBuffer                      // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
+///     "secretKey": ArrayBuffer           // The private key of signer
+///     "messages": [String, String],      // The messages to be signed as strings. They will be hashed with SHAKE-128
+///     "dst": String                      // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
 /// }
 ///
 /// `return`: `ArrayBuffer` the signature
 fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
-    let sk = SecretKey::from_bytes(&obj_field_to_slice!(&mut cx, js_obj, "secretKey")).map_err(|_| Throw)?;
+    let sk = handle_err!(SecretKey::from_bytes(&obj_field_to_slice!(&mut cx, js_obj, "secretKey")));
     let (pk, sk) = DeterministicPublicKey::new(Some(KeyGenOption::FromSecretKey(sk)));
-    let dst = DomainSeparationTag::new(&obj_field_to_slice!(&mut cx, js_obj, "dst"), None, None, None).map_err(|_| Throw)?;
+    let t = obj_field_to_string!(&mut cx, js_obj, "dst");
+    let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
 
     let message_bytes = obj_field_to_vec!(&mut cx, js_obj, "messages");
 
     let mut messages = Vec::new();
     for i in 0..message_bytes.len() {
-        let message = SignatureMessage::from_bytes(&cast_to_slice!(&mut cx, message_bytes[i])).map_err(|_| Throw)?;
+        let message = obj_field_to_field_elem!(&mut cx, message_bytes[i]);
         messages.push(message);
     }
     let pk = pk.to_public_key(messages.len(), dst);
 
-    let signature = Signature::new(messages.as_slice(), &sk, &pk).map_err(|_| Throw)?;
+    let signature = handle_err!(Signature::new(messages.as_slice(), &sk, &pk));
     let result = slice_to_js_array_buffer!(signature.to_bytes().as_slice(), cx);
     Ok(result)
 }
@@ -84,23 +85,24 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
 /// {
 ///     "publicKey": ArrayBuffer                // The public key
 ///     "signature": ArrayBuffer                // The signature
-///     "messages": [ArrayBuffer, ArrayBuffer], // The messages that were signed as ArrayBuffers
-///     "dst": ArrayBuffer                      // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
+///     "messages": [String, String],           // The messages that were signed as strings. They will be SHAKE-256 hashed
+///     "dst": String                           // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
 /// }
 ///
 /// `return`: true if valid `signature` on `messages`
 fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
-    let w = DeterministicPublicKey::from_bytes(&obj_field_to_slice!(&mut cx, js_obj, "publicKey")).map_err(|_| Throw)?;
-    let signature = Signature::from_bytes(&obj_field_to_slice!(&mut cx, js_obj, "signature")).map_err(|_| Throw)?;
-    let dst = DomainSeparationTag::new(&obj_field_to_slice!(&mut cx, js_obj, "dst"), None, None, None).map_err(|_| Throw)?;
+    let w = handle_err!(DeterministicPublicKey::from_bytes(&obj_field_to_slice!(&mut cx, js_obj, "publicKey")));
+    let signature = handle_err!(Signature::from_bytes(&obj_field_to_slice!(&mut cx, js_obj, "signature")));
+    let t = obj_field_to_string!(&mut cx, js_obj, "dst");
+    let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
 
     let message_bytes = obj_field_to_vec!(&mut cx, js_obj, "messages");
 
     let mut messages = Vec::new();
     for i in 0..message_bytes.len() {
-        let message = SignatureMessage::from_bytes(&cast_to_slice!(&mut cx, message_bytes[i])).map_err(|_| Throw)?;
+        let message = obj_field_to_field_elem!(&mut cx, message_bytes[i]);
         messages.push(message);
     }
 
@@ -126,10 +128,10 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 /// {
 ///     "publicKey": ArrayBuffer                // The public key of signer
 ///     "messageCount": Number                  // The total number of messages that will be signed––both hidden and known.
-///     "messages": [ArrayBuffer, ArrayBuffer], // The messages that will be blinded as ArrayBuffers
-///     "hidden": [0, 1],                       // The zero based indices to the generators in the public key for the messages.
-///     "sessionId": ArrayBuffer                // This is an optional nonce from the signer and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
-///     "dst": ArrayBuffer                      // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
+///     "messages": [String, String],           // The messages that will be blinded as strings. They will be SHAKE-256 hashed
+///     "hidden": [Number, Number],             // The zero based indices to the generators in the public key for the messages.
+///     "nonce": String                         // This is an optional nonce from the signer and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
+///     "dst": String                           // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
 /// }
 ///
 /// `return`: `Object` with the following fields
@@ -193,8 +195,8 @@ fn generate_blind_values(bcx: BlindingContext) -> BlindedContext {
 
     let mut extra = Vec::new();
     extra.extend_from_slice(commitment.to_bytes().as_slice());
-    if let Some(b) = bcx.session_id {
-        extra.extend_from_slice(b.as_slice());
+    if let Some(b) = bcx.nonce {
+        extra.extend_from_slice(b.as_bytes());
     }
     let challenge_hash = committed.gen_challenge(extra);
     let proof = committed
@@ -212,19 +214,11 @@ fn generate_blind_values(bcx: BlindingContext) -> BlindedContext {
 fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext, Throw> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
-    let message_count = js_obj
-        .get(cx, "messageCount")?
-        .downcast::<JsNumber>()
-        .unwrap_or(cx.number(-1))
-        .value();
-
-    if message_count < 0f64 {
-        return Err(Throw);
-    }
-
-    let public_key = DeterministicPublicKey::from_bytes(&obj_field_to_slice!(cx, js_obj, "publicKey")).map_err(|_| Throw)?;
-    let session_id = obj_field_to_opt_bytes!(cx, js_obj, "sessionId");
-    let dst = DomainSeparationTag::new(&obj_field_to_slice!(cx, js_obj, "dst"), None, None, None).map_err(|_| Throw)?;
+    let message_count = get_message_count!(cx, js_obj, "messageCount");
+    let public_key = handle_err!(DeterministicPublicKey::from_bytes(&obj_field_to_slice!(cx, js_obj, "publicKey")));
+    let nonce = obj_field_to_opt_string!(cx, js_obj, "nonce");
+    let t = obj_field_to_string!(cx, js_obj, "dst");
+    let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
 
     let hidden = obj_field_to_vec!(cx, js_obj, "hidden");
     let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
@@ -236,16 +230,11 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
     let mut messages = BTreeMap::new();
 
     for i in 0..hidden.len() {
-        let index = hidden[i]
-            .downcast::<JsNumber>()
-            .unwrap_or(cx.number(-1))
-            .value();
-
+        let index = cast_to_number!(cx, hidden[i]);
         if index < 0f64 || index > message_count {
-            return Err(Throw);
+            panic!("Index is out of bounds. Must be between 0 and {}: {}", message_count, index);
         }
-        let message = SignatureMessage::from_bytes(&cast_to_slice!(cx, message_bytes[i])).map_err(|_| Throw)?;
-
+        let message = obj_field_to_field_elem!(cx, message_bytes[i]);
         messages.insert(index as usize, message);
     }
     let message_count = message_count as usize;
@@ -254,7 +243,7 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
         public_key,
         message_count,
         messages,
-        session_id,
+        nonce,
         dst,
     })
 }
@@ -270,7 +259,7 @@ struct BlindingContext {
     public_key: DeterministicPublicKey,
     message_count: usize,
     messages: BTreeMap<usize, SignatureMessage>,
-    session_id: Option<Vec<u8>>,
+    nonce: Option<String>,
     dst: DomainSeparationTag,
 }
 
@@ -288,10 +277,10 @@ struct BlindingContext {
 ///     "challengeHash": ArrayBuffer             // The challenge hash from the intended recipient
 ///     "secretKey": ArrayBuffer                 // The secret key used for generating the signature
 ///     "messageCount": Number                   // The total number of messages that will be signed––both hidden and known.
-///     "messages": [ArrayBuffer, ArrayBuffer]   // The messages that will be signed as ArrayBuffers
-///     "known": [2, 3, 4],                      // The zero based indices to the generators in the public key for the messages.
-///     "sessionId": ArrayBuffer                 // This is the optional nonce sent from the signer used in the proof of hidden messages
-///     "dst": ArrayBuffer                       // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
+///     "messages": [String, String]             // The messages that will be signed as strings. They will be hashed with SHAKE-128
+///     "known": [Number, Number, Number],       // The zero based indices to the generators in the public key for the messages.
+///     "nonce": String                          // This is the optional nonce sent from the signer used in the proof of hidden messages
+///     "dst": String                            // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
 /// }
 ///
 /// `return`: `ArrayBuffer` the blinded signature. Recipient must unblind before it is valid
@@ -320,59 +309,46 @@ fn sign_blind(bcx: BlindSignatureContext) -> Result<Signature, Throw> {
 
     // Include the nonce if it exists
     let mut nonce = Vec::new();
-    if let Some(n) = bcx.session_id {
-        nonce = n;
+    if let Some(n) = bcx.nonce {
+        nonce = n.as_bytes().to_vec();
     }
     // Verify proof of hidden messages
-    if !bcx.proof.verify_complete_proof(bases.as_slice(), &bcx.commitment, &bcx.challenge_hash, nonce.as_slice()).map_err(|_| Throw)? {
+    if !handle_err!(bcx.proof.verify_complete_proof(bases.as_slice(), &bcx.commitment, &bcx.challenge_hash, nonce.as_slice())) {
         return Err(Throw);
     }
 
-    Ok(Signature::new_blind(&bcx.commitment, &bcx.messages, &bcx.secret_key, &pk).map_err(|_| Throw)?)
+    Ok(handle_err!(Signature::new_blind(&bcx.commitment, &bcx.messages, &bcx.secret_key, &pk)))
 }
 
 fn extract_blind_signature_context(cx: &mut FunctionContext) -> Result<BlindSignatureContext, Throw> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
-    let message_count = js_obj
-        .get(cx, "messageCount")?
-        .downcast::<JsNumber>()
-        .unwrap_or(cx.number(-1))
-        .value();
-
-    if message_count < 0f64 {
-        return Err(Throw);
-    }
-
-    let secret_key = SecretKey::from_bytes(&obj_field_to_slice!(cx, js_obj, "secretKey")).map_err(|_| Throw)?;
-    let session_id = obj_field_to_opt_bytes!(cx, js_obj, "sessionId");
-    let dst = DomainSeparationTag::new(&obj_field_to_slice!(cx, js_obj, "dst"), None, None, None).map_err(|_| Throw)?;
+    let message_count = get_message_count!(cx, js_obj, "messageCount");
+    let secret_key = handle_err!(SecretKey::from_bytes(&obj_field_to_slice!(cx, js_obj, "secretKey")));
+    let nonce = obj_field_to_opt_string!(cx, js_obj, "nonce");
+    let t = obj_field_to_string!(cx, js_obj, "dst");
+    let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
     let known = obj_field_to_vec!(cx, js_obj, "known");
     let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
 
     if known.len() != message_bytes.len() {
-        return Err(Throw);
+        panic!("Known messages length does not equal the number of messages");
     }
 
     let mut messages = BTreeMap::new();
 
     for i in 0..known.len() {
-        let index = known[i]
-            .downcast::<JsNumber>()
-            .unwrap_or(cx.number(-1))
-            .value();
-
+        let index = cast_to_number!(cx, known[i]);
         if index < 0f64 || index > message_count {
-            return Err(Throw);
+            panic!("Index is out of bounds. Must be between 0 and {}: {}", message_count, index);
         }
-        let message = SignatureMessage::from_bytes(&cast_to_slice!(cx, message_bytes[i])).map_err(|_| Throw)?;
-
+        let message = obj_field_to_field_elem!(cx, message_bytes[i]);
         messages.insert(index as usize, message);
     }
 
-    let commitment = BlindedSignatureCommitment::from_bytes(&obj_field_to_slice!(cx, js_obj, "commitment")).map_err(|_| Throw)?;
-    let challenge_hash = SignatureMessage::from_bytes(&obj_field_to_slice!(cx, js_obj, "challengeHash")).map_err(|_| Throw)?;
-    let proof = ProofG1::from_bytes(&obj_field_to_slice!(cx, js_obj, "proofOfHiddenMessages")).map_err(|_| Throw)?;
+    let commitment = handle_err!(BlindedSignatureCommitment::from_bytes(&obj_field_to_slice!(cx, js_obj, "commitment")));
+    let challenge_hash = handle_err!(SignatureMessage::from_bytes(&obj_field_to_slice!(cx, js_obj, "challengeHash")));
+    let proof = handle_err!(ProofG1::from_bytes(&obj_field_to_slice!(cx, js_obj, "proofOfHiddenMessages")));
 
     let message_count = message_count as usize;
 
@@ -384,7 +360,7 @@ fn extract_blind_signature_context(cx: &mut FunctionContext) -> Result<BlindSign
         messages,
         proof,
         secret_key,
-        session_id,
+        nonce,
     })
 }
 
@@ -397,7 +373,7 @@ struct BlindSignatureContext {
     proof: ProofG1,
     /// This is automatically zeroed on drop
     secret_key: SecretKey,
-    session_id: Option<Vec<u8>>,
+    nonce: Option<String>,
 }
 
 /// Takes a blinded signature and makes it unblinded
@@ -409,26 +385,15 @@ struct BlindSignatureContext {
 /// `blindingFactor`: `ArrayBuffer` length must be `MESSAGE_SIZE`
 /// `return`: `ArrayBuffer` the unblinded signature
 fn bbs_get_unblinded_signature(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
-    let arg: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(0)?;
-    let sig = cx.borrow(&arg, |d| d.as_slice::<u8>());
+    let sig = arg_to_slice!(cx, 0);
+    let bf = arg_to_slice!(cx, 1);
 
-    let arg: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(1)?;
-    let bf = cx.borrow(&arg, |d| d.as_slice::<u8>());
-
-    let sig = Signature::from_bytes(sig).map_err(|_| Throw)?;
-    let bf = SignatureBlinding::from_bytes(bf).map_err(|_| Throw)?;
+    let sig = handle_err!(Signature::from_bytes(sig.as_slice()));
+    let bf = handle_err!(SignatureBlinding::from_bytes(bf.as_slice()));
 
     let sig = sig.get_unblinded_signature(&bf);
 
-    let signature_bytes = sig.to_bytes();
-    let mut result = JsArrayBuffer::new(&mut cx, signature_bytes.len() as u32)?;
-
-    cx.borrow_mut(&mut result, |slice| {
-        let bytes = slice.as_mut_slice::<u8>();
-        for i in 0..signature_bytes.len() {
-            bytes[i] = signature_bytes[i];
-        }
-    });
+    let result = slice_to_js_array_buffer!(sig.to_bytes().as_slice(), cx);
     Ok(result)
 }
 
@@ -441,10 +406,10 @@ fn bbs_get_unblinded_signature(mut cx: FunctionContext) -> JsResult<JsArrayBuffe
 /// {
 ///     "signature": ArrayBuffer,               // The signature to be proved
 ///     "publicKey": ArrayBuffer,               // The public key of the signer
-///     "messages": [ArrayBuffer, ArrayBuffer]  // All messages that were signed in the order they correspond to the generators in the public key.
-///     "revealed": [2, 3]                      // The zero based indices to the generators in the public key for the messages to be revealed. All other messages will be hidden from the verifier.
-///     "sessionId": ArrayBuffer                // This is an optional nonce from the verifier and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
-///     "dst": ArrayBuffer                      // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
+///     "messages": [String, String]            // All messages that were signed in the order they correspond to the generators in the public key. They will be SHAKE-256 hashed
+///     "revealed": [Number, Number]            // The zero based indices to the generators in the public key for the messages to be revealed. All other messages will be hidden from the verifier.
+///     "nonce": String                         // This is an optional nonce from the verifier and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
+///     "dst": String                           // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
 /// }
 ///
 /// `return`: `ArrayBuffer` the proof to send to the verifier
@@ -457,41 +422,38 @@ fn bbs_create_proof(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
 fn generate_proof(pcx: CreateProofContext) -> Result<PoKOfSignatureProof, Throw> {
     let pk = pcx.public_key.to_public_key(pcx.messages.len(), pcx.dst);
 
-    let pok = PoKOfSignature::init(&pcx.signature, &pk, pcx.messages.as_slice(), None, pcx.revealed.clone()).map_err(|_| Throw)?;
+    let pok = handle_err!(PoKOfSignature::init(&pcx.signature, &pk, pcx.messages.as_slice(), None, pcx.revealed.clone()));
     let mut challenge_bytes = pok.to_bytes();
-    if let Some(b) = pcx.session_id {
-        challenge_bytes.extend_from_slice(b.as_slice());
+    if let Some(b) = pcx.nonce {
+        challenge_bytes.extend_from_slice(b.as_bytes());
     }
 
     let challenge_hash = SignatureMessage::from_msg_hash(&challenge_bytes);
-    Ok(pok.gen_proof(&challenge_hash).map_err(|_| Throw)?)
+    Ok(handle_err!(pok.gen_proof(&challenge_hash)))
 }
 
 fn extract_create_proof_context(cx: &mut FunctionContext) -> Result<CreateProofContext, Throw> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
-    let signature = Signature::from_bytes(&obj_field_to_slice!(cx, js_obj, "signature")).map_err(|_| Throw)?;
-    let public_key = DeterministicPublicKey::from_bytes(&obj_field_to_slice!(cx, js_obj, "publicKey")).map_err(|_| Throw)?;
-    let session_id = obj_field_to_opt_bytes!(cx, js_obj, "sessionId");
-    let dst = DomainSeparationTag::new(&obj_field_to_slice!(cx, js_obj, "dst"), None, None, None).map_err(|_| Throw)?;
+    let signature = handle_err!(Signature::from_bytes(&obj_field_to_slice!(cx, js_obj, "signature")));
+    let public_key = handle_err!(DeterministicPublicKey::from_bytes(&obj_field_to_slice!(cx, js_obj, "publicKey")));
+    let nonce = obj_field_to_opt_string!(cx, js_obj, "nonce");
+    let t = obj_field_to_string!(cx, js_obj, "dst");
+    let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
     let revealed_indices = obj_field_to_vec!(cx, js_obj, "revealed");
     let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
 
     let mut messages = Vec::new();
     for i in 0..message_bytes.len() {
-        let message = SignatureMessage::from_bytes(&cast_to_slice!(cx, message_bytes[i])).map_err(|_| Throw)?;
+        let message = obj_field_to_field_elem!(cx, message_bytes[i]);
         messages.push(message);
     }
 
     let mut revealed = BTreeSet::new();
     for i in 0..revealed_indices.len() {
-        let index = revealed_indices[i]
-            .downcast::<JsNumber>()
-            .unwrap_or(cx.number(-1))
-            .value();
-
+        let index = cast_to_number!(cx, revealed_indices[i]);
         if index < 0f64 || index as usize > messages.len() {
-            return Err(Throw);
+            panic!("Index is out of bounds. Must be between 0 and {}: {}", messages.len(), index);
         }
         revealed.insert(index as usize);
     }
@@ -501,7 +463,7 @@ fn extract_create_proof_context(cx: &mut FunctionContext) -> Result<CreateProofC
         public_key,
         messages,
         revealed,
-        session_id,
+        nonce,
         dst
     })
 }
@@ -511,7 +473,7 @@ struct CreateProofContext {
     public_key: DeterministicPublicKey,
     messages: Vec<SignatureMessage>,
     revealed: BTreeSet<usize>,
-    session_id: Option<Vec<u8>>,
+    nonce: Option<String>,
     dst: DomainSeparationTag
 }
 
@@ -524,10 +486,10 @@ struct CreateProofContext {
 ///     "proof": ArrayBuffer,                   // The proof from `bbs_create_proof`
 ///     "publicKey": ArrayBuffer,               // The public key of the signer
 ///     "messageCount": Number                  // The total number of messages that were included in the signature
-///     "messages": [ArrayBuffer, ArrayBuffer]  // The revealed messages.
-///     "revealed": [2, 3]                      // The zero based indices to the generators in the public key for the messages to be revealed.
-///     "sessionId": ArrayBuffer                // This is an optional nonce from the verifier and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
-///     "dst": ArrayBuffer                      // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
+///     "messages": [String, String]            // The revealed messages as strings. They will be SHAKE-256 hashed.
+///     "revealed": [Number, Number]            // The zero based indices to the generators in the public key for the messages to be revealed.
+///     "nonce": String                         // This is an optional nonce from the verifier and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
+///     "dst": String                           // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
 /// }
 ///
 /// `return`: true if valid
@@ -549,48 +511,36 @@ fn verify_proof(vcx: VerifyProofContext) -> Result<bool, Throw> {
     // The verifier generates the challenge on its own.
     let mut challenge_bytes = vcx.proof.get_bytes_for_challenge(vcx.revealed.clone(), &pk);
 
-    if let Some(b) = vcx.session_id {
-        challenge_bytes.extend_from_slice(b.as_slice());
+    if let Some(b) = vcx.nonce {
+        challenge_bytes.extend_from_slice(b.as_bytes());
     }
     let challenge_verifier = SignatureMessage::from_msg_hash(&challenge_bytes);
-    Ok(vcx.proof.verify(&pk, revealed_msgs.clone(), &challenge_verifier).map_err(|_| Throw)?)
+    Ok(handle_err!(vcx.proof.verify(&pk, revealed_msgs.clone(), &challenge_verifier)))
 }
 
 fn extract_verify_proof_context(cx: &mut FunctionContext) -> Result<VerifyProofContext, Throw> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
-    let message_count = js_obj
-        .get(cx, "messageCount")?
-        .downcast::<JsNumber>()
-        .unwrap_or(cx.number(-1))
-        .value();
-
-    if message_count < 0f64 {
-        return Err(Throw);
-    }
-
-    let proof = PoKOfSignatureProof::from_bytes(&obj_field_to_slice!(cx, js_obj, "proof")).map_err(|_| Throw)?;
-    let public_key = DeterministicPublicKey::from_bytes(&obj_field_to_slice!(cx, js_obj, "publicKey")).map_err(|_| Throw)?;
-    let session_id = obj_field_to_opt_bytes!(cx, js_obj, "sessionId");
-    let dst = DomainSeparationTag::new(&obj_field_to_slice!(cx, js_obj, "dst"), None, None, None).map_err(|_| Throw)?;
+    let message_count = get_message_count!(cx, js_obj, "messageCount");
+    let proof = handle_err!(PoKOfSignatureProof::from_bytes(&obj_field_to_slice!(cx, js_obj, "proof")));
+    let public_key = handle_err!(DeterministicPublicKey::from_bytes(&obj_field_to_slice!(cx, js_obj, "publicKey")));
+    let nonce = obj_field_to_opt_string!(cx, js_obj, "nonce");
+    let t = obj_field_to_string!(cx, js_obj, "dst");
+    let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
     let revealed_indices = obj_field_to_vec!(cx, js_obj, "revealed");
     let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
 
     let mut messages = Vec::new();
     for i in 0..message_bytes.len() {
-        let message = SignatureMessage::from_bytes(&cast_to_slice!(cx, message_bytes[i])).map_err(|_| Throw)?;
+        let message = obj_field_to_field_elem!(cx, message_bytes[i]);
         messages.push(message);
     }
 
     let mut revealed = BTreeSet::new();
     for i in 0..revealed_indices.len() {
-        let index = revealed_indices[i]
-            .downcast::<JsNumber>()
-            .unwrap_or(cx.number(-1))
-            .value();
-
+        let index = cast_to_number!(cx, revealed_indices[i]);
         if index < 0f64 || index > message_count {
-            return Err(Throw);
+            panic!("Index is out of bounds. Must be between 0 and {}: {}", message_count, index);
         }
         revealed.insert(index as usize);
     }
@@ -603,7 +553,7 @@ fn extract_verify_proof_context(cx: &mut FunctionContext) -> Result<VerifyProofC
         messages,
         message_count,
         revealed,
-        session_id,
+        nonce,
         dst
     })
 }
@@ -615,181 +565,8 @@ struct VerifyProofContext {
     proof: PoKOfSignatureProof,
     public_key: DeterministicPublicKey,
     revealed: BTreeSet<usize>,
-    session_id: Option<Vec<u8>>,
+    nonce: Option<String>,
 }
-
-/// Computes `u` = `generator`^`value`
-/// `generator` is expected to be in G1 and `value` is handled in Fp
-///
-/// `generator`: `ArrayBuffer` length must be `COMMITMENT_SIZE`
-/// `value`: `ArrayBuffer` length must be `MESSAGE_SIZE`
-/// `return`: `ArrayBuffer`
-fn bls_commitment(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
-    unimplemented!();
-    //     let generator: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(0)?;
-    //     let value: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(1)?;
-    //
-    //     let base = cx.borrow(&generator, |data| { data.as_slice::<u8>() });
-    //
-    //     if base.len() != COMMITMENT_SIZE {
-    //         return Err(Throw);
-    //     }
-    //
-    //     let exponent = cx.borrow(&value, |data| { data.as_slice::<u8>() });
-    //
-    //     if exponent.len() != MESSAGE_SIZE {
-    //         return Err(Throw);
-    //     }
-    //
-    //     let g = G1::from_bytes(base).map_err(|_| Throw)?;
-    //     let e = amcl_wrapper::field_elem::FieldElement::from_bytes(exponent).map_err(|_| Throw)?;
-    //     let res = g.scalar_mul_const_time(&e);
-    //
-    //     let mut commitment = JsArrayBuffer::new(&mut cx, SECRET_KEY_SIZE as u32)?;
-    //     cx.borrow_mut(&mut commitment, |slice| {
-    //         let bytes = slice.as_mut_slice::<u8>();
-    //         bytes.copy_from_slice(res.to_bytes().as_slice());
-    //     });
-    //     Ok(commitment)
-}
-
-/// Create a generator in G1
-/// `seed`: `ArrayBuffer` [opt]
-///
-/// `return`: `ArrayBuffer`
-// fn bls_create_generator_g1(mut cx: FunctionContent) -> JsResult<JsArrayBuffer> {
-//     let seed =
-//         match cx.argument_opt(0) {
-//             Some(arg) => {
-//                 let arg: Handle<JsArrayBuffer> = arg.downcast::<JsArrayBuffer>().or_throw(&mut cx)?;
-//                 let seed_data = cx.borrow(&arg, |data| { data.as_slice::<u8>() });
-//                 Some(KeyGenOption::UseSeed(seed_data.to_vec()))
-//             },
-//             None => G1::generator()
-//         };
-//
-//
-// }
-
-// declare_types! {
-//   pub class JsBlsKeyPair for BlsKeyPair {
-//     init(mut cx) {
-//
-//       let seed = match cx.argument_opt(0) {
-//         Some(arg) => {
-//             let seed_type: Handle<JsString> = arg.downcast::<Js>
-//             let bytes: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(1)?;
-//             match arg {
-//                 "seed" => {
-//                 },
-//                 "key" => {
-//
-//                 },
-//                 _ => None
-//             }
-//         },
-//         None => None
-//       };
-
-// let seed =
-//   match cx.argument_opt(1) {
-//       Some(arg) => {
-//           let arg: Handle<JsArrayBuffer> = arg.downcast::<JsArrayBuffer>().or_throw(&mut cx)?;
-//           let seed_data = cx.borrow(&arg, |data| { data.as_slice::<u8>() });
-//           Some(KeyGenOption::UseSeed(seed_data.to_vec()))
-//       },
-//       None => None
-//   };
-
-// let (pk, sk) = DeterministicPublicKey::new(seed);
-//
-// Ok(BlsKeyPair { pk, sk: Some(sk) })
-// }
-//
-// method fromPrivateKey(mut cx) {
-//     let arg: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(0)?;
-//
-//     let sk = cx.borrow(&arg, |data| { data.as_slice::<u8>() } );
-//
-//     if sk.len() != SECRET_KEY_SIZE {
-//         return Err(Throw);
-//     }
-//
-//     let (pk, sk) = DeterministicPublicKey::new(Some(KeyGenOption::FromSecretKey(RawPrivateKey(sk.to_vec()))));
-//
-//     Ok(BlsKeyPair { pk, sk: Some(sk) })
-// }
-//
-// method publicKey(mut cx) {
-//     let this = cx.this();
-//
-//     let pk = {
-//         let guard = cx.lock();
-//         let keypair = this.borrow(&guard);
-//         keypair.pk.to_bytes()
-//     };
-//     let mut js_array = JsArrayBuffer::new(&mut cx, pk.len() as u32)?;
-//     cx.borrow_mut(&mut js_array, |slice| {
-//         let bytes = slice.as_mut_slice::<u8>();
-//         for i in 0..pk.len() {
-//             bytes[i] = pk[i];
-//         }
-//     });
-//     Ok(js_array.upcast())
-// }
-
-// method secretKey(mut cx) {
-//     let this = cx.this();
-//
-//     let sk = {
-//         let guard = cx.lock();
-//         let keypair = this.borrow(&guard);
-//         keypair.sk
-//     };
-//     match sk {
-//         Some(k) => {
-//             let data = k.to_bytes();
-//             let mut js_array = JsArrayBuffer::new(&mut cx, data.len() as u32)?;
-//             cx.borrow_mut(&mut js_array, |slice| {
-//                 let bytes = slice.as_mut_slice::<u8>();
-//                 for i in 0..data.len() {
-//                     bytes[i] = data[i];
-//                 }
-//             });
-//             Ok(js_array.upcast())
-//         },
-//         None => {
-//             Ok(cx.empty_array().upcast())
-//         }
-//     }
-// }
-
-// method bbs_sign(mut cx) {
-// let args_length = cx.len();
-//
-// let messages = Vec::with_capacity(args_length as usize);
-// for i in 0..args_length {
-//     let arg: Handle<JsArrayBuffer> = cx.argument::<JsArrayBuffer>(i)?;
-//     let data = cx.borrow(&arg, |data| { data.as_slice::<u8>() });
-//
-//     let m = SignatureMessage::from_bytes(data)?;
-//     messages.push(m);
-// }
-//
-// let this = cx.this();
-// let sk = {
-//     let guard = cx.lock();
-//     let keypair = this.borrow(&guard);
-//     keypair.sk.to_bytes()
-// };
-// Ok(())
-// }
-
-// method panic(_) {
-//   panic!("BbsKeyPair.prototype.panic")
-// }
-// }
-// }
 
 register_module!(mut m, {
     m.export_function("bls_generate_key", bls_generate_key)?;
@@ -801,6 +578,5 @@ register_module!(mut m, {
     m.export_function("bbs_get_unblinded_signature", bbs_get_unblinded_signature)?;
     m.export_function("bbs_create_proof", bbs_create_proof)?;
     m.export_function("bbs_verify_proof", bbs_verify_proof)?;
-    // m.export_class::<JsBlsKeyPair>("BbsKeyPair")?;
     Ok(())
 });
