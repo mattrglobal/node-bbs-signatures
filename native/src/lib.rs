@@ -110,7 +110,7 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 
     match signature.verify(messages.as_slice(), &pk) {
         Ok(b) => Ok(cx.boolean(b)),
-        Err(_) => Err(Throw),
+        Err(_) => Ok(cx.boolean(false))
     }
 }
 
@@ -224,7 +224,7 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
     let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
 
     if hidden.len() != message_bytes.len() {
-        return Err(Throw);
+        panic!("hidden length is not the same as messages: {} != {}", hidden.len(), message_bytes.len());
     }
 
     let mut messages = BTreeMap::new();
@@ -314,7 +314,7 @@ fn sign_blind(bcx: BlindSignatureContext) -> Result<Signature, Throw> {
     }
     // Verify proof of hidden messages
     if !handle_err!(bcx.proof.verify_complete_proof(bases.as_slice(), &bcx.commitment, &bcx.challenge_hash, nonce.as_slice())) {
-        return Err(Throw);
+        panic!("Proof of hidden messages is not valid");
     }
 
     Ok(handle_err!(Signature::new_blind(&bcx.commitment, &bcx.messages, &bcx.secret_key, &pk)))
@@ -498,7 +498,7 @@ fn bbs_verify_proof(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 
     match verify_proof(vcx) {
         Ok(b) => Ok(cx.boolean(b)),
-        Err(_) => Err(Throw),
+        Err(_) => Ok(cx.boolean(false)),
     }
 }
 
