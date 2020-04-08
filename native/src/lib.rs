@@ -572,7 +572,6 @@ register_module!(mut m, {
     m.export_function("bls_generate_key", bls_generate_key)?;
     m.export_function("bbs_sign", bbs_sign)?;
     m.export_function("bbs_verify", bbs_verify)?;
-    m.export_function("bbs_commitment", bls_commitment)?;
     m.export_function("bbs_blind_signature_commitment", bbs_blind_signature_commitment)?;
     m.export_function("bbs_blind_sign", bbs_blind_sign)?;
     m.export_function("bbs_get_unblinded_signature", bbs_get_unblinded_signature)?;
