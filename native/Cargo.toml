@@ -22,9 +22,8 @@ name = "zmixnode"
 crate-type = ["cdylib"]
 
 [dependencies]
-neon = "0.4.0"
-# TODO This will move to a released version of zmix once available
 bbs = { version = "0.1.0", git = "https://github.com/mikelodder7/ursa", branch = "deterministic_bbs" }
+neon = "0.4.0"
 
 [build-dependencies]
 neon-build = "0.4.0"

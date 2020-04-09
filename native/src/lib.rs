@@ -6,12 +6,6 @@ use neon::register_module;
 use neon::result::Throw;
 use std::collections::{BTreeMap, BTreeSet};
 use bbs::prelude::*;
-// use zmix::amcl_wrapper::{
-//     group_elem::{GroupElement, GroupElementVector},
-//     group_elem_g1::G1Vector,
-// };
-// use zmix::signatures::bbs::prelude::*;
-// use zmix::signatures::{SignatureBlinding, SignatureMessage, SignatureMessageVector};
 
 /// Generate a BLS key pair where secret key `x` in Fp
 /// and public key `w` = `g2` ^ `x`
