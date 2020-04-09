@@ -5,13 +5,13 @@ use neon::prelude::*;
 use neon::register_module;
 use neon::result::Throw;
 use std::collections::{BTreeMap, BTreeSet};
-use zmix::amcl_wrapper::{
-    group_elem::{GroupElement, GroupElementVector},
-    group_elem_g1::G1Vector,
-    field_elem::FieldElement,
-};
-use zmix::signatures::bbs::prelude::*;
-use zmix::signatures::{SignatureBlinding, SignatureMessage, SignatureMessageVector};
+use bbs::prelude::*;
+// use zmix::amcl_wrapper::{
+//     group_elem::{GroupElement, GroupElementVector},
+//     group_elem_g1::G1Vector,
+// };
+// use zmix::signatures::bbs::prelude::*;
+// use zmix::signatures::{SignatureBlinding, SignatureMessage, SignatureMessageVector};
 
 /// Generate a BLS key pair where secret key `x` in Fp
 /// and public key `w` = `g2` ^ `x`
@@ -94,7 +94,7 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
 fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
-    let w = handle_err!(DeterministicPublicKey::from_bytes(&obj_field_to_slice!(&mut cx, js_obj, "publicKey")));
+    let w = DeterministicPublicKey::from_bytes(GenericArray::clone_from_slice(&obj_field_to_slice!(&mut cx, js_obj, "publicKey")));
     let signature = handle_err!(Signature::from_bytes(&obj_field_to_slice!(&mut cx, js_obj, "signature")));
     let t = obj_field_to_string!(&mut cx, js_obj, "dst");
     let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
@@ -173,7 +173,7 @@ fn generate_blind_values(bcx: BlindingContext) -> BlindedContext {
 
     let blinding_factor = Signature::generate_blinding();
 
-    let mut points = G1Vector::with_capacity(bcx.messages.len() + 1);
+    let mut points = SignaturePointVector::with_capacity(bcx.messages.len() + 1);
     let mut scalars = SignatureMessageVector::with_capacity(bcx.messages.len() + 1);
     // h0^blinding_factor*hi^mi.....
     points.push(pk.h0.clone());
@@ -216,7 +216,7 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
     let js_obj = cx.argument::<JsObject>(0)?;
 
     let message_count = get_message_count!(cx, js_obj, "messageCount");
-    let public_key = handle_err!(DeterministicPublicKey::from_bytes(&obj_field_to_slice!(cx, js_obj, "publicKey")));
+    let public_key = DeterministicPublicKey::from_bytes(GenericArray::clone_from_slice(&obj_field_to_slice!(cx, js_obj, "publicKey")));
     let nonce = obj_field_to_opt_string!(cx, js_obj, "nonce");
     let t = obj_field_to_string!(cx, js_obj, "dst");
     let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
@@ -293,7 +293,7 @@ fn bbs_blind_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     Ok(result)
 }
 
-fn sign_blind(bcx: BlindSignatureContext) -> Result<Signature, Throw> {
+fn sign_blind(bcx: BlindSignatureContext) -> Result<BlindSignature, Throw> {
     let (dpk, _) = DeterministicPublicKey::new(Some(KeyGenOption::FromSecretKey(bcx.secret_key.clone())));
 
     let pk = dpk.to_public_key(bcx.message_count, bcx.dst.clone());
@@ -318,7 +318,7 @@ fn sign_blind(bcx: BlindSignatureContext) -> Result<Signature, Throw> {
         panic!("Proof of hidden messages is not valid");
     }
 
-    Ok(handle_err!(Signature::new_blind(&bcx.commitment, &bcx.messages, &bcx.secret_key, &pk)))
+    Ok(handle_err!(BlindSignature::new(&bcx.commitment, &bcx.messages, &bcx.secret_key, &pk)))
 }
 
 fn extract_blind_signature_context(cx: &mut FunctionContext) -> Result<BlindSignatureContext, Throw> {
@@ -389,10 +389,10 @@ fn bbs_get_unblinded_signature(mut cx: FunctionContext) -> JsResult<JsArrayBuffe
     let sig = arg_to_slice!(cx, 0);
     let bf = arg_to_slice!(cx, 1);
 
-    let sig = handle_err!(Signature::from_bytes(sig.as_slice()));
+    let sig = handle_err!(BlindSignature::from_bytes(sig.as_slice()));
     let bf = handle_err!(SignatureBlinding::from_bytes(bf.as_slice()));
 
-    let sig = sig.get_unblinded_signature(&bf);
+    let sig = sig.to_unblinded(&bf);
 
     let result = slice_to_js_array_buffer!(sig.to_bytes().as_slice(), cx);
     Ok(result)
@@ -437,7 +437,7 @@ fn extract_create_proof_context(cx: &mut FunctionContext) -> Result<CreateProofC
     let js_obj = cx.argument::<JsObject>(0)?;
 
     let signature = handle_err!(Signature::from_bytes(&obj_field_to_slice!(cx, js_obj, "signature")));
-    let public_key = handle_err!(DeterministicPublicKey::from_bytes(&obj_field_to_slice!(cx, js_obj, "publicKey")));
+    let public_key = DeterministicPublicKey::from_bytes(GenericArray::clone_from_slice(&obj_field_to_slice!(cx, js_obj, "publicKey")));
     let nonce = obj_field_to_opt_string!(cx, js_obj, "nonce");
     let t = obj_field_to_string!(cx, js_obj, "dst");
     let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
@@ -524,7 +524,7 @@ fn extract_verify_proof_context(cx: &mut FunctionContext) -> Result<VerifyProofC
 
     let message_count = get_message_count!(cx, js_obj, "messageCount");
     let proof = handle_err!(PoKOfSignatureProof::from_bytes(&obj_field_to_slice!(cx, js_obj, "proof")));
-    let public_key = handle_err!(DeterministicPublicKey::from_bytes(&obj_field_to_slice!(cx, js_obj, "publicKey")));
+    let public_key = DeterministicPublicKey::from_bytes(GenericArray::clone_from_slice(&obj_field_to_slice!(cx, js_obj, "publicKey")));
     let nonce = obj_field_to_opt_string!(cx, js_obj, "nonce");
     let t = obj_field_to_string!(cx, js_obj, "dst");
     let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
