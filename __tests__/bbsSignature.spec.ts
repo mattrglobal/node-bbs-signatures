@@ -127,6 +127,56 @@ describe("bbsSignature", () => {
     });
   });
 
+  describe("blindSign", () => {
+    const blsKeyPair = generateKeyPair();
+
+    it("should be able to sign with a single known message", () => {
+      const request: BbsBlindSignRequest = {
+        commitment: randomBytes(97),
+        secretKey: blsKeyPair.secretKey,
+        domainSeperationTag,
+        messages: [ "ExampleMessage" ],
+        messageCount: 2
+      }
+      const signature = blindSign(request);
+      expect(signature.length).toEqual(193);
+    });
+
+    it("should be able to sign with a multiple known messages", () => {
+      const request: BbsBlindSignRequest = {
+        commitment: randomBytes(97),
+        secretKey: blsKeyPair.secretKey,
+        domainSeperationTag,
+        messages: [ "ExampleMessage",  "ExampleMessage2",  "ExampleMessage3" ],
+        messageCount: 4
+      }
+      const signature = blindSign(request);
+      expect(signature.length).toEqual(193);
+    });
+
+    it("should throw error when domain seperation tag empty", () => {
+      const request: BbsBlindSignRequest = {
+        commitment: randomBytes(97),
+        secretKey: blsKeyPair.secretKey,
+        domainSeperationTag: "",
+        messages: [ "ExampleMessage" ],
+        messageCount: 2
+      }
+      expect(() => sign(request)).toThrowError("Failed to sign");
+    });
+
+    it("should throw error when secret key invalid length", () => {
+      const request: BbsBlindSignRequest = {
+        commitment: randomBytes(97),
+        secretKey: randomBytes(10),
+        domainSeperationTag,
+        messages: [ "ExampleMessage" ],
+        messageCount: 2
+      }
+      expect(() => blindSign(request)).toThrowError("Failed to sign");
+    });
+  });
+
   describe("verify", () => {
     it("should be able to verify valid signature with a single message", () => {
       const messages = ["ExampleMessage"];
