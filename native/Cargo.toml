@@ -1,15 +1,16 @@
 [package]
 authors = ["Michael Lodder <redmike7@gmail.com>"]
 build = "build.rs"
-description = "A node wrapper for libzmix from hyperledger ursa"
+description = "A node wrapper for bbs-signatures"
 edition = "2018"
 license = "Apache-2.0"
-name = "zmix-nodejs-wrapper"
+name = "node-bbs-signatures"
 version = "0.1.0"
 readme =  "README.md"
-repository = "https://github.com/mikelodder7/zmix-nodejs-wrapper"
-documentation = "https://docs.rs/zmix-nodejs-wrapper"
-homepage = "https://crates.io/crates/zmix-nodejs-wrapper"
+repository = "https://github.com/mattrglobal/node-bbs-signatures"
+# TODO clarify whether this will actually be published as a crate?
+documentation = "https://docs.rs/zmix-node-wrapper"
+homepage = "https://crates.io/crates/zmix-node-wrapper"
 keywords = ["wrapper", "javascript", "cryptography"]
 exclude = [
     ".gitignore",
@@ -21,9 +22,8 @@ name = "zmixnode"
 crate-type = ["cdylib"]
 
 [dependencies]
+bbs = { version = "0.1.0", git = "https://github.com/mikelodder7/ursa", branch = "deterministic_bbs" }
 neon = "0.4.0"
-# TODO This will move to a released version of zmix once available
-zmix = { version = "0.3.1", path = "../../ursa/libzmix" }
 
 [build-dependencies]
 neon-build = "0.4.0"
