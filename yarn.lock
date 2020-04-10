@@ -374,6 +374,11 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
+"@stablelib/base64@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@stablelib/base64/-/base64-1.0.0.tgz#e08ba78078c731cbbb244530b1750659c52ba7cb"
+  integrity sha512-s/wTc/3+vYSalh4gfayJrupzhT7SDBqNtiYOeEMlkSDqL/8cExh5FAeTzLpmYq+7BLLv36EjBL5xrb0bUHWJWQ==
+
 "@stablelib/benchmark@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@stablelib/benchmark/-/benchmark-1.0.0.tgz#76555efc6b785fa5c99e4cdd897a436e70c40441"
