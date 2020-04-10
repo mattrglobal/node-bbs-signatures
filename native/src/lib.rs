@@ -268,13 +268,9 @@ struct BlindingContext {
 /// The context object model is as follows:
 /// {
 ///     "commitment": ArrayBuffer                // The commitment received from the intended recipient
-///     "proofOfHiddenMessages": ArrayBuffer     // The proof of hidden messages from the intended recipient
-///     "challengeHash": ArrayBuffer             // The challenge hash from the intended recipient
 ///     "secretKey": ArrayBuffer                 // The secret key used for generating the signature
 ///     "messageCount": Number                   // The total number of messages that will be signed––both hidden and known.
 ///     "messages": [String, String]             // The messages that will be signed as strings. They will be hashed with SHAKE-128
-///     "known": [Number, Number, Number],       // The zero based indices to the generators in the public key for the messages.
-///     "nonce": String                          // This is the optional nonce sent from the signer used in the proof of hidden messages
 ///     "dst": String                            // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
 /// }
 ///
@@ -292,26 +288,6 @@ fn sign_blind(bcx: BlindSignatureContext) -> Result<BlindSignature, Throw> {
 
     let pk = dpk.to_public_key(bcx.message_count, bcx.dst.clone());
 
-    // Verify the proof
-    // First get the generators used to create the commitment
-    let mut bases = Vec::new();
-    bases.push(pk.h0.clone());
-    for i in 0..bcx.message_count {
-        if !bcx.messages.contains_key(&i) {
-            bases.push(pk.h[i].clone());
-        }
-    }
-
-    // Include the nonce if it exists
-    let mut nonce = Vec::new();
-    if let Some(n) = bcx.nonce {
-        nonce = n.as_bytes().to_vec();
-    }
-    // Verify proof of hidden messages
-    if !handle_err!(bcx.proof.verify_complete_proof(bases.as_slice(), &bcx.commitment, &bcx.challenge_hash, nonce.as_slice())) {
-        panic!("Proof of hidden messages is not valid");
-    }
-
     Ok(handle_err!(BlindSignature::new(&bcx.commitment, &bcx.messages, &bcx.secret_key, &pk)))
 }
 
@@ -320,55 +296,37 @@ fn extract_blind_signature_context(cx: &mut FunctionContext) -> Result<BlindSign
 
     let message_count = get_message_count!(cx, js_obj, "messageCount");
     let secret_key = handle_err!(SecretKey::from_bytes(&obj_field_to_slice!(cx, js_obj, "secretKey")));
-    let nonce = obj_field_to_opt_string!(cx, js_obj, "nonce");
     let t = obj_field_to_string!(cx, js_obj, "dst");
     let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
-    let known = obj_field_to_vec!(cx, js_obj, "known");
     let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
-
-    if known.len() != message_bytes.len() {
-        panic!("Known messages length does not equal the number of messages");
-    }
 
     let mut messages = BTreeMap::new();
 
-    for i in 0..known.len() {
-        let index = cast_to_number!(cx, known[i]);
-        if index < 0f64 || index > message_count {
-            panic!("Index is out of bounds. Must be between 0 and {}: {}", message_count, index);
-        }
+    for i in 0..message_bytes.len() {
         let message = obj_field_to_field_elem!(cx, message_bytes[i]);
-        messages.insert(index as usize, message);
+        messages.insert(i, message);
     }
-
+    
     let commitment = handle_err!(BlindedSignatureCommitment::from_bytes(&obj_field_to_slice!(cx, js_obj, "commitment")));
-    let challenge_hash = handle_err!(SignatureMessage::from_bytes(&obj_field_to_slice!(cx, js_obj, "challengeHash")));
-    let proof = handle_err!(ProofG1::from_bytes(&obj_field_to_slice!(cx, js_obj, "proofOfHiddenMessages")));
-
+   
     let message_count = message_count as usize;
 
     Ok(BlindSignatureContext {
-        challenge_hash,
         commitment,
         dst,
         message_count,
         messages,
-        proof,
         secret_key,
-        nonce,
     })
 }
 
 struct BlindSignatureContext {
-    challenge_hash: SignatureMessage,
     commitment: BlindedSignatureCommitment,
     dst: DomainSeparationTag,
     message_count: usize,
     messages: BTreeMap<usize, SignatureMessage>,
-    proof: ProofG1,
     /// This is automatically zeroed on drop
     secret_key: SecretKey,
-    nonce: Option<String>,
 }
 
 /// Takes a blinded signature and makes it unblinded
