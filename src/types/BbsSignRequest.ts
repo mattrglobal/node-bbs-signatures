@@ -13,5 +13,5 @@ export interface BbsSignRequest {
   /**
    * Messages to sign
    */
-  readonly messages: string[];
+  readonly messages: readonly string[];
 }

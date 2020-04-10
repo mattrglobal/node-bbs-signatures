@@ -13,11 +13,11 @@ export interface BbsCreateProofRequest {
   /**
    * The messages that were originally signed
    */
-  readonly messages: string[];
+  readonly messages: readonly string[];
   /**
    * A zero based indicies of which messages to reveal
    */
-  readonly revealed: number[];
+  readonly revealed: readonly number[];
   /**
    * A nonce for the resulting proof
    */
