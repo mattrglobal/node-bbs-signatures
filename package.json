@@ -22,7 +22,8 @@
     "clean": "rm -rf lib/ && rm -rf native/index.node && rm -rf native/target",
     "format": "prettier --write \"**/*.ts\" \"**/*.md\"  \"!**/lib/**\"",
     "lint": "prettier --check \"**/*.ts\" \"**/*.md\" \"!**/lib/**\" && tslint --project ./tsconfig.json",
-    "lint:fix": "prettier --check \"**/*.ts\" \"**/*.md\" \"!**/lib/**\" && tslint --project ./tsconfig.json --fix"
+    "lint:fix": "prettier --check \"**/*.ts\" \"**/*.md\" \"!**/lib/**\" && tslint --project ./tsconfig.json --fix",
+    "pre-pr": "yarn format && yarn lint:fix && yarn build && yarn test"
   },
   "devDependencies": {
     "@stablelib/benchmark": "1.0.0",
