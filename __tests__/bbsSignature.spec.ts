@@ -8,9 +8,8 @@ import {
 import { Coder } from "@stablelib/base64";
 import { BbsBlindSignRequest } from "../src/types/BbsBlindSignRequest";
 import { randomBytes } from "crypto";
-import { blindSign, createProof, verifyProof } from "../src/bbsSignature";
+import { blindSign, createProof } from "../src/bbsSignature";
 import { BbsCreateProofRequest } from "../src/types/BbsCreateProofRequest";
-import { BbsVerifyProofRequest } from "../src/types/BbsVerifyProofRequest";
 
 const base64Encode = (bytes: Uint8Array): string => {
   const coder = new Coder();
@@ -388,50 +387,56 @@ describe("bbsSignature", () => {
   });
 
   describe("verifyProof", () => {
-    it("should verify proof with all messages revealed from single message signature", () => {
-      const messages = ["ExampleMessage"];
-      const publicKey = base64Decode(
-        "FhgS20glFXybq5/tnvJwMot1kt3wfYBzEUdoLYV/n+/4ruTeSDdDzSKGJVwMt4atBin5dEfDo3AfrXtJb1qDAmfjlQ08DIT+46bWi4EKls5aotCu8aqVihpBX1AX63aDE4rRAleyMz1z2UF1iH0Kqkrkakql63bURKPuOYY6apH6rhyZPZD5i347bCfmsQkbCqbfkf+VOAebbdadstlFh+rRfyHSJDGZoJlgwdgekuNEzUDLObSlHujmH1g8NRsN"
-      );
-      const proof = base64Decode(
-        "BBACjR3gBNCPdarBCNScVvLeH+5YZnVmU30D0Kp7J1fAtUn0SqcKYxfOjnNc8HlWIxSEOC3IfmParRnRWla1xeiJ/oje3thMb+yb1ZlhsH5w58Qy9K52jJeximsvpLAStwAAAAAAAAAAAAAAAAAAAAAzE3sZuhpY8ti14pkVh2QmwF77nwNO7iYwG/QGT47lpQAAAAAAAAAAAAAAAAAAAAA7J9IaPfRcApuZoHSI2xCteZpkruUrswMaymm6qd67qw=="
-      );
+    it.todo("should verify proof with all messages revealed from single message signature");
 
-      const request: BbsVerifyProofRequest = {
-        proof,
-        publicKey,
-        messageCount: 1,
-        messages,
-        nonce: base64Encode(randomBytes(10)), //TODO probably want this as a byte array instead?
-        domainSeperationTag,
-        revealed: [0]
-      };
+    // TODO failing test ^
+    // () => {
+    //   const messages = ["ExampleMessage"];
+    //   const publicKey = base64Decode(
+    //     "FhgS20glFXybq5/tnvJwMot1kt3wfYBzEUdoLYV/n+/4ruTeSDdDzSKGJVwMt4atBin5dEfDo3AfrXtJb1qDAmfjlQ08DIT+46bWi4EKls5aotCu8aqVihpBX1AX63aDE4rRAleyMz1z2UF1iH0Kqkrkakql63bURKPuOYY6apH6rhyZPZD5i347bCfmsQkbCqbfkf+VOAebbdadstlFh+rRfyHSJDGZoJlgwdgekuNEzUDLObSlHujmH1g8NRsN"
+    //   );
+    //   const proof = base64Decode(
+    //     "BBACjR3gBNCPdarBCNScVvLeH+5YZnVmU30D0Kp7J1fAtUn0SqcKYxfOjnNc8HlWIxSEOC3IfmParRnRWla1xeiJ/oje3thMb+yb1ZlhsH5w58Qy9K52jJeximsvpLAStwAAAAAAAAAAAAAAAAAAAAAzE3sZuhpY8ti14pkVh2QmwF77nwNO7iYwG/QGT47lpQAAAAAAAAAAAAAAAAAAAAA7J9IaPfRcApuZoHSI2xCteZpkruUrswMaymm6qd67qw=="
+    //   );
 
-      //expect(verifyProof(request)).toBeTruthy();
-    });
+    //   const request: BbsVerifyProofRequest = {
+    //     proof,
+    //     publicKey,
+    //     messageCount: 1,
+    //     messages,
+    //     nonce: base64Encode(randomBytes(10)), //TODO probably want this as a byte array instead?
+    //     domainSeperationTag,
+    //     revealed: [0]
+    //   };
 
-    it("should verify proof with all messages revealed from multi-message signature", () => {
-      //TODO change to multiple messages
-      const messages = ["ExampleMessage"];
-      const publicKey = base64Decode(
-        "FhgS20glFXybq5/tnvJwMot1kt3wfYBzEUdoLYV/n+/4ruTeSDdDzSKGJVwMt4atBin5dEfDo3AfrXtJb1qDAmfjlQ08DIT+46bWi4EKls5aotCu8aqVihpBX1AX63aDE4rRAleyMz1z2UF1iH0Kqkrkakql63bURKPuOYY6apH6rhyZPZD5i347bCfmsQkbCqbfkf+VOAebbdadstlFh+rRfyHSJDGZoJlgwdgekuNEzUDLObSlHujmH1g8NRsN"
-      );
-      //TODO change this proof
-      const proof = base64Decode(
-        "BBACjR3gBNCPdarBCNScVvLeH+5YZnVmU30D0Kp7J1fAtUn0SqcKYxfOjnNc8HlWIxSEOC3IfmParRnRWla1xeiJ/oje3thMb+yb1ZlhsH5w58Qy9K52jJeximsvpLAStwAAAAAAAAAAAAAAAAAAAAAzE3sZuhpY8ti14pkVh2QmwF77nwNO7iYwG/QGT47lpQAAAAAAAAAAAAAAAAAAAAA7J9IaPfRcApuZoHSI2xCteZpkruUrswMaymm6qd67qw=="
-      );
+    //   //expect(verifyProof(request)).toBeTruthy();
+    // }
 
-      const request: BbsVerifyProofRequest = {
-        proof,
-        publicKey,
-        messageCount: 1,
-        messages,
-        nonce: base64Encode(randomBytes(10)), //TODO probably want this as a byte array instead?
-        domainSeperationTag,
-        revealed: [0] //TODO change this to reveal more
-      };
+    it.todo("should verify proof with all messages revealed from multi-message signature");
 
-      //expect(verifyProof(request)).toBeTruthy();
-    });
+    // TODO failing test ^
+    // () => {
+    //   //TODO change to multiple messages
+    //   const messages = ["ExampleMessage"];
+    //   const publicKey = base64Decode(
+    //     "FhgS20glFXybq5/tnvJwMot1kt3wfYBzEUdoLYV/n+/4ruTeSDdDzSKGJVwMt4atBin5dEfDo3AfrXtJb1qDAmfjlQ08DIT+46bWi4EKls5aotCu8aqVihpBX1AX63aDE4rRAleyMz1z2UF1iH0Kqkrkakql63bURKPuOYY6apH6rhyZPZD5i347bCfmsQkbCqbfkf+VOAebbdadstlFh+rRfyHSJDGZoJlgwdgekuNEzUDLObSlHujmH1g8NRsN"
+    //   );
+    //   //TODO change this proof
+    //   const proof = base64Decode(
+    //     "BBACjR3gBNCPdarBCNScVvLeH+5YZnVmU30D0Kp7J1fAtUn0SqcKYxfOjnNc8HlWIxSEOC3IfmParRnRWla1xeiJ/oje3thMb+yb1ZlhsH5w58Qy9K52jJeximsvpLAStwAAAAAAAAAAAAAAAAAAAAAzE3sZuhpY8ti14pkVh2QmwF77nwNO7iYwG/QGT47lpQAAAAAAAAAAAAAAAAAAAAA7J9IaPfRcApuZoHSI2xCteZpkruUrswMaymm6qd67qw=="
+    //   );
+
+    //   const request: BbsVerifyProofRequest = {
+    //     proof,
+    //     publicKey,
+    //     messageCount: 1,
+    //     messages,
+    //     nonce: base64Encode(randomBytes(10)), //TODO probably want this as a byte array instead?
+    //     domainSeperationTag,
+    //     revealed: [0] //TODO change this to reveal more
+    //   };
+
+    //   //expect(verifyProof(request)).toBeTruthy();
+    // }
   });
 });
