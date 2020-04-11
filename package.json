@@ -24,7 +24,7 @@
     "lint": "prettier --check \"**/*.ts\" \"**/*.md\" \"!**/lib/**\" && tslint --project ./tsconfig.json",
     "lint:fix": "prettier --check \"**/*.ts\" \"**/*.md\" \"!**/lib/**\" && tslint --project ./tsconfig.json --fix",
     "pre-pr": "yarn clean && yarn format && yarn lint:fix && yarn build && yarn test",
-    "publish:unstable": "yarn publish --non-interactive --preid=unstable --prerelease"
+    "publish:unstable": "yarn publish --non-interactive --preid=unstable --prerelease --no-git-tag-version"
   },
   "devDependencies": {
     "@stablelib/base64": "1.0.0",
