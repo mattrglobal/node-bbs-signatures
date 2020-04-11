@@ -3,7 +3,8 @@ import {
   BbsSignRequest,
   sign,
   verify,
-  BbsVerifyRequest
+  BbsVerifyRequest,
+  DEFAULT_PUBLIC_KEY_LENGTH
 } from "../src";
 import { Coder } from "@stablelib/base64";
 import { BbsBlindSignRequest } from "../src/types/BbsBlindSignRequest";
@@ -34,7 +35,7 @@ describe("bbsSignature", () => {
         messages: ["ExampleMessage"]
       };
       const signature = sign(request);
-      expect(signature.length).toEqual(193);
+      expect(signature.length).toEqual(DEFAULT_PUBLIC_KEY_LENGTH + 1); //TODO why is the signature one more than the public key?
     });
 
     it("should sign multiple messages", () => {
@@ -44,7 +45,7 @@ describe("bbsSignature", () => {
         messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"]
       };
       const signature = sign(request);
-      expect(signature.length).toEqual(193);
+      expect(signature.length).toEqual(DEFAULT_PUBLIC_KEY_LENGTH + 1); //TODO why is the signature one more than the public key?
     });
 
     it("should throw error when domain seperation tag empty", () => {
@@ -90,7 +91,7 @@ describe("bbsSignature", () => {
         messageCount: 2
       };
       const signature = blindSign(request);
-      expect(signature.length).toEqual(193);
+      expect(signature.length).toEqual(DEFAULT_PUBLIC_KEY_LENGTH + 1); //TODO why is the signature one more than the public key?
     });
 
     it("should sign with a multiple known messages", () => {
@@ -102,7 +103,7 @@ describe("bbsSignature", () => {
         messageCount: 4
       };
       const signature = blindSign(request);
-      expect(signature.length).toEqual(193);
+      expect(signature.length).toEqual(DEFAULT_PUBLIC_KEY_LENGTH + 1); //TODO why is the signature one more than the public key?
     });
 
     it("should throw error when domain seperation tag empty", () => {
@@ -140,7 +141,7 @@ describe("bbsSignature", () => {
         messageCount: 2
       };
       const signature = blindSign(request);
-      expect(signature.length).toEqual(193);
+      expect(signature.length).toEqual(DEFAULT_PUBLIC_KEY_LENGTH + 1); //TODO why is the signature one more than the public key?
     });
 
     it("should sign multiple known messages", () => {
@@ -152,7 +153,7 @@ describe("bbsSignature", () => {
         messageCount: 4
       };
       const signature = blindSign(request);
-      expect(signature.length).toEqual(193);
+      expect(signature.length).toEqual(DEFAULT_PUBLIC_KEY_LENGTH + 1); //TODO why is the signature one more than the public key?
     });
 
     it("should throw error when domain seperation tag empty", () => {
@@ -382,7 +383,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = createProof(request);
-      expect(proof.length).toEqual(741); //TODO why?????? add a reason for this and some constants?
+      expect(proof.length).toEqual(741); //TODO evaluate this length properly add a reason for this and some constants?
     });
   });
 
