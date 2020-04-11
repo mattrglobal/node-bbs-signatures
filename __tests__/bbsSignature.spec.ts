@@ -142,7 +142,6 @@ describe("bbsSignature", () => {
     //   expect(() => verify(request)).toThrowError("Failed to verify");
     // }
 
-
     it("should throw error when public key invalid length", () => {
       const signature = base64Decode(
         "BBkDTwJ6H3LLVd9wf/p5X4ZzNnFJ7usnbzxmcjcSxF2t+VWcqq6a8JYAYLeAwB0tMwi/Tu1cROZ2ioBDh0+HoV2Aj8UIYxLa5fZn1E0hLzeQadURmI7nqtofopMnXeRG8gAAAAAAAAAAAAAAAAAAAAAAxXagffQjZCCLLPu9m/8/OEl/nSNsArq30nY2hgqmYAAAAAAAAAAAAAAAAAAAAABEhciXgV9wG+MOrEb4vkFPdDGae+wIIzRJhJjKK2B7ng=="
