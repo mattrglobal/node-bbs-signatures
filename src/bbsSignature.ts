@@ -1,3 +1,4 @@
+import { BbsBlindSignRequest } from "./types/BbsBlindSignRequest";
 import { BbsSignRequest } from "./types/BbsSignRequest";
 import { BbsVerifyRequest } from "./types/BbsVerifyRequest";
 // tslint:disable-next-line
@@ -17,6 +18,32 @@ export const sign = (request: BbsSignRequest): Uint8Array => {
       })
     );
   } catch {
+    throw new Error("Failed to sign");
+  }
+};
+
+/**
+ * Signs a set of messages featuring both known and blinded messages and produces a BBS signature
+ */
+export const blindSign = (request: BbsBlindSignRequest): Uint8Array => {
+  const {
+    commitment,
+    secretKey,
+    messages,
+    domainSeperationTag,
+    messageCount
+  } = request;
+  try {
+    return new Uint8Array(
+      zmix.bbs_blind_sign({
+        messageCount,
+        commitment: commitment.buffer as ArrayBuffer,
+        dst: domainSeperationTag,
+        secretKey: secretKey.buffer as ArrayBuffer,
+        messages
+      })
+    );
+  } catch (ex) {
     throw new Error("Failed to sign");
   }
 };
