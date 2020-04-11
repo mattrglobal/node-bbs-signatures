@@ -13,11 +13,11 @@ export interface BbsVerifyProofRequest {
   /**
    * Revealed messages to verify (TODO maybe rename this field??)
    */
-  readonly messages: string[];
+  readonly messages: readonly string[];
   /**
    * Zero based indicies of the revealed messages in original signature
    */
-  readonly revealed: number[];
+  readonly revealed: readonly number[];
   /**
    * Total count of the originally signed messages
    */
