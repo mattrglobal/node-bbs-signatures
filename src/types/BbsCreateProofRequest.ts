@@ -15,13 +15,13 @@ export interface BbsCreateProofRequest {
    */
   readonly messages: readonly string[];
   /**
-   * A zero based indicies of which messages to reveal
+   * The zero based indicies of which messages to reveal
    */
   readonly revealed: readonly number[];
   /**
    * A nonce for the resulting proof
    */
-  readonly nonce: Uint8Array;
+  readonly nonce: string;
   /**
    * Domain seperation featured in the signature
    */

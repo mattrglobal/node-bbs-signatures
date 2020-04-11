@@ -1,5 +1,7 @@
 import { BbsBlindSignRequest } from "./types/BbsBlindSignRequest";
+import { BbsCreateProofRequest } from "./types/BbsCreateProofRequest";
 import { BbsSignRequest } from "./types/BbsSignRequest";
+import { BbsVerifyProofRequest } from "./types/BbsVerifyProofRequest";
 import { BbsVerifyRequest } from "./types/BbsVerifyRequest";
 // tslint:disable-next-line
 const zmix = require("../native/index.node");
@@ -62,5 +64,61 @@ export const verify = (request: BbsVerifyRequest): boolean => {
     });
   } catch {
     throw new Error("Failed to verify");
+  }
+};
+
+/**
+ * Creates a BBS proof for a set of messages from a BBS signature
+ */
+export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
+  const {
+    domainSeperationTag,
+    publicKey,
+    signature,
+    messages,
+    nonce,
+    revealed
+  } = request;
+  try {
+    return new Uint8Array(
+      zmix.bbs_create_proof({
+        nonce,
+        revealed,
+        dst: domainSeperationTag,
+        publicKey: publicKey.buffer as ArrayBuffer,
+        signature: signature.buffer as ArrayBuffer,
+        messages
+      })
+    );
+  } catch (ex) {
+    throw new Error("Failed to create proof");
+  }
+};
+
+/**
+ * Verifies a BBS proof
+ */
+export const verifyProof = (request: BbsVerifyProofRequest): Uint8Array => {
+  const {
+    domainSeperationTag,
+    publicKey,
+    proof,
+    messages,
+    nonce,
+    revealed,
+    messageCount
+  } = request;
+  try {
+    return zmix.bbs_verify_proof({
+      messageCount,
+      nonce,
+      revealed,
+      dst: domainSeperationTag,
+      publicKey: publicKey.buffer as ArrayBuffer,
+      proof: proof.buffer as ArrayBuffer,
+      messages
+    });
+  } catch (ex) {
+    throw new Error("Failed to create proof");
   }
 };
