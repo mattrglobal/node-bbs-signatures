@@ -1,29 +1,17 @@
 [package]
-authors = ["Michael Lodder <redmike7@gmail.com>"]
-build = "build.rs"
-description = "A node wrapper for bbs-signatures"
-edition = "2018"
-license = "Apache-2.0"
 name = "node-bbs-signatures"
+description = "A node wrapper for bbs-signatures"
 version = "0.1.0"
-readme =  "README.md"
-repository = "https://github.com/mattrglobal/node-bbs-signatures"
-# TODO clarify whether this will actually be published as a crate?
-documentation = "https://docs.rs/zmix-node-wrapper"
-homepage = "https://crates.io/crates/zmix-node-wrapper"
-keywords = ["wrapper", "javascript", "cryptography"]
-exclude = [
-    ".gitignore",
-    "Cargo.lock"
-]
+build = "build.rs"
+edition = "2018"
 
 [lib]
-name = "zmixnode"
+name = "node_bbs_signatures"
 crate-type = ["cdylib"]
-
-[dependencies]
-bbs = { version = "0.1.0", git = "https://github.com/mikelodder7/ursa", branch = "deterministic_bbs" }
-neon = "0.4.0"
 
 [build-dependencies]
 neon-build = "0.4.0"
+
+[dependencies]
+bbs = { git = "https://github.com/mikelodder7/ursa", branch = "deterministic_bbs", rev = "54778517" }
+neon = "0.4.0"
