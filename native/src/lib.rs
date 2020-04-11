@@ -417,7 +417,7 @@ fn bbs_create_proof(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
 fn generate_proof(pcx: CreateProofContext) -> Result<PoKOfSignatureProof, Throw> {
     let pk = pcx.public_key.to_public_key(pcx.messages.len(), pcx.dst);
 
-    let pok = handle_err!(PoKOfSignature::init(&pcx.signature, &pk, pcx.messages.as_slice(), None, pcx.revealed.clone()));
+    let pok = handle_err!(PoKOfSignature::init(&pcx.signature, &pk, &pcx.messages.as_slice(), None, &pcx.revealed.clone()));
     let mut challenge_bytes = pok.to_bytes();
     if let Some(b) = pcx.nonce {
         challenge_bytes.extend_from_slice(b.as_bytes());
@@ -492,12 +492,15 @@ fn bbs_verify_proof(mut cx: FunctionContext) -> JsResult<JsBoolean> {
     let vcx = extract_verify_proof_context(&mut cx)?;
 
     match verify_proof(vcx) {
-        Ok(b) => Ok(cx.boolean(b)),
+        Ok(b) => match b {
+            PoKOfSignatureProofStatus::Success => Ok(cx.boolean(true)),
+            _ => Ok(cx.boolean(false))
+        },
         Err(_) => Ok(cx.boolean(false)),
     }
 }
 
-fn verify_proof(vcx: VerifyProofContext) -> Result<bool, Throw> {
+fn verify_proof(vcx: VerifyProofContext) -> Result<PoKOfSignatureProofStatus,Throw> {
     let pk = vcx.public_key.to_public_key(vcx.message_count, vcx.dst.clone());
     let mut revealed_msgs = BTreeMap::new();
     for i in &vcx.revealed {
@@ -510,7 +513,7 @@ fn verify_proof(vcx: VerifyProofContext) -> Result<bool, Throw> {
         challenge_bytes.extend_from_slice(b.as_bytes());
     }
     let challenge_verifier = SignatureMessage::from_msg_hash(&challenge_bytes);
-    Ok(handle_err!(vcx.proof.verify(&pk, revealed_msgs.clone(), &challenge_verifier)))
+    Ok(handle_err!(vcx.proof.verify(&pk, &revealed_msgs.clone(), &challenge_verifier)))
 }
 
 fn extract_verify_proof_context(cx: &mut FunctionContext) -> Result<VerifyProofContext, Throw> {
