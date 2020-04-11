@@ -36,21 +36,6 @@ macro_rules! obj_field_to_string {
     };
 }
 
-macro_rules! obj_field_to_opt_bytes {
-    ($cx:expr, $obj:expr, $field:expr) => {
-        {
-            match $obj
-                .get($cx, $field)?
-                .downcast::<JsArrayBuffer>()
-                .or_throw($cx)
-            {
-                Err(_) => None,
-                Ok(arg) => Some($cx.borrow(&arg, |d| d.as_slice::<u8>()).to_vec()),
-            }
-        }
-    };
-}
-
 macro_rules! obj_field_to_opt_string {
     ($cx:expr, $obj:expr, $field:expr) => {
         {
