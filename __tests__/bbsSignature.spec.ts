@@ -82,7 +82,7 @@ describe("bbsSignature", () => {
   describe("blindSign", () => {
     const blsKeyPair = generateKeyPair();
 
-    it("should be able to sign with a single known message", () => {
+    it("should sign with a single known message", () => {
       const request: BbsBlindSignRequest = {
         commitment: randomBytes(97),
         secretKey: blsKeyPair.secretKey,
@@ -94,7 +94,7 @@ describe("bbsSignature", () => {
       expect(signature.length).toEqual(193);
     });
 
-    it("should be able to sign with a multiple known messages", () => {
+    it("should sign with a multiple known messages", () => {
       const request: BbsBlindSignRequest = {
         commitment: randomBytes(97),
         secretKey: blsKeyPair.secretKey,
