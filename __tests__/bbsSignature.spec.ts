@@ -85,9 +85,9 @@ describe("bbsSignature", () => {
         commitment: randomBytes(97),
         secretKey: blsKeyPair.secretKey,
         domainSeperationTag,
-        messages: [ "ExampleMessage" ],
+        messages: ["ExampleMessage"],
         messageCount: 2
-      }
+      };
       const signature = blindSign(request);
       expect(signature.length).toEqual(193);
     });
@@ -97,9 +97,9 @@ describe("bbsSignature", () => {
         commitment: randomBytes(97),
         secretKey: blsKeyPair.secretKey,
         domainSeperationTag,
-        messages: [ "ExampleMessage",  "ExampleMessage2",  "ExampleMessage3" ],
+        messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"],
         messageCount: 4
-      }
+      };
       const signature = blindSign(request);
       expect(signature.length).toEqual(193);
     });
@@ -109,9 +109,9 @@ describe("bbsSignature", () => {
         commitment: randomBytes(97),
         secretKey: blsKeyPair.secretKey,
         domainSeperationTag: "",
-        messages: [ "ExampleMessage" ],
+        messages: ["ExampleMessage"],
         messageCount: 2
-      }
+      };
       expect(() => sign(request)).toThrowError("Failed to sign");
     });
 
@@ -120,9 +120,9 @@ describe("bbsSignature", () => {
         commitment: randomBytes(97),
         secretKey: randomBytes(10),
         domainSeperationTag,
-        messages: [ "ExampleMessage" ],
+        messages: ["ExampleMessage"],
         messageCount: 2
-      }
+      };
       expect(() => blindSign(request)).toThrowError("Failed to sign");
     });
   });

@@ -1,7 +1,6 @@
 import { BbsBlindSignRequest } from "./types/BbsBlindSignRequest";
 import { BbsSignRequest } from "./types/BbsSignRequest";
 import { BbsVerifyRequest } from "./types/BbsVerifyRequest";
-import { BbsBlindSignRequest } from "./types/BbsBlindSignRequest";
 // tslint:disable-next-line
 const zmix = require("../native/index.node");
 
