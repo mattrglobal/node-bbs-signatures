@@ -1,0 +1,43 @@
+name: push-master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_test_publish:
+    name: Build, test, and publish unstable release
+    if: "! contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+      - run: yarn test
+      - name: Publish unstable release
+        env:
+          REMOTE_ORIGIN: ${{ secrets.REMOTE_ORIGIN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI_USER_NAME: ${{ secrets.CI_USER_NAME }}
+          CI_USER_EMAIL: ${{ secrets.CI_USER_EMAIL }}
+        with:
+            node-version: [10.x]
+            registry-url: 'https://npm.pkg.github.com'
+            scope: '@mattrglobal' # Defaults to the user or organization that owns the workflow file
+        run: |
+          git checkout master
+          yarn install --frozen-lockfile
+          echo "//npm.pkg.github.com/:_authToken=$GITHUB_TOKEN" > .npmrc 2> /dev/null
+          git config user.name "$CI_USER_NAME"
+          git config user.email "$CI_USER_EMAIL"
+          git remote set-url origin https://${REMOTE_ORIGIN:-"x-access-token:$GITHUB_TOKEN"}@github.com/${GITHUB_REPOSITORY}.git
+          git status
+          yarn publish:unstable
