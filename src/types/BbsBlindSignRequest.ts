@@ -13,7 +13,7 @@ export interface BbsBlindSignRequest {
   /**
    * The known messages to sign
    */
-  readonly messages: string[];
+  readonly messages: readonly string[];
   /**
    * Domain seperation tag to feature in the signature
    */
