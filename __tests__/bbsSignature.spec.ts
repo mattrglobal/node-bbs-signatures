@@ -387,7 +387,9 @@ describe("bbsSignature", () => {
   });
 
   describe("verifyProof", () => {
-    it.todo("should verify proof with all messages revealed from single message signature");
+    it.todo(
+      "should verify proof with all messages revealed from single message signature"
+    );
 
     // TODO failing test ^
     // () => {
@@ -412,7 +414,9 @@ describe("bbsSignature", () => {
     //   //expect(verifyProof(request)).toBeTruthy();
     // }
 
-    it.todo("should verify proof with all messages revealed from multi-message signature");
+    it.todo(
+      "should verify proof with all messages revealed from multi-message signature"
+    );
 
     // TODO failing test ^
     // () => {
