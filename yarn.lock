@@ -374,12 +374,12 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@stablelib/base64@^1.0.0":
+"@stablelib/base64@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@stablelib/base64/-/base64-1.0.0.tgz#e08ba78078c731cbbb244530b1750659c52ba7cb"
   integrity sha512-s/wTc/3+vYSalh4gfayJrupzhT7SDBqNtiYOeEMlkSDqL/8cExh5FAeTzLpmYq+7BLLv36EjBL5xrb0bUHWJWQ==
 
-"@stablelib/benchmark@^1.0.0":
+"@stablelib/benchmark@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@stablelib/benchmark/-/benchmark-1.0.0.tgz#76555efc6b785fa5c99e4cdd897a436e70c40441"
   integrity sha512-YQmq1T8jjfl//QLgxR56G/sw78+GayDivmFfriJYLxyNZDf0PYi8fpG1tBXK0nFnbdHyKduUqMlx8C/qDkN60g==
@@ -396,7 +396,7 @@
   resolved "https://registry.yarnpkg.com/@stablelib/int/-/int-1.0.0.tgz#2432569169cc5640fe5e65b7f79f722ed9cacc59"
   integrity sha512-MRigEQCO7xM93nZqW4CbIBjhANGw3jJxGVSUZH3PQ6HWL1IGrFWVDBzIclWxl4l5aRRpqoM+76ellQNdUJPnsA==
 
-"@stablelib/random@^1.0.0":
+"@stablelib/random@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@stablelib/random/-/random-1.0.0.tgz#f441495075cdeaa45de16d7ddcc269c0b8edb16b"
   integrity sha512-G9vwwKrNCGMI/uHL6XeWe2Nk4BuxkYyWZagGaDU9wrsuV+9hUwNI1lok2WVo8uJDa2zx7ahNwN7Ij983hOUFEw==
