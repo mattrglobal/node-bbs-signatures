@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build_test_publish_ts:
+  build_test_publish:
     name: Build, test, and publish unstable release
     if: "! contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
@@ -30,7 +30,7 @@ jobs:
           env:
             NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             NODE_PRE_GYP_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  build_publish_native_binaries:
+  build_pub_binaries:
     name: Publish binaries for supported environments for unstable release
     needs: build_test_publish
     if: "! contains(github.event.head_commit.message, '[skip ci]')"
