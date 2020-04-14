@@ -8,7 +8,8 @@
     "lib": "lib"
   },
   "files": [
-    "lib"
+    "lib",
+    "native/index.node"
   ],
   "typings": "lib/index.d.ts",
   "repository": {
