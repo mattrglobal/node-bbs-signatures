@@ -34,10 +34,11 @@ jobs:
     name: Publish binaries for supported environments for unstable release
     needs: build_test_publish
     if: "! contains(github.event.head_commit.message, '[skip ci]')"
-    runs-on: [ macos-latest, windows-latest ]
+    runs-on: ${{matrix.os}}
     strategy:
         matrix:
           node-version: [10.x]
+          os: [windows-latest, macos-latest]
     steps:
         - uses: actions/checkout@v2
         - uses: actions/setup-node@v1
