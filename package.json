@@ -28,7 +28,7 @@
     "pkg_path": "."
   },
   "scripts": {
-    "install": "node-pre-gyp install --fallback-to-build=false",
+    "install": "node-pre-gyp install --fallback-to-build=false || yarn build:neon",
     "test": "jest",
     "benchmark": "ts-node ./bench/index.ts",
     "build": "yarn build:neon && yarn build:ts",
@@ -53,7 +53,6 @@
     "@types/node": "12.7.2",
     "jest": "24.9.0",
     "node-pre-gyp-github": "1.4.3",
-    "neon-cli": "0.4.0",
     "prettier": "1.19.1",
     "ts-jest": "24.0.2",
     "ts-node": "8.4.1",
@@ -64,6 +63,7 @@
     "typescript": "3.7.5"
   },
   "dependencies": {
-    "node-pre-gyp": "amilajack/node-pre-gyp#neon-compat"
+    "node-pre-gyp": "amilajack/node-pre-gyp#neon-compat",
+    "neon-cli": "0.4.0"
   }
 }
