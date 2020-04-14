@@ -1,6 +1,6 @@
 {
   "name": "@mattrglobal/node-bbs-signatures",
-  "version": "0.1.1-unstable.3",
+  "version": "0.1.0",
   "description": "",
   "homepage": "https://github.com/mattrglobal/node-bbs-signatures",
   "main": "lib/index.js",
@@ -27,7 +27,9 @@
     "lint": "prettier --check \"**/*.ts\" \"**/*.md\" \"!**/lib/**\" && tslint --project ./tsconfig.json",
     "lint:fix": "prettier --check \"**/*.ts\" \"**/*.md\" \"!**/lib/**\" && tslint --project ./tsconfig.json --fix",
     "pre-pr": "yarn clean && yarn format && yarn lint:fix && yarn build && yarn test",
-    "publish:unstable": "yarn publish --preid=unstable --prerelease --message \"chore(release): new unstable [skip ci]\""
+    "version:current": "node -pe \"require('./package.json').version\"",
+    "version:current-unstable": "echo \"$(yarn run -s version:current)-unstable.$(git rev-parse --short HEAD)\"",
+    "publish:unstable": "yarn version --no-git-tag-version --patch && yarn publish --no-git-tag-version --new-version \"$(yarn run -s version:current-unstable)\""
   },
   "devDependencies": {
     "@stablelib/base64": "1.0.0",
