@@ -46,7 +46,6 @@ jobs:
         - run: yarn
         - run: yarn install --frozen-lockfile
         - run: yarn build
-        - run: yarn package
         - run: yarn publish:unstable:binary
           env:
             NODE_PRE_GYP_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
