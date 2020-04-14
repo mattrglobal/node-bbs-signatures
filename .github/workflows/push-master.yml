@@ -29,16 +29,16 @@ jobs:
         - run: yarn publish:unstable:ts
           env:
             NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            NODE_PRE_GYP_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build_pub_binaries:
     name: Publish binaries for supported environments for unstable release
     needs: build_test_publish
-    if: "! contains(github.event.head_commit.message, '[skip ci]')"
+    # Disabled while packages are private
+    if: "false"
     runs-on: ${{matrix.os}}
     strategy:
         matrix:
           node-version: [10.x]
-          os: [windows-latest, macos-latest]
+          os: [windows-latest, macos-latest, ubuntu-latest]
     steps:
         - uses: actions/checkout@v2
         - uses: actions/setup-node@v1

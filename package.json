@@ -9,7 +9,7 @@
   },
   "files": [
     "lib",
-    "native/index.node"
+    "native"
   ],
   "typings": "lib/index.d.ts",
   "repository": {
