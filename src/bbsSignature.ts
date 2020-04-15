@@ -16,7 +16,7 @@ export const sign = (request: BbsSignRequest): Uint8Array => {
     return new Uint8Array(
       zmix.bbs_sign({
         dst: domainSeperationTag,
-        secretKey: secretKey.buffer as ArrayBuffer,
+        secretKey: secretKey.buffer,
         messages,
       })
     );
@@ -34,9 +34,9 @@ export const blindSign = (request: BbsBlindSignRequest): Uint8Array => {
     return new Uint8Array(
       zmix.bbs_blind_sign({
         messageCount,
-        commitment: commitment.buffer as ArrayBuffer,
+        commitment: commitment.buffer,
         dst: domainSeperationTag,
-        secretKey: secretKey.buffer as ArrayBuffer,
+        secretKey: secretKey.buffer,
         messages,
       })
     );
@@ -53,8 +53,8 @@ export const verify = (request: BbsVerifyRequest): boolean => {
   try {
     return zmix.bbs_verify({
       dst: domainSeperationTag,
-      publicKey: publicKey.buffer as ArrayBuffer,
-      signature: signature.buffer as ArrayBuffer,
+      publicKey: publicKey.buffer,
+      signature: signature.buffer,
       messages,
     });
   } catch {
@@ -73,8 +73,8 @@ export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
         nonce,
         revealed,
         dst: domainSeperationTag,
-        publicKey: publicKey.buffer as ArrayBuffer,
-        signature: signature.buffer as ArrayBuffer,
+        publicKey: publicKey.buffer,
+        signature: signature.buffer,
         messages,
       })
     );
@@ -94,8 +94,8 @@ export const verifyProof = (request: BbsVerifyProofRequest): Uint8Array => {
       nonce,
       revealed,
       dst: domainSeperationTag,
-      publicKey: publicKey.buffer as ArrayBuffer,
-      proof: proof.buffer as ArrayBuffer,
+      publicKey: publicKey.buffer,
+      proof: proof.buffer,
       messages,
     });
   } catch (ex) {
