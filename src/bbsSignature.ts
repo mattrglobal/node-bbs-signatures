@@ -3,7 +3,8 @@ import { BbsCreateProofRequest } from "./types/BbsCreateProofRequest";
 import { BbsSignRequest } from "./types/BbsSignRequest";
 import { BbsVerifyProofRequest } from "./types/BbsVerifyProofRequest";
 import { BbsVerifyRequest } from "./types/BbsVerifyRequest";
-// tslint:disable-next-line
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const zmix = require("../native/index.node");
 
 /**
@@ -16,7 +17,7 @@ export const sign = (request: BbsSignRequest): Uint8Array => {
       zmix.bbs_sign({
         dst: domainSeperationTag,
         secretKey: secretKey.buffer as ArrayBuffer,
-        messages
+        messages,
       })
     );
   } catch {
@@ -28,13 +29,7 @@ export const sign = (request: BbsSignRequest): Uint8Array => {
  * Signs a set of messages featuring both known and blinded messages and produces a BBS signature
  */
 export const blindSign = (request: BbsBlindSignRequest): Uint8Array => {
-  const {
-    commitment,
-    secretKey,
-    messages,
-    domainSeperationTag,
-    messageCount
-  } = request;
+  const { commitment, secretKey, messages, domainSeperationTag, messageCount } = request;
   try {
     return new Uint8Array(
       zmix.bbs_blind_sign({
@@ -42,7 +37,7 @@ export const blindSign = (request: BbsBlindSignRequest): Uint8Array => {
         commitment: commitment.buffer as ArrayBuffer,
         dst: domainSeperationTag,
         secretKey: secretKey.buffer as ArrayBuffer,
-        messages
+        messages,
       })
     );
   } catch (ex) {
@@ -60,7 +55,7 @@ export const verify = (request: BbsVerifyRequest): boolean => {
       dst: domainSeperationTag,
       publicKey: publicKey.buffer as ArrayBuffer,
       signature: signature.buffer as ArrayBuffer,
-      messages
+      messages,
     });
   } catch {
     throw new Error("Failed to verify");
@@ -71,14 +66,7 @@ export const verify = (request: BbsVerifyRequest): boolean => {
  * Creates a BBS proof for a set of messages from a BBS signature
  */
 export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
-  const {
-    domainSeperationTag,
-    publicKey,
-    signature,
-    messages,
-    nonce,
-    revealed
-  } = request;
+  const { domainSeperationTag, publicKey, signature, messages, nonce, revealed } = request;
   try {
     return new Uint8Array(
       zmix.bbs_create_proof({
@@ -87,7 +75,7 @@ export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
         dst: domainSeperationTag,
         publicKey: publicKey.buffer as ArrayBuffer,
         signature: signature.buffer as ArrayBuffer,
-        messages
+        messages,
       })
     );
   } catch (ex) {
@@ -99,15 +87,7 @@ export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
  * Verifies a BBS proof
  */
 export const verifyProof = (request: BbsVerifyProofRequest): Uint8Array => {
-  const {
-    domainSeperationTag,
-    publicKey,
-    proof,
-    messages,
-    nonce,
-    revealed,
-    messageCount
-  } = request;
+  const { domainSeperationTag, publicKey, proof, messages, nonce, revealed, messageCount } = request;
   try {
     return zmix.bbs_verify_proof({
       messageCount,
@@ -116,7 +96,7 @@ export const verifyProof = (request: BbsVerifyProofRequest): Uint8Array => {
       dst: domainSeperationTag,
       publicKey: publicKey.buffer as ArrayBuffer,
       proof: proof.buffer as ArrayBuffer,
-      messages
+      messages,
     });
   } catch (ex) {
     throw new Error("Failed to create proof");
