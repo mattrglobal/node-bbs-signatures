@@ -1,11 +1,4 @@
-import {
-  generateKeyPair,
-  BbsSignRequest,
-  sign,
-  verify,
-  BbsVerifyRequest,
-  DEFAULT_PUBLIC_KEY_LENGTH
-} from "../src";
+import { generateKeyPair, BbsSignRequest, sign, verify, BbsVerifyRequest, DEFAULT_PUBLIC_KEY_LENGTH } from "../src";
 import { Coder } from "@stablelib/base64";
 import { BbsBlindSignRequest } from "../src/types/BbsBlindSignRequest";
 import { randomBytes } from "crypto";
@@ -32,7 +25,7 @@ describe("bbsSignature", () => {
       const request: BbsSignRequest = {
         secretKey: blsKeyPair.secretKey,
         domainSeperationTag,
-        messages: ["ExampleMessage"]
+        messages: ["ExampleMessage"],
       };
       const signature = sign(request);
       expect(signature.length).toEqual(DEFAULT_PUBLIC_KEY_LENGTH + 1); //TODO why is the signature one more than the public key?
@@ -42,7 +35,7 @@ describe("bbsSignature", () => {
       const request: BbsSignRequest = {
         secretKey: blsKeyPair.secretKey,
         domainSeperationTag,
-        messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"]
+        messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"],
       };
       const signature = sign(request);
       expect(signature.length).toEqual(DEFAULT_PUBLIC_KEY_LENGTH + 1); //TODO why is the signature one more than the public key?
@@ -52,7 +45,7 @@ describe("bbsSignature", () => {
       const request: BbsSignRequest = {
         secretKey: blsKeyPair.secretKey,
         domainSeperationTag: "",
-        messages: ["ExampleMessage"]
+        messages: ["ExampleMessage"],
       };
       expect(() => sign(request)).toThrowError("Failed to sign");
     });
@@ -73,7 +66,7 @@ describe("bbsSignature", () => {
       const request: BbsSignRequest = {
         secretKey: blsKeyPair.publicKey,
         domainSeperationTag,
-        messages: ["ExampleMessage"]
+        messages: ["ExampleMessage"],
       };
       expect(() => sign(request)).toThrowError("Failed to sign");
     });
@@ -88,7 +81,7 @@ describe("bbsSignature", () => {
         secretKey: blsKeyPair.secretKey,
         domainSeperationTag,
         messages: ["ExampleMessage"],
-        messageCount: 2
+        messageCount: 2,
       };
       const signature = blindSign(request);
       expect(signature.length).toEqual(DEFAULT_PUBLIC_KEY_LENGTH + 1); //TODO why is the signature one more than the public key?
@@ -100,7 +93,7 @@ describe("bbsSignature", () => {
         secretKey: blsKeyPair.secretKey,
         domainSeperationTag,
         messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"],
-        messageCount: 4
+        messageCount: 4,
       };
       const signature = blindSign(request);
       expect(signature.length).toEqual(DEFAULT_PUBLIC_KEY_LENGTH + 1); //TODO why is the signature one more than the public key?
@@ -112,7 +105,7 @@ describe("bbsSignature", () => {
         secretKey: blsKeyPair.secretKey,
         domainSeperationTag: "",
         messages: ["ExampleMessage"],
-        messageCount: 2
+        messageCount: 2,
       };
       expect(() => sign(request)).toThrowError("Failed to sign");
     });
@@ -123,7 +116,7 @@ describe("bbsSignature", () => {
         secretKey: randomBytes(10),
         domainSeperationTag,
         messages: ["ExampleMessage"],
-        messageCount: 2
+        messageCount: 2,
       };
       expect(() => blindSign(request)).toThrowError("Failed to sign");
     });
@@ -138,7 +131,7 @@ describe("bbsSignature", () => {
         secretKey: blsKeyPair.secretKey,
         domainSeperationTag,
         messages: ["ExampleMessage"],
-        messageCount: 2
+        messageCount: 2,
       };
       const signature = blindSign(request);
       expect(signature.length).toEqual(DEFAULT_PUBLIC_KEY_LENGTH + 1); //TODO why is the signature one more than the public key?
@@ -150,7 +143,7 @@ describe("bbsSignature", () => {
         secretKey: blsKeyPair.secretKey,
         domainSeperationTag,
         messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"],
-        messageCount: 4
+        messageCount: 4,
       };
       const signature = blindSign(request);
       expect(signature.length).toEqual(DEFAULT_PUBLIC_KEY_LENGTH + 1); //TODO why is the signature one more than the public key?
@@ -162,7 +155,7 @@ describe("bbsSignature", () => {
         secretKey: blsKeyPair.secretKey,
         domainSeperationTag: "",
         messages: ["ExampleMessage"],
-        messageCount: 2
+        messageCount: 2,
       };
       expect(() => sign(request)).toThrowError("Failed to sign");
     });
@@ -173,7 +166,7 @@ describe("bbsSignature", () => {
         secretKey: randomBytes(10),
         domainSeperationTag,
         messages: ["ExampleMessage"],
-        messageCount: 2
+        messageCount: 2,
       };
       expect(() => blindSign(request)).toThrowError("Failed to sign");
     });
@@ -193,7 +186,7 @@ describe("bbsSignature", () => {
         publicKey,
         domainSeperationTag,
         messages,
-        signature
+        signature,
       };
       expect(verify(verifyRequest)).toBeTruthy();
     });
@@ -211,7 +204,7 @@ describe("bbsSignature", () => {
         publicKey,
         domainSeperationTag,
         messages,
-        signature
+        signature,
       };
       expect(verify(verifyRequest)).toBeTruthy();
     });
@@ -229,7 +222,7 @@ describe("bbsSignature", () => {
         publicKey,
         domainSeperationTag,
         messages,
-        signature
+        signature,
       };
       expect(verify(verifyRequest)).toBeFalsy();
     });
@@ -247,7 +240,7 @@ describe("bbsSignature", () => {
         publicKey,
         domainSeperationTag,
         messages,
-        signature
+        signature,
       };
       expect(verify(verifyRequest)).toBeFalsy();
     });
@@ -261,7 +254,7 @@ describe("bbsSignature", () => {
         publicKey: blsKeyPair.publicKey,
         domainSeperationTag: "",
         messages: ["ExampleMessage"],
-        signature
+        signature,
       };
       expect(() => verify(request)).toThrowError("Failed to verify");
     });
@@ -291,7 +284,7 @@ describe("bbsSignature", () => {
         publicKey: new Uint8Array(20),
         domainSeperationTag,
         messages: [],
-        signature
+        signature,
       };
       expect(() => verify(request)).toThrowError("Failed to verify");
     });
@@ -313,7 +306,7 @@ describe("bbsSignature", () => {
         messages,
         nonce: base64Encode(randomBytes(10)), //TODO probably want this as a byte array instead?
         domainSeperationTag,
-        revealed: [0]
+        revealed: [0],
       };
 
       const proof = createProof(request);
@@ -335,7 +328,7 @@ describe("bbsSignature", () => {
         messages,
         nonce: base64Encode(randomBytes(10)), //TODO probably want this as a byte array instead?
         domainSeperationTag,
-        revealed: [0, 1, 2]
+        revealed: [0, 1, 2],
       };
 
       const proof = createProof(request);
@@ -357,7 +350,7 @@ describe("bbsSignature", () => {
         messages,
         nonce: base64Encode(randomBytes(10)), //TODO probably want this as a byte array instead?
         domainSeperationTag,
-        revealed: [0]
+        revealed: [0],
       };
 
       const proof = createProof(request);
@@ -379,7 +372,7 @@ describe("bbsSignature", () => {
         messages,
         nonce: base64Encode(randomBytes(10)), //TODO probably want this as a byte array instead?
         domainSeperationTag,
-        revealed: [0, 2]
+        revealed: [0, 2],
       };
 
       const proof = createProof(request);
@@ -388,9 +381,7 @@ describe("bbsSignature", () => {
   });
 
   describe("verifyProof", () => {
-    it.todo(
-      "should verify proof with all messages revealed from single message signature"
-    );
+    it.todo("should verify proof with all messages revealed from single message signature");
 
     // TODO failing test ^
     // () => {
@@ -415,9 +406,7 @@ describe("bbsSignature", () => {
     //   //expect(verifyProof(request)).toBeTruthy();
     // }
 
-    it.todo(
-      "should verify proof with all messages revealed from multi-message signature"
-    );
+    it.todo("should verify proof with all messages revealed from multi-message signature");
 
     // TODO failing test ^
     // () => {

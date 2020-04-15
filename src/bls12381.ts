@@ -1,5 +1,6 @@
 import { BlsKeyPair } from "./types";
-// tslint:disable-next-line
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const zmix = require("../native/index.node");
 
 /**
@@ -16,11 +17,9 @@ export const DEFAULT_PUBLIC_KEY_LENGTH = 192;
  * Generates a BLS12-381 key pair
  */
 export const generateKeyPair = (seed?: Uint8Array): BlsKeyPair => {
-  const result = seed
-    ? zmix.bls_generate_key(seed?.buffer)
-    : zmix.bls_generate_key();
+  const result = seed ? zmix.bls_generate_key(seed?.buffer) : zmix.bls_generate_key();
   return {
     publicKey: new Uint8Array(result.publicKey),
-    secretKey: new Uint8Array(result.secretKey)
+    secretKey: new Uint8Array(result.secretKey),
   };
 };
