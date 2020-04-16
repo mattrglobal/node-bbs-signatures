@@ -1,9 +1,17 @@
-import { generateKeyPair, BbsSignRequest, sign, verify, BbsVerifyRequest, DEFAULT_PUBLIC_KEY_LENGTH } from "../src";
+import {
+  generateKeyPair,
+  BbsSignRequest,
+  BbsVerifyProofRequest,
+  BbsBlindSignRequest,
+  BbsCreateProofRequest,
+  sign,
+  verify,
+  BbsVerifyRequest,
+  DEFAULT_PUBLIC_KEY_LENGTH,
+} from "../src";
 import { Coder } from "@stablelib/base64";
-import { BbsBlindSignRequest } from "../src/types/BbsBlindSignRequest";
 import { randomBytes } from "crypto";
-import { blindSign, createProof } from "../src/bbsSignature";
-import { BbsCreateProofRequest } from "../src/types/BbsCreateProofRequest";
+import { blindSign, createProof, verifyProof } from "../src/bbsSignature";
 
 const base64Encode = (bytes: Uint8Array): string => {
   const coder = new Coder();
@@ -50,17 +58,14 @@ describe("bbsSignature", () => {
       expect(() => sign(request)).toThrowError("Failed to sign");
     });
 
-    it.todo("should throw error when messages empty");
-
-    // TODO ^ test currently failing
-    // () => {
-    //   const request: BbsSignRequest = {
-    //     secretKey: blsKeyPair.secretKey,
-    //     domainSeperationTag,
-    //     messages: []
-    //   };
-    //   expect(() => sign(request)).toThrowError("Failed to sign");
-    // }
+    it("should throw error when messages empty", () => {
+      const request: BbsSignRequest = {
+        secretKey: blsKeyPair.secretKey,
+        domainSeperationTag,
+        messages: [],
+      };
+      expect(() => sign(request)).toThrowError("Failed to sign");
+    });
 
     it("should throw error when secret key invalid length", () => {
       const request: BbsSignRequest = {
@@ -259,22 +264,19 @@ describe("bbsSignature", () => {
       expect(() => verify(request)).toThrowError("Failed to verify");
     });
 
-    it.todo("should throw error when messages empty");
-
-    // TODO ^ test currently failing
-    // () => {
-    //   const signature = base64Decode(
-    //     "BBkDTwJ6H3LLVd9wf/p5X4ZzNnFJ7usnbzxmcjcSxF2t+VWcqq6a8JYAYLeAwB0tMwi/Tu1cROZ2ioBDh0+HoV2Aj8UIYxLa5fZn1E0hLzeQadURmI7nqtofopMnXeRG8gAAAAAAAAAAAAAAAAAAAAAAxXagffQjZCCLLPu9m/8/OEl/nSNsArq30nY2hgqmYAAAAAAAAAAAAAAAAAAAAABEhciXgV9wG+MOrEb4vkFPdDGae+wIIzRJhJjKK2B7ng=="
-    //   );
-    //   const blsKeyPair = generateKeyPair();
-    //   const request: BbsVerifyRequest = {
-    //     publicKey: blsKeyPair.publicKey,
-    //     domainSeperationTag,
-    //     messages: [],
-    //     signature
-    //   };
-    //   expect(() => verify(request)).toThrowError("Failed to verify");
-    // }
+    it("should throw error when messages empty", () => {
+      const signature = base64Decode(
+        "BBkDTwJ6H3LLVd9wf/p5X4ZzNnFJ7usnbzxmcjcSxF2t+VWcqq6a8JYAYLeAwB0tMwi/Tu1cROZ2ioBDh0+HoV2Aj8UIYxLa5fZn1E0hLzeQadURmI7nqtofopMnXeRG8gAAAAAAAAAAAAAAAAAAAAAAxXagffQjZCCLLPu9m/8/OEl/nSNsArq30nY2hgqmYAAAAAAAAAAAAAAAAAAAAABEhciXgV9wG+MOrEb4vkFPdDGae+wIIzRJhJjKK2B7ng=="
+      );
+      const blsKeyPair = generateKeyPair();
+      const request: BbsVerifyRequest = {
+        publicKey: blsKeyPair.publicKey,
+        domainSeperationTag,
+        messages: [],
+        signature,
+      };
+      expect(() => verify(request)).toThrowError("Failed to verify");
+    });
 
     it("should throw error when public key invalid length", () => {
       const signature = base64Decode(
@@ -381,56 +383,48 @@ describe("bbsSignature", () => {
   });
 
   describe("verifyProof", () => {
-    it.todo("should verify proof with all messages revealed from single message signature");
+    it("should verify proof with all messages revealed from single message signature", () => {
+      const messages = ["ExampleMessage"];
+      const publicKey = base64Decode(
+        "FhgS20glFXybq5/tnvJwMot1kt3wfYBzEUdoLYV/n+/4ruTeSDdDzSKGJVwMt4atBin5dEfDo3AfrXtJb1qDAmfjlQ08DIT+46bWi4EKls5aotCu8aqVihpBX1AX63aDE4rRAleyMz1z2UF1iH0Kqkrkakql63bURKPuOYY6apH6rhyZPZD5i347bCfmsQkbCqbfkf+VOAebbdadstlFh+rRfyHSJDGZoJlgwdgekuNEzUDLObSlHujmH1g8NRsN"
+      );
+      const proof = base64Decode(
+        "BBACjR3gBNCPdarBCNScVvLeH+5YZnVmU30D0Kp7J1fAtUn0SqcKYxfOjnNc8HlWIxSEOC3IfmParRnRWla1xeiJ/oje3thMb+yb1ZlhsH5w58Qy9K52jJeximsvpLAStwAAAAAAAAAAAAAAAAAAAAAzE3sZuhpY8ti14pkVh2QmwF77nwNO7iYwG/QGT47lpQAAAAAAAAAAAAAAAAAAAAA7J9IaPfRcApuZoHSI2xCteZpkruUrswMaymm6qd67qw=="
+      );
 
-    // TODO failing test ^
-    // () => {
-    //   const messages = ["ExampleMessage"];
-    //   const publicKey = base64Decode(
-    //     "FhgS20glFXybq5/tnvJwMot1kt3wfYBzEUdoLYV/n+/4ruTeSDdDzSKGJVwMt4atBin5dEfDo3AfrXtJb1qDAmfjlQ08DIT+46bWi4EKls5aotCu8aqVihpBX1AX63aDE4rRAleyMz1z2UF1iH0Kqkrkakql63bURKPuOYY6apH6rhyZPZD5i347bCfmsQkbCqbfkf+VOAebbdadstlFh+rRfyHSJDGZoJlgwdgekuNEzUDLObSlHujmH1g8NRsN"
-    //   );
-    //   const proof = base64Decode(
-    //     "BBACjR3gBNCPdarBCNScVvLeH+5YZnVmU30D0Kp7J1fAtUn0SqcKYxfOjnNc8HlWIxSEOC3IfmParRnRWla1xeiJ/oje3thMb+yb1ZlhsH5w58Qy9K52jJeximsvpLAStwAAAAAAAAAAAAAAAAAAAAAzE3sZuhpY8ti14pkVh2QmwF77nwNO7iYwG/QGT47lpQAAAAAAAAAAAAAAAAAAAAA7J9IaPfRcApuZoHSI2xCteZpkruUrswMaymm6qd67qw=="
-    //   );
+      const request: BbsVerifyProofRequest = {
+        proof,
+        publicKey,
+        messageCount: 1,
+        messages,
+        nonce: base64Encode(randomBytes(10)), //TODO probably want this as a byte array instead?
+        domainSeperationTag,
+        revealed: [0],
+      };
 
-    //   const request: BbsVerifyProofRequest = {
-    //     proof,
-    //     publicKey,
-    //     messageCount: 1,
-    //     messages,
-    //     nonce: base64Encode(randomBytes(10)), //TODO probably want this as a byte array instead?
-    //     domainSeperationTag,
-    //     revealed: [0]
-    //   };
+      expect(verifyProof(request)).toBeTruthy();
+    });
 
-    //   //expect(verifyProof(request)).toBeTruthy();
-    // }
+    it("should verify proof with all messages revealed from multi-message signature", () => {
+      const messages = ["ExampleMessage"];
+      const publicKey = base64Decode(
+        "FhgS20glFXybq5/tnvJwMot1kt3wfYBzEUdoLYV/n+/4ruTeSDdDzSKGJVwMt4atBin5dEfDo3AfrXtJb1qDAmfjlQ08DIT+46bWi4EKls5aotCu8aqVihpBX1AX63aDE4rRAleyMz1z2UF1iH0Kqkrkakql63bURKPuOYY6apH6rhyZPZD5i347bCfmsQkbCqbfkf+VOAebbdadstlFh+rRfyHSJDGZoJlgwdgekuNEzUDLObSlHujmH1g8NRsN"
+      );
+      const proof = base64Decode(
+        "BBACjR3gBNCPdarBCNScVvLeH+5YZnVmU30D0Kp7J1fAtUn0SqcKYxfOjnNc8HlWIxSEOC3IfmParRnRWla1xeiJ/oje3thMb+yb1ZlhsH5w58Qy9K52jJeximsvpLAStwAAAAAAAAAAAAAAAAAAAAAzE3sZuhpY8ti14pkVh2QmwF77nwNO7iYwG/QGT47lpQAAAAAAAAAAAAAAAAAAAAA7J9IaPfRcApuZoHSI2xCteZpkruUrswMaymm6qd67qw=="
+      );
 
-    it.todo("should verify proof with all messages revealed from multi-message signature");
+      const request: BbsVerifyProofRequest = {
+        proof,
+        publicKey,
+        messageCount: 1,
+        messages,
+        nonce: base64Encode(randomBytes(10)), //TODO probably want this as a byte array instead?
+        domainSeperationTag,
+        revealed: [0], //TODO change this to reveal more
+      };
 
-    // TODO failing test ^
-    // () => {
-    //   //TODO change to multiple messages
-    //   const messages = ["ExampleMessage"];
-    //   const publicKey = base64Decode(
-    //     "FhgS20glFXybq5/tnvJwMot1kt3wfYBzEUdoLYV/n+/4ruTeSDdDzSKGJVwMt4atBin5dEfDo3AfrXtJb1qDAmfjlQ08DIT+46bWi4EKls5aotCu8aqVihpBX1AX63aDE4rRAleyMz1z2UF1iH0Kqkrkakql63bURKPuOYY6apH6rhyZPZD5i347bCfmsQkbCqbfkf+VOAebbdadstlFh+rRfyHSJDGZoJlgwdgekuNEzUDLObSlHujmH1g8NRsN"
-    //   );
-    //   //TODO change this proof
-    //   const proof = base64Decode(
-    //     "BBACjR3gBNCPdarBCNScVvLeH+5YZnVmU30D0Kp7J1fAtUn0SqcKYxfOjnNc8HlWIxSEOC3IfmParRnRWla1xeiJ/oje3thMb+yb1ZlhsH5w58Qy9K52jJeximsvpLAStwAAAAAAAAAAAAAAAAAAAAAzE3sZuhpY8ti14pkVh2QmwF77nwNO7iYwG/QGT47lpQAAAAAAAAAAAAAAAAAAAAA7J9IaPfRcApuZoHSI2xCteZpkruUrswMaymm6qd67qw=="
-    //   );
-
-    //   const request: BbsVerifyProofRequest = {
-    //     proof,
-    //     publicKey,
-    //     messageCount: 1,
-    //     messages,
-    //     nonce: base64Encode(randomBytes(10)), //TODO probably want this as a byte array instead?
-    //     domainSeperationTag,
-    //     revealed: [0] //TODO change this to reveal more
-    //   };
-
-    //   //expect(verifyProof(request)).toBeTruthy();
-    // }
+      expect(verifyProof(request)).toBeTruthy();
+    });
   });
 });

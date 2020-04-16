@@ -13,5 +13,5 @@ crate-type = ["cdylib"]
 neon-build = "0.4.0"
 
 [dependencies]
-bbs = { version = "0.1.0", git = "https://github.com/mikelodder7/ursa", rev = "54778517ebdb6aaba0180b341ec2b60486b9d5d7" }
+bbs = { version = "0.2.0", git = "https://github.com/mikelodder7/ursa", branch = "deterministic_bbs" }
 neon = "0.4.0"
