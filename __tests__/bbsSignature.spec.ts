@@ -282,7 +282,7 @@ describe("bbsSignature", () => {
         publicKey: blsKeyPair.publicKey,
         domainSeparationTag,
         messages: [],
-        signature,
+        signature
       };
       expect(() => verify(request)).toThrowError("Failed to verify");
     });
