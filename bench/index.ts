@@ -8,7 +8,7 @@ const base64Decode = (string: string): Uint8Array => {
   return coder.decode(string);
 };
 
-const domainSeperationTag = "BBSSignature2020";
+const domainSeparationTag = "BBSSignature2020";
 const blsKeyPair = {
   secretKey: base64Decode("AAAAAAAAAAAAAAAAAAAAAFutvcqd+rMKit2/lHuUBrarW0MQHYXEhdwRiDAWF6xU"),
   publicKey: base64Decode(
@@ -18,13 +18,13 @@ const blsKeyPair = {
 
 const oneMessageSignRequestRequest = {
   secretKey: blsKeyPair.secretKey,
-  domainSeperationTag,
+  domainSeparationTag,
   messages: ["ExampleMessage"],
 };
 
 const tenMessageSignRequest = {
   secretKey: blsKeyPair.secretKey,
-  domainSeperationTag,
+  domainSeparationTag,
   messages: [
     "ExampleMessage",
     "ExampleMessage",
@@ -44,7 +44,7 @@ const oneMessageVerifyRequest = {
   signature: base64Decode(
     "BBSCxYOjrbhPc2+M/9qHdA6EzbD3U8DznJxJs7SYg1hPv2lNjB6Fc7Fv0dPgQHjLHhYrGApKZEdsuL3zPMzhjGbiyrh9Rsa2jsSn8nCui4v2QnKSUXCXG++DnhQbCMvjRwAAAAAAAAAAAAAAAAAAAABkTRu/B1QJvROL4hrpMpNsPNBjN9v/+FAG1KIFHoIjTwAAAAAAAAAAAAAAAAAAAABaVuLs/ZFEmKjXtgSf3euJ3p0TuekCEtW3kYkm2VdV7Q=="
   ),
-  domainSeperationTag,
+  domainSeparationTag,
   messages: ["ExampleMessage"],
 };
 
@@ -53,7 +53,7 @@ const tenMessageVerifyRequest = {
   signature: base64Decode(
     "BAZiCPZ6iHmDXkimWhFa+9p2TTJ2GZ1MHik7T41Q1MFvZS9sNX4nFUlRQn9VxpRUCw7is9he1jek/FwBfxqGk5CNLGeTNiXC1H2ymsg1GUiNFaS6kXwunOfH1jx2lEcCMQAAAAAAAAAAAAAAAAAAAAA3wfmN2jzk8GNTvcPaE/teCAM5BsILmZbpLN3GSGI8CwAAAAAAAAAAAAAAAAAAAAAwML+DrJ+rtCg2SgKjfSzMNjyew+h9Uz9hjA8a36DwWQ=="
   ),
-  domainSeperationTag,
+  domainSeparationTag,
   messages: [
     "ExampleMessage",
     "ExampleMessage",

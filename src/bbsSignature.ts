@@ -11,11 +11,11 @@ const zmix = require("../native/index.node");
  * Signs a set of messages and produces a BBS signature
  */
 export const sign = (request: BbsSignRequest): Uint8Array => {
-  const { domainSeperationTag, secretKey, messages } = request;
+  const { domainSeparationTag, secretKey, messages } = request;
   try {
     return new Uint8Array(
       zmix.bbs_sign({
-        dst: domainSeperationTag,
+        dst: domainSeparationTag,
         secretKey: secretKey.buffer,
         messages,
       })
@@ -29,13 +29,13 @@ export const sign = (request: BbsSignRequest): Uint8Array => {
  * Signs a set of messages featuring both known and blinded messages and produces a BBS signature
  */
 export const blindSign = (request: BbsBlindSignRequest): Uint8Array => {
-  const { commitment, secretKey, messages, domainSeperationTag, messageCount } = request;
+  const { commitment, secretKey, messages, domainSeparationTag, messageCount } = request;
   try {
     return new Uint8Array(
       zmix.bbs_blind_sign({
         messageCount,
         commitment: commitment.buffer,
-        dst: domainSeperationTag,
+        dst: domainSeparationTag,
         secretKey: secretKey.buffer,
         messages,
       })
@@ -49,10 +49,10 @@ export const blindSign = (request: BbsBlindSignRequest): Uint8Array => {
  * Verifies a BBS signature for a set of messages
  */
 export const verify = (request: BbsVerifyRequest): boolean => {
-  const { domainSeperationTag, publicKey, signature, messages } = request;
+  const { domainSeparationTag, publicKey, signature, messages } = request;
   try {
     return zmix.bbs_verify({
-      dst: domainSeperationTag,
+      dst: domainSeparationTag,
       publicKey: publicKey.buffer,
       signature: signature.buffer,
       messages,
@@ -66,13 +66,13 @@ export const verify = (request: BbsVerifyRequest): boolean => {
  * Creates a BBS proof for a set of messages from a BBS signature
  */
 export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
-  const { domainSeperationTag, publicKey, signature, messages, nonce, revealed } = request;
+  const { domainSeparationTag, publicKey, signature, messages, nonce, revealed } = request;
   try {
     return new Uint8Array(
       zmix.bbs_create_proof({
         nonce,
         revealed,
-        dst: domainSeperationTag,
+        dst: domainSeparationTag,
         publicKey: publicKey.buffer,
         signature: signature.buffer,
         messages,
@@ -87,13 +87,13 @@ export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
  * Verifies a BBS proof
  */
 export const verifyProof = (request: BbsVerifyProofRequest): Uint8Array => {
-  const { domainSeperationTag, publicKey, proof, messages, nonce, revealed, messageCount } = request;
+  const { domainSeparationTag, publicKey, proof, messages, nonce, revealed, messageCount } = request;
   try {
     return zmix.bbs_verify_proof({
       messageCount,
       nonce,
       revealed,
-      dst: domainSeperationTag,
+      dst: domainSeparationTag,
       publicKey: publicKey.buffer,
       proof: proof.buffer,
       messages,

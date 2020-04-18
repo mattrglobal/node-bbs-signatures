@@ -1,3 +1,5 @@
+#[macro_use] extern crate arrayref;
+#[macro_use] extern crate bbs;
 #[macro_use]
 mod macros;
 
@@ -23,7 +25,7 @@ fn bls_generate_key(mut cx: FunctionContext) -> JsResult<JsObject> {
 
     let (pk, sk) = DeterministicPublicKey::new(seed);
 
-    let pk_array = slice_to_js_array_buffer!(pk.to_bytes().as_slice(), cx);
+    let pk_array = slice_to_js_array_buffer!(&pk.to_bytes()[..], cx);
     let sk_array = slice_to_js_array_buffer!(sk.to_bytes().as_slice(), cx);
 
     let result = JsObject::new(&mut cx);
@@ -43,7 +45,7 @@ fn bls_generate_key(mut cx: FunctionContext) -> JsResult<JsObject> {
 /// The context object model is as follows:
 /// {
 ///     "secretKey": ArrayBuffer           // The private key of signer
-///     "messages": [String, String],      // The messages to be signed as strings. They will be hashed with SHAKE-128
+///     "messages": [String, String],      // The messages to be signed as strings. They will be hashed with SHAKE-256
 ///     "dst": String                      // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
 /// }
 ///
@@ -63,10 +65,10 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
         let message = obj_field_to_field_elem!(&mut cx, message_bytes[i]);
         messages.push(message);
     }
-    let pk = pk.to_public_key(messages.len(), dst);
+    let pk = pk.to_public_key(messages.len(), dst).unwrap();
 
     let signature = handle_err!(Signature::new(messages.as_slice(), &sk, &pk));
-    let result = slice_to_js_array_buffer!(signature.to_bytes().as_slice(), cx);
+    let result = slice_to_js_array_buffer!(&signature.to_bytes()[..], cx);
     Ok(result)
 }
 
@@ -88,8 +90,8 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
 fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
-    let w = DeterministicPublicKey::from_bytes(GenericArray::clone_from_slice(&obj_field_to_slice!(&mut cx, js_obj, "publicKey")));
-    let signature = handle_err!(Signature::from_bytes(&obj_field_to_slice!(&mut cx, js_obj, "signature")));
+    let w = DeterministicPublicKey::from_bytes(obj_field_to_fixed_array!(&mut cx, js_obj, "publicKey", 0, PUBLIC_KEY_SIZE));
+    let signature = Signature::from_bytes(obj_field_to_fixed_array!(&mut cx, js_obj, "signature", 0, SIGNATURE_SIZE));
     let t = obj_field_to_string!(&mut cx, js_obj, "dst");
     let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
 
@@ -101,7 +103,7 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
         messages.push(message);
     }
 
-    let pk = w.to_public_key(messages.len(), dst);
+    let pk = w.to_public_key(messages.len(), dst).unwrap();
 
     match signature.verify(messages.as_slice(), &pk) {
         Ok(b) => Ok(cx.boolean(b)),
@@ -142,15 +144,15 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 /// values.
 fn bbs_blind_signature_commitment(mut cx: FunctionContext) -> JsResult<JsObject> {
     let bcx = extract_blinding_context(&mut cx)?;
-    let bcx = generate_blind_values(bcx);
-    get_blind_commitment(cx, bcx)
+    let (bcx, bf) = generate_blind_values(bcx);
+    get_blind_commitment(cx, bcx, bf)
 }
 
-fn get_blind_commitment(mut cx: FunctionContext, bcx: BlindedContext) -> JsResult<JsObject> {
+fn get_blind_commitment(mut cx: FunctionContext, bcx: BlindSignatureContext, bf: SignatureBlinding) -> JsResult<JsObject> {
     let commitment = slice_to_js_array_buffer!(bcx.commitment.to_bytes().as_slice(), cx);
     let challenge_hash = slice_to_js_array_buffer!(bcx.challenge_hash.to_bytes().as_slice(), cx);
-    let blinding_factor = slice_to_js_array_buffer!(bcx.blinding_factor.to_bytes().as_slice(), cx);
-    let proof = slice_to_js_array_buffer!(bcx.proof.to_bytes().as_slice(), cx);
+    let blinding_factor = slice_to_js_array_buffer!(bf.to_bytes().as_slice(), cx);
+    let proof = slice_to_js_array_buffer!(bcx.proof_of_hidden_messages.to_bytes().as_slice(), cx);
 
     let result = JsObject::new(&mut cx);
     result.set(&mut cx, "commitment", commitment)?;
@@ -160,58 +162,18 @@ fn get_blind_commitment(mut cx: FunctionContext, bcx: BlindedContext) -> JsResul
     Ok(result)
 }
 
-fn generate_blind_values(bcx: BlindingContext) -> BlindedContext {
-    let pk = bcx
-        .public_key
-        .to_public_key(bcx.message_count, bcx.dst.clone());
+fn generate_blind_values(bcx: BlindingContext) -> (BlindSignatureContext, SignatureBlinding)  {
+    let pk = bcx.public_key.to_public_key(bcx.message_count, bcx.dst.clone()).unwrap();
 
-    let blinding_factor = Signature::generate_blinding();
-
-    let mut points = SignaturePointVector::with_capacity(bcx.messages.len() + 1);
-    let mut scalars = SignatureMessageVector::with_capacity(bcx.messages.len() + 1);
-    // h0^blinding_factor*hi^mi.....
-    points.push(pk.h0.clone());
-    scalars.push(blinding_factor.clone());
-    let mut committing = ProverCommittingG1::new();
-    committing.commit(&pk.h0, None);
-
-    for (i, m) in &bcx.messages {
-        points.push(pk.h[*i].clone());
-        scalars.push(m.clone());
-        committing.commit(&pk.h[*i], None);
-    }
-
-    //User creates a random commitment, computes challenges and response. The proof of knowledge consists of a commitment and responses
-    //User and signer engage in a proof of knowledge for `commitment`
-    let commitment = points
-        .multi_scalar_mul_const_time(scalars.as_slice())
-        .unwrap();
-    let committed = committing.finish();
-
-    let mut extra = Vec::new();
-    extra.extend_from_slice(commitment.to_bytes().as_slice());
-    if let Some(b) = bcx.nonce {
-        extra.extend_from_slice(b.as_bytes());
-    }
-    let challenge_hash = committed.gen_challenge(extra);
-    let proof = committed
-        .gen_proof(&challenge_hash, scalars.as_slice())
-        .unwrap();
-
-    BlindedContext {
-        blinding_factor,
-        challenge_hash,
-        commitment,
-        proof,
-    }
+    Prover::new_blind_signature_context(&pk, &bcx.messages, &bcx.nonce).unwrap()
 }
 
 fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext, Throw> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
     let message_count = get_message_count!(cx, js_obj, "messageCount");
-    let public_key = DeterministicPublicKey::from_bytes(GenericArray::clone_from_slice(&obj_field_to_slice!(cx, js_obj, "publicKey")));
-    let nonce = obj_field_to_opt_string!(cx, js_obj, "nonce");
+    let public_key = DeterministicPublicKey::from_bytes(obj_field_to_fixed_array!(cx, js_obj, "publicKey", 0, PUBLIC_KEY_SIZE));
+    let nonce_str = obj_field_to_opt_string!(cx, js_obj, "nonce");
     let t = obj_field_to_string!(cx, js_obj, "dst");
     let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
 
@@ -233,6 +195,7 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
         messages.insert(index as usize, message);
     }
     let message_count = message_count as usize;
+    let nonce = SignatureNonce::from_msg_hash(&(nonce_str.map_or_else(|| "bbs+nodejswrapper".as_bytes().to_vec(), |m| m.as_bytes().to_vec())));
 
     Ok(BlindingContext {
         public_key,
@@ -243,18 +206,11 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
     })
 }
 
-struct BlindedContext {
-    blinding_factor: SignatureBlinding,
-    challenge_hash: SignatureMessage,
-    commitment: BlindedSignatureCommitment,
-    proof: ProofG1,
-}
-
 struct BlindingContext {
     public_key: DeterministicPublicKey,
     message_count: usize,
     messages: BTreeMap<usize, SignatureMessage>,
-    nonce: Option<String>,
+    nonce: SignatureNonce,
     dst: DomainSeparationTag,
 }
 
@@ -270,7 +226,7 @@ struct BlindingContext {
 ///     "commitment": ArrayBuffer                // The commitment received from the intended recipient
 ///     "secretKey": ArrayBuffer                 // The secret key used for generating the signature
 ///     "messageCount": Number                   // The total number of messages that will be signed––both hidden and known.
-///     "messages": [String, String]             // The messages that will be signed as strings. They will be hashed with SHAKE-128
+///     "messages": [String, String]             // The messages that will be signed as strings. They will be hashed with SHAKE-256
 ///     "dst": String                            // The domain separation tag, e.g. "BBS-Sign-NewZealand2020
 /// }
 ///
@@ -279,19 +235,19 @@ fn bbs_blind_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     let bcx = extract_blind_signature_context(&mut cx)?;
     let signature = sign_blind(bcx)?;
 
-    let result = slice_to_js_array_buffer!(signature.to_bytes().as_slice(), cx);
+    let result = slice_to_js_array_buffer!(&signature.to_bytes()[..], cx);
     Ok(result)
 }
 
-fn sign_blind(bcx: BlindSignatureContext) -> Result<BlindSignature, Throw> {
+fn sign_blind(bcx: BlindSignContext) -> Result<BlindSignature, Throw> {
     let (dpk, _) = DeterministicPublicKey::new(Some(KeyGenOption::FromSecretKey(bcx.secret_key.clone())));
 
-    let pk = dpk.to_public_key(bcx.message_count, bcx.dst.clone());
+    let pk = dpk.to_public_key(bcx.message_count, bcx.dst.clone()).unwrap();
 
     Ok(handle_err!(BlindSignature::new(&bcx.commitment, &bcx.messages, &bcx.secret_key, &pk)))
 }
 
-fn extract_blind_signature_context(cx: &mut FunctionContext) -> Result<BlindSignatureContext, Throw> {
+fn extract_blind_signature_context(cx: &mut FunctionContext) -> Result<BlindSignContext, Throw> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
     let message_count = get_message_count!(cx, js_obj, "messageCount");
@@ -311,7 +267,7 @@ fn extract_blind_signature_context(cx: &mut FunctionContext) -> Result<BlindSign
    
     let message_count = message_count as usize;
 
-    Ok(BlindSignatureContext {
+    Ok(BlindSignContext {
         commitment,
         dst,
         message_count,
@@ -320,7 +276,7 @@ fn extract_blind_signature_context(cx: &mut FunctionContext) -> Result<BlindSign
     })
 }
 
-struct BlindSignatureContext {
+struct BlindSignContext {
     commitment: BlindedSignatureCommitment,
     dst: DomainSeparationTag,
     message_count: usize,
@@ -338,15 +294,15 @@ struct BlindSignatureContext {
 /// `blindingFactor`: `ArrayBuffer` length must be `MESSAGE_SIZE`
 /// `return`: `ArrayBuffer` the unblinded signature
 fn bbs_get_unblinded_signature(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
-    let sig = arg_to_slice!(cx, 0);
+    let sig = arg_to_fixed_array!(cx, 0, 0, SIGNATURE_SIZE);
     let bf = arg_to_slice!(cx, 1);
 
-    let sig = handle_err!(BlindSignature::from_bytes(sig.as_slice()));
+    let sig = BlindSignature::from_bytes(sig);
     let bf = handle_err!(SignatureBlinding::from_bytes(bf.as_slice()));
 
     let sig = sig.to_unblinded(&bf);
 
-    let result = slice_to_js_array_buffer!(sig.to_bytes().as_slice(), cx);
+    let result = slice_to_js_array_buffer!(&sig.to_bytes()[..], cx);
     Ok(result)
 }
 
@@ -373,12 +329,14 @@ fn bbs_create_proof(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
 }
 
 fn generate_proof(pcx: CreateProofContext) -> Result<PoKOfSignatureProof, Throw> {
-    let pk = pcx.public_key.to_public_key(pcx.messages.len(), pcx.dst);
+    let pk = pcx.public_key.to_public_key(pcx.messages.len(), pcx.dst).unwrap();
 
-    let pok = handle_err!(PoKOfSignature::init(&pcx.signature, &pk, &pcx.messages.as_slice(), None, &pcx.revealed.clone()));
+    let pok = handle_err!(PoKOfSignature::init(&pcx.signature, &pk, &pcx.messages.as_slice()));
     let mut challenge_bytes = pok.to_bytes();
     if let Some(b) = pcx.nonce {
-        challenge_bytes.extend_from_slice(b.as_bytes());
+        challenge_bytes.extend_from_slice(&SignatureNonce::from_msg_hash(b.as_bytes()).to_bytes());
+    } else {
+        challenge_bytes.extend_from_slice(&SignatureNonce::new().to_bytes());
     }
 
     let challenge_hash = SignatureMessage::from_msg_hash(&challenge_bytes);
@@ -388,34 +346,37 @@ fn generate_proof(pcx: CreateProofContext) -> Result<PoKOfSignatureProof, Throw>
 fn extract_create_proof_context(cx: &mut FunctionContext) -> Result<CreateProofContext, Throw> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
-    let signature = handle_err!(Signature::from_bytes(&obj_field_to_slice!(cx, js_obj, "signature")));
-    let public_key = DeterministicPublicKey::from_bytes(GenericArray::clone_from_slice(&obj_field_to_slice!(cx, js_obj, "publicKey")));
+    let signature = Signature::from_bytes(obj_field_to_fixed_array!(cx, js_obj, "signature", 0, SIGNATURE_SIZE));
+    let public_key = DeterministicPublicKey::from_bytes(obj_field_to_fixed_array!(cx, js_obj, "publicKey", 0, PUBLIC_KEY_SIZE));
     let nonce = obj_field_to_opt_string!(cx, js_obj, "nonce");
     let t = obj_field_to_string!(cx, js_obj, "dst");
     let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
     let revealed_indices = obj_field_to_vec!(cx, js_obj, "revealed");
     let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
 
-    let mut messages = Vec::new();
-    for i in 0..message_bytes.len() {
-        let message = obj_field_to_field_elem!(cx, message_bytes[i]);
-        messages.push(message);
-    }
-
     let mut revealed = BTreeSet::new();
     for i in 0..revealed_indices.len() {
         let index = cast_to_number!(cx, revealed_indices[i]);
-        if index < 0f64 || index as usize > messages.len() {
-            panic!("Index is out of bounds. Must be between 0 and {}: {}", messages.len(), index);
+        if index < 0f64 || index as usize > message_bytes.len() {
+            panic!("Index is out of bounds. Must be between 0 and {}: {}", message_bytes.len(), index);
         }
         revealed.insert(index as usize);
+    }
+
+    let mut messages = Vec::new();
+    for i in 0..message_bytes.len() {
+        let message = obj_field_to_field_elem!(cx, message_bytes[i]);
+        if revealed.contains(&i) {
+            messages.push(pm_revealed_raw!(message));
+        } else {
+            messages.push(pm_hidden_raw!(message));
+        }
     }
 
     Ok(CreateProofContext {
         signature,
         public_key,
         messages,
-        revealed,
         nonce,
         dst
     })
@@ -424,8 +385,7 @@ fn extract_create_proof_context(cx: &mut FunctionContext) -> Result<CreateProofC
 struct CreateProofContext {
     signature: Signature,
     public_key: DeterministicPublicKey,
-    messages: Vec<SignatureMessage>,
-    revealed: BTreeSet<usize>,
+    messages: Vec<ProofMessage>,
     nonce: Option<String>,
     dst: DomainSeparationTag
 }
@@ -450,28 +410,36 @@ fn bbs_verify_proof(mut cx: FunctionContext) -> JsResult<JsBoolean> {
     let vcx = extract_verify_proof_context(&mut cx)?;
 
     match verify_proof(vcx) {
-        Ok(b) => match b {
-            PoKOfSignatureProofStatus::Success => Ok(cx.boolean(true)),
-            _ => Ok(cx.boolean(false))
-        },
+        Ok(_) => Ok(cx.boolean(true)),
         Err(_) => Ok(cx.boolean(false)),
     }
 }
 
-fn verify_proof(vcx: VerifyProofContext) -> Result<PoKOfSignatureProofStatus,Throw> {
-    let pk = vcx.public_key.to_public_key(vcx.message_count, vcx.dst.clone());
-    let mut revealed_msgs = BTreeMap::new();
-    for i in &vcx.revealed {
-        revealed_msgs.insert(i.clone(), vcx.messages[*i].clone());
-    }
-    // The verifier generates the challenge on its own.
-    let mut challenge_bytes = vcx.proof.get_bytes_for_challenge(vcx.revealed.clone(), &pk);
+fn verify_proof(vcx: VerifyProofContext) -> Result<Vec<SignatureMessage>, Throw> {
+    let nonce = match vcx.nonce {
+        Some(ref s) => SignatureNonce::from_msg_hash(s.as_bytes()),
+        None => SignatureNonce::new()
+    };
+    let proof_request = ProofRequest {
+        revealed_messages: vcx.revealed.clone(),
+        verification_key: vcx.public_key.to_public_key(vcx.message_count, vcx.dst.clone()).unwrap()
+    };
 
-    if let Some(b) = vcx.nonce {
-        challenge_bytes.extend_from_slice(b.as_bytes());
+    let mut revealed_messages = BTreeMap::new();
+    for i in &vcx.revealed {
+        revealed_messages.insert(*i, vcx.messages[*i].clone());
     }
-    let challenge_verifier = SignatureMessage::from_msg_hash(&challenge_bytes);
-    Ok(handle_err!(vcx.proof.verify(&pk, &revealed_msgs.clone(), &challenge_verifier)))
+
+    let signature_proof = SignatureProof {
+        revealed_messages,
+        proof: vcx.proof.clone()
+    };
+
+    Ok(handle_err!(Verifier::verify_signature_pok(
+        &proof_request,
+        &signature_proof,
+        &nonce,
+    )))
 }
 
 fn extract_verify_proof_context(cx: &mut FunctionContext) -> Result<VerifyProofContext, Throw> {
@@ -479,7 +447,7 @@ fn extract_verify_proof_context(cx: &mut FunctionContext) -> Result<VerifyProofC
 
     let message_count = get_message_count!(cx, js_obj, "messageCount");
     let proof = handle_err!(PoKOfSignatureProof::from_bytes(&obj_field_to_slice!(cx, js_obj, "proof")));
-    let public_key = DeterministicPublicKey::from_bytes(GenericArray::clone_from_slice(&obj_field_to_slice!(cx, js_obj, "publicKey")));
+    let public_key = DeterministicPublicKey::from_bytes(obj_field_to_fixed_array!(cx, js_obj, "publicKey", 0, PUBLIC_KEY_SIZE));
     let nonce = obj_field_to_opt_string!(cx, js_obj, "nonce");
     let t = obj_field_to_string!(cx, js_obj, "dst");
     let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
