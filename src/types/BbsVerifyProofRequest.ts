@@ -29,5 +29,5 @@ export interface BbsVerifyProofRequest {
   /**
    * Domain seperation featured in the proof (TODO do we need one for the sig and other for the proof?)
    */
-  readonly domainSeperationTag: string;
+  readonly domainSeparationTag: string;
 }

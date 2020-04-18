@@ -17,7 +17,7 @@ export interface BbsBlindSignRequest {
   /**
    * Domain seperation tag to feature in the signature
    */
-  readonly domainSeperationTag: string;
+  readonly domainSeparationTag: string;
   /**
    * Total number of messages to sign both known and blinded
    */

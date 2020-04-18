@@ -9,7 +9,7 @@ export interface BbsVerifyRequest {
   /**
    * Domain seperation tag used by the signature
    */
-  readonly domainSeperationTag: string;
+  readonly domainSeparationTag: string;
   /**
    * Raw signature value
    */

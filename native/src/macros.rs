@@ -20,12 +20,30 @@ macro_rules! arg_to_slice {
     };
 }
 
+macro_rules! arg_to_fixed_array {
+    ($cx:expr, $i:expr, $start:expr, $end:expr) => {
+        {
+            let a = arg_to_slice!($cx, $i);
+            *array_ref![a, $start, $end]
+        }
+    };
+}
+
 macro_rules! obj_field_to_slice {
     ($cx:expr, $obj:expr, $field:expr) => {
         {
             cast_to_slice!($cx, $obj.get($cx, $field)?)
         }
     };
+}
+
+macro_rules! obj_field_to_fixed_array {
+    ($cx:expr, $obj:expr, $field:expr, $start:expr, $end:expr) => {
+        {
+            let a = cast_to_slice!($cx, $obj.get($cx, $field)?);
+            *array_ref![a, $start, $end]
+        }
+    }
 }
 
 macro_rules! obj_field_to_string {

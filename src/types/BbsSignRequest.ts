@@ -9,7 +9,7 @@ export interface BbsSignRequest {
   /**
    * Domain seperation to feature in the signature
    */
-  readonly domainSeperationTag: string;
+  readonly domainSeparationTag: string;
   /**
    * Messages to sign
    */

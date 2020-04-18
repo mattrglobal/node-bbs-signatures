@@ -25,5 +25,5 @@ export interface BbsCreateProofRequest {
   /**
    * Domain seperation featured in the signature
    */
-  readonly domainSeperationTag: string;
+  readonly domainSeparationTag: string;
 }
