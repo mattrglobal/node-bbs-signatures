@@ -1,5 +1,7 @@
 # Node BBS Signatures
 
+![Master](https://github.com/mattrglobal/node-bbs-signatures/workflows/push-master/badge.svg)
+
 BBS+ Signatures are digital signature algorithm originally proposed by Camenisch et al. in
 [Anonymous Attestation Using the Strong Diffie Hellman Assumption Revisited ](https://www.researchgate.net/publication/306347781_Anonymous_Attestation_Using_the_Strong_Diffie_Hellman_Assumption_Revisited).
 
@@ -34,7 +36,7 @@ yarn build
 
 ### Testing
 
-With [Yarn] run:
+With [Yarn](https://yarnpkg.com/) run:
 
 ```
 yarn test
@@ -42,7 +44,7 @@ yarn test
 
 ### Benchmarking
 
-With [Yarn] run:
+With [Yarn](https://yarnpkg.com/) run:
 
 ```
 yarn benchmark
