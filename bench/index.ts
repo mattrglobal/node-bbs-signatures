@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { benchmark, report } from "@stablelib/benchmark";
 import { generateKeyPair } from "../src/bls12381";
 import { sign, verify } from "../src/bbsSignature";
 import { Coder } from "@stablelib/base64";
+import { generateSignRequest } from "./helper";
 
 const base64Decode = (string: string): Uint8Array => {
   const coder = new Coder();
@@ -16,79 +18,138 @@ const blsKeyPair = {
   ),
 };
 
-const oneMessageSignRequestRequest = {
-  secretKey: blsKeyPair.secretKey,
-  domainSeparationTag,
-  messages: ["ExampleMessage"],
-};
-
-const tenMessageSignRequest = {
-  secretKey: blsKeyPair.secretKey,
-  domainSeparationTag,
-  messages: [
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-  ],
-};
-
-const oneMessageVerifyRequest = {
-  publicKey: blsKeyPair.publicKey,
-  signature: base64Decode(
-    "BBSCxYOjrbhPc2+M/9qHdA6EzbD3U8DznJxJs7SYg1hPv2lNjB6Fc7Fv0dPgQHjLHhYrGApKZEdsuL3zPMzhjGbiyrh9Rsa2jsSn8nCui4v2QnKSUXCXG++DnhQbCMvjRwAAAAAAAAAAAAAAAAAAAABkTRu/B1QJvROL4hrpMpNsPNBjN9v/+FAG1KIFHoIjTwAAAAAAAAAAAAAAAAAAAABaVuLs/ZFEmKjXtgSf3euJ3p0TuekCEtW3kYkm2VdV7Q=="
-  ),
-  domainSeparationTag,
-  messages: ["ExampleMessage"],
-};
-
-const tenMessageVerifyRequest = {
-  publicKey: blsKeyPair.publicKey,
-  signature: base64Decode(
-    "BAZiCPZ6iHmDXkimWhFa+9p2TTJ2GZ1MHik7T41Q1MFvZS9sNX4nFUlRQn9VxpRUCw7is9he1jek/FwBfxqGk5CNLGeTNiXC1H2ymsg1GUiNFaS6kXwunOfH1jx2lEcCMQAAAAAAAAAAAAAAAAAAAAA3wfmN2jzk8GNTvcPaE/teCAM5BsILmZbpLN3GSGI8CwAAAAAAAAAAAAAAAAAAAAAwML+DrJ+rtCg2SgKjfSzMNjyew+h9Uz9hjA8a36DwWQ=="
-  ),
-  domainSeparationTag,
-  messages: [
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-    "ExampleMessage",
-  ],
-};
-
 report(
   "BLS 12-381 Key Generation",
   benchmark(() => generateKeyPair())
 );
 
+// ------------------------------ Sign/Verify 1, 100 byte message ------------------------------
+const one_HundredByteMessageSignRequest = generateSignRequest(blsKeyPair.secretKey, domainSeparationTag, 1, 100);
+const one_HundredByteMessageSignature = sign(one_HundredByteMessageSignRequest);
+const one_HundredByteMessageVerifyRequest = {
+  signature: one_HundredByteMessageSignature,
+  publicKey: blsKeyPair.publicKey,
+  domainSeparationTag,
+  messages: one_HundredByteMessageSignRequest.messages,
+};
+
 report(
-  "BBS Sign 1 message",
-  benchmark(() => sign(oneMessageSignRequestRequest))
+  "BBS Sign 1, 100 byte message",
+  benchmark(() => sign(one_HundredByteMessageSignRequest))
 );
 
 report(
-  "BBS Sign 10 message",
-  benchmark(() => sign(tenMessageSignRequest))
+  "BBS Verify 1, 100 byte message",
+  benchmark(() => verify(one_HundredByteMessageVerifyRequest))
+);
+// ---------------------------------------------------------------------------------------------
+
+// ------------------------------ Sign/Verify 1, 1000 byte message ------------------------------
+const one_ThousandByteMessageSignRequest = generateSignRequest(blsKeyPair.secretKey, domainSeparationTag, 1, 1000);
+const one_ThousandByteMessageSignature = sign(one_HundredByteMessageSignRequest);
+const one_ThousandByteMessageVerifyRequest = {
+  signature: one_ThousandByteMessageSignature,
+  publicKey: blsKeyPair.publicKey,
+  domainSeparationTag,
+  messages: one_ThousandByteMessageSignRequest.messages,
+};
+
+report(
+  "BBS Sign 1, 1000 byte message",
+  benchmark(() => sign(one_ThousandByteMessageSignRequest))
 );
 
 report(
-  "BBS Verify 1 message",
-  benchmark(() => verify(oneMessageVerifyRequest))
+  "BBS Verify 1, 1000 byte message",
+  benchmark(() => verify(one_ThousandByteMessageVerifyRequest))
+);
+// ---------------------------------------------------------------------------------------------
+
+// ------------------------------ Sign/Verify 10, 100 byte messages ------------------------------
+const ten_HundredByteMessageSignRequest = generateSignRequest(blsKeyPair.secretKey, domainSeparationTag, 10, 100);
+const ten_HundredByteMessageSignature = sign(ten_HundredByteMessageSignRequest);
+const ten_HundredByteMessageVerifyRequest = {
+  signature: ten_HundredByteMessageSignature,
+  publicKey: blsKeyPair.publicKey,
+  domainSeparationTag,
+  messages: ten_HundredByteMessageSignRequest.messages,
+};
+
+report(
+  "BBS Sign 10, 100 byte messages",
+  benchmark(() => sign(ten_HundredByteMessageSignRequest))
 );
 
 report(
-  "BBS Verify 10 message",
-  benchmark(() => verify(tenMessageVerifyRequest))
+  "BBS Verify 10, 100 byte messages",
+  benchmark(() => verify(ten_HundredByteMessageVerifyRequest))
 );
+// -----------------------------------------------------------------------------------------------
+
+// ------------------------------ Sign/Verify 10, 1000 byte messages ------------------------------
+const ten_ThousandByteMessageSignRequest = generateSignRequest(blsKeyPair.secretKey, domainSeparationTag, 10, 1000);
+const ten_ThousandByteMessageSignature = sign(ten_HundredByteMessageSignRequest);
+const ten_ThousandByteMessageVerifyRequest = {
+  signature: ten_ThousandByteMessageSignature,
+  publicKey: blsKeyPair.publicKey,
+  domainSeparationTag,
+  messages: ten_ThousandByteMessageSignRequest.messages,
+};
+
+report(
+  "BBS Sign 10, 1000 byte messages",
+  benchmark(() => sign(ten_ThousandByteMessageSignRequest))
+);
+
+report(
+  "BBS Verify 10, 1000 byte messages",
+  benchmark(() => verify(ten_ThousandByteMessageVerifyRequest))
+);
+// -----------------------------------------------------------------------------------------------
+
+// ------------------------------ Sign/Verify 100, 100 byte messages ------------------------------
+const hundred_HundredByteMessageSignRequest = generateSignRequest(blsKeyPair.secretKey, domainSeparationTag, 100, 100);
+const hundred_HundredByteMessageSignature = sign(hundred_HundredByteMessageSignRequest);
+const hundred_HundredByteMessageVerifyRequest = {
+  signature: hundred_HundredByteMessageSignature,
+  publicKey: blsKeyPair.publicKey,
+  domainSeparationTag,
+  messages: hundred_HundredByteMessageSignRequest.messages,
+};
+
+report(
+  "BBS Sign 100, 100 byte messages",
+  benchmark(() => sign(hundred_HundredByteMessageSignRequest))
+);
+
+report(
+  "BBS Verify 100, 100 byte messages",
+  benchmark(() => verify(hundred_HundredByteMessageVerifyRequest))
+);
+// -----------------------------------------------------------------------------------------------
+
+// ------------------------------ Sign/Verify 100, 100 byte messages ------------------------------
+const hundred_ThousandByteMessageSignRequest = generateSignRequest(
+  blsKeyPair.secretKey,
+  domainSeparationTag,
+  100,
+  1000
+);
+const hundred_ThousandByteMessageSignature = sign(hundred_HundredByteMessageSignRequest);
+const hundred_ThousandByteMessageVerifyRequest = {
+  signature: hundred_ThousandByteMessageSignature,
+  publicKey: blsKeyPair.publicKey,
+  domainSeparationTag,
+  messages: hundred_ThousandByteMessageSignRequest.messages,
+};
+
+report(
+  "BBS Sign 100, 1000 byte messages",
+  benchmark(() => sign(hundred_ThousandByteMessageSignRequest))
+);
+
+report(
+  "BBS Verify 100, 1000 byte messages",
+  benchmark(() => verify(hundred_ThousandByteMessageVerifyRequest))
+);
+// -----------------------------------------------------------------------------------------------
