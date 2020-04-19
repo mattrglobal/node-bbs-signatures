@@ -31,6 +31,7 @@
     "install": "node-pre-gyp install --fallback-to-build=false || yarn build:neon",
     "test": "jest",
     "benchmark": "ts-node ./bench/index.ts",
+    "benchmark:stress": "ts-node ./bench/stress.ts",
     "build": "yarn build:neon && yarn build:ts",
     "build:ts": "tsc --pretty",
     "build:neon": "neon build --release",
