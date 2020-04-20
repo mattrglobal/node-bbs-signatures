@@ -1,5 +1,5 @@
 import {
-  generateKeyPair,
+  generateBls12381KeyPair,
   BbsSignRequest,
   BbsVerifyProofRequest,
   BbsBlindSignRequest,
@@ -27,7 +27,7 @@ describe("bbsSignature", () => {
   const domainSeparationTag = "BBSSignature2020";
 
   describe("sign", () => {
-    const blsKeyPair = generateKeyPair();
+    const blsKeyPair = generateBls12381KeyPair();
 
     it("should sign a single message", () => {
       const request: BbsSignRequest = {
@@ -78,7 +78,7 @@ describe("bbsSignature", () => {
   });
 
   describe("blindSign", () => {
-    const blsKeyPair = generateKeyPair();
+    const blsKeyPair = generateBls12381KeyPair();
 
     it("should sign with a single known message", () => {
       const request: BbsBlindSignRequest = {
@@ -128,7 +128,7 @@ describe("bbsSignature", () => {
   });
 
   describe("blindSign", () => {
-    const blsKeyPair = generateKeyPair();
+    const blsKeyPair = generateBls12381KeyPair();
 
     it("should sign a single known message", () => {
       const request: BbsBlindSignRequest = {
@@ -251,7 +251,7 @@ describe("bbsSignature", () => {
       const signature = base64Decode(
         "BBkDTwJ6H3LLVd9wf/p5X4ZzNnFJ7usnbzxmcjcSxF2t+VWcqq6a8JYAYLeAwB0tMwi/Tu1cROZ2ioBDh0+HoV2Aj8UIYxLa5fZn1E0hLzeQadURmI7nqtofopMnXeRG8gAAAAAAAAAAAAAAAAAAAAAAxXagffQjZCCLLPu9m/8/OEl/nSNsArq30nY2hgqmYAAAAAAAAAAAAAAAAAAAAABEhciXgV9wG+MOrEb4vkFPdDGae+wIIzRJhJjKK2B7ng=="
       );
-      const blsKeyPair = generateKeyPair();
+      const blsKeyPair = generateBls12381KeyPair();
       const request: BbsVerifyRequest = {
         publicKey: blsKeyPair.publicKey,
         domainSeparationTag: "",
@@ -264,7 +264,7 @@ describe("bbsSignature", () => {
       const signature = base64Decode(
         "BBkDTwJ6H3LLVd9wf/p5X4ZzNnFJ7usnbzxmcjcSxF2t+VWcqq6a8JYAYLeAwB0tMwi/Tu1cROZ2ioBDh0+HoV2Aj8UIYxLa5fZn1E0hLzeQadURmI7nqtofopMnXeRG8gAAAAAAAAAAAAAAAAAAAAAAxXagffQjZCCLLPu9m/8/OEl/nSNsArq30nY2hgqmYAAAAAAAAAAAAAAAAAAAAABEhciXgV9wG+MOrEb4vkFPdDGae+wIIzRJhJjKK2B7ng=="
       );
-      const blsKeyPair = generateKeyPair();
+      const blsKeyPair = generateBls12381KeyPair();
       const request: BbsVerifyRequest = {
         publicKey: blsKeyPair.publicKey,
         domainSeparationTag,
