@@ -84,7 +84,7 @@ The API's change in the following way and compute the message specific generator
 
 1. _H2C_ is the hash to curve algorithm
 1. _I2OSP_ Thise function is used to convert a byte string to a non-negative integer as described in
-   [RFC8017](https://tools.ietf.org/html/rfc8017).
+   [RFC8017](https://tools.ietf.org/html/rfc8017#section-4.1).
 1. Compute _h<sub>0</sub> &xlarr; H2C( w || I2OSP(0, 1) || I2OSP(L, 4) )_
 1. Compute _h<sub>i</sub> &xlarr; H2C( h<sub>i-1</sub> || I2OSP(0, 1) || I2OSP(i, 4) )_
 
