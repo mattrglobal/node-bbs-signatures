@@ -2,18 +2,17 @@
 
 ![Master](https://github.com/mattrglobal/node-bbs-signatures/workflows/push-master/badge.svg)
 
-This repository is the home to a performant multi-message digital signature algorithm which supports deriving zero knowledge proofs that enable selectively disclose from the originally signed message set.
+This repository is the home to a performant multi-message digital signature algorithm which supports deriving zero knowledge proofs that enable selectively disclosure from the originally signed message set.
 
 BBS+ Signatures are a digital signature algorithm originally born from the work on [Short group signatures](https://crypto.stanford.edu/~xb/crypto04a/groupsigs.pdf) by Boneh, Boyen, and Shachum which was later improved on in [Constant-Size Dynamic k-TAA](http://web.cs.iastate.edu/~wzhang/teach-552/ReadingList/552-14.pdf) as BBS+ and touched on again in section 4.3 in [Anonymous Attestation Using the Strong Diffie Hellman Assumption Revisited ](https://www.researchgate.net/publication/306347781_Anonymous_Attestation_Using_the_Strong_Diffie_Hellman_Assumption_Revisited).
 
-BBS+ signatures require a [pairing-friendly curve](https://tools.ietf.org/html/draft-irtf-cfrg-pairing-friendly-curves-03), this library includes
-support for [BLS12-381](https://tools.ietf.org/html/draft-irtf-cfrg-pairing-friendly-curves-03#section-2.4).
+BBS+ signatures require a [pairing-friendly curve](https://tools.ietf.org/html/draft-irtf-cfrg-pairing-friendly-curves-03), this library includes support for [BLS12-381](https://tools.ietf.org/html/draft-irtf-cfrg-pairing-friendly-curves-03#section-2.4).
 
-BBS+ Signatures allow for multi-message signing whilst producing a single output signature. With a BBS signature, a [proof of knowledge](https://en.wikipedia.org/wiki/Proof_of_knowledge) can be produced where only some of the originally signed messages are revealed at the discretion of the prover.
+BBS+ Signatures allow for multi-message signing whilst producing a single output signature. With a BBS signature, a [proof of knowledge](https://en.wikipedia.org/wiki/Proof_of_knowledge) based proof can be produced where only some of the originally signed messages are revealed at the discretion of the prover.
 
 For more details on the signature algorithm please refer to [here](./docs/ALGORITHM.md)
 
-## Getting Started
+## Getting started
 
 To use this package within your project simply run
 
@@ -77,7 +76,7 @@ const isProofVerified = verifyProof({
 });
 ```
 
-## Getting Started as a contributor
+## Getting started as a contributor
 
 The following describes how to get started as a contributor to this project
 
