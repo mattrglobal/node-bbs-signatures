@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { benchmark, report } from "@stablelib/benchmark";
-import { generateKeyPair } from "../src/bls12381";
+import { generateBls12381KeyPair } from "../src/bls12381";
 import { sign, verify } from "../src/bbsSignature";
 import { Coder } from "@stablelib/base64";
 import { generateSignRequest } from "./helper";
@@ -20,7 +20,7 @@ const blsKeyPair = {
 
 report(
   "BLS 12-381 Key Generation",
-  benchmark(() => generateKeyPair())
+  benchmark(() => generateBls12381KeyPair())
 );
 
 // ------------------------------ Sign/Verify 1, 100 byte message ------------------------------
