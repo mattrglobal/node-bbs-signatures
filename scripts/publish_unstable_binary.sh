@@ -22,7 +22,7 @@ new_version=$(node -pe "require('./package.json').version")
 new_unstable_version=$new_version"-unstable.$(git rev-parse --short HEAD)"
 
 # Version to this new unstable version
-yarn version --no-git-tag-version --new-version $current_unstable_version
+yarn version --no-git-tag-version --new-version $new_unstable_version
 
 # Package the binary
 yarn package
