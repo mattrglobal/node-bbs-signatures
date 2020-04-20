@@ -28,7 +28,6 @@
     "pkg_path": "."
   },
   "scripts": {
-    "install": "node-pre-gyp install --fallback-to-build=false || yarn build:neon",
     "test": "jest",
     "benchmark": "ts-node ./bench/index.ts",
     "benchmark:stress": "ts-node ./bench/stress.ts",
@@ -41,11 +40,8 @@
     "lint": "eslint . --ext .ts --color --format=table",
     "lint:fix": "yarn lint --fix",
     "pre-pr": "yarn clean && yarn format && yarn lint:fix && yarn build && yarn test",
-    "version:current": "node -pe \"require('./package.json').version\"",
-    "version:current-unstable": "echo \"$(yarn run -s version:current)-unstable.$(git rev-parse --short HEAD)\"",
-    "publish:unstable:binary": "yarn version --no-git-tag-version --patch && yarn version --no-git-tag-version --new-version \"$(yarn run -s version:current-unstable)\" && yarn package && node-pre-gyp-github publish --release && git checkout -- package.json",
-    "publish:unstable:ts": "rm native/index.node && yarn version --no-git-tag-version --patch && yarn publish --no-git-tag-version --new-version \"$(yarn run -s version:current-unstable)\" && git checkout -- package.json",
-    "publish:unstable": "yarn version --no-git-tag-version --patch && yarn publish --no-git-tag-version --new-version \"$(yarn run -s version:current-unstable)\" && yarn package && node-pre-gyp-github publish --release && git checkout -- package.json"
+    "publish:unstable:binary": "./scripts/publish_unstable_binary.sh",
+    "publish:unstable:ts": "./scripts/publish_unstable_ts.sh"
   },
   "devDependencies": {
     "@stablelib/base64": "1.0.0",
