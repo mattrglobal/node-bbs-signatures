@@ -28,7 +28,6 @@
     "pkg_path": "."
   },
   "scripts": {
-    "install": "node-pre-gyp install --fallback-to-build=false || yarn build:neon",
     "test": "jest",
     "benchmark": "ts-node ./bench/index.ts",
     "benchmark:stress": "ts-node ./bench/stress.ts",
