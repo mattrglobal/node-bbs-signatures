@@ -1,7 +1,11 @@
 ## Unstable Releases
 
+Unstable releases include the un-compiled rust required to build the project and hence require rust to install.
+
+### Automatic Release
+
 Each time a push to master is made, the `push-master` workflow will run which automatically creates an unstable release
-and pushes this to the github package manager.
+and pushes this to the package manager.
 
 ### Manual Release
 
@@ -17,7 +21,7 @@ If the automated unstable release fails, please run the following manually
 3. Ensure the package is clean from previous branches/builds `yarn clean`
 4. Install the dependencies `yarn install`
 5. Build the package `yarn build`
-6. Publish the package `yarn publish:unstable`
+6. Publish the package `yarn publish:unstable:ts`
 7. Observe the newly created unstable packages in the github package manager.
 
 **Note** - Yarn cannot be used in step 2 as it does not support the `--registry` flag
