@@ -76,6 +76,32 @@ const isProofVerified = verifyProof({
 });
 ```
 
+## Element Size
+
+Within a digital signature there are several elements for which it is useful to know the size, the following table outlines the general equation for calculating element sizes in relation to BBS+ signatures as it is dependent on the pairing friendly curve used.
+
+| Element       | Size Equation                        |
+| ------------- | ------------------------------------ |
+| Private Key   | F                                    |
+| Public Key    | G2                                   |
+| Signature     | G1 + 2*F                             |
+| Proof         | 5*G1 + (4 + no_of_hidden_messages)*F |
+
+- `F` A field element
+- `G1` A point in the field of G1
+- `G2` A point in the field of G2
+- `no_of_hidden_messages` The number of the hidden messages
+
+This library includes specific support for BLS12-381 keys with BBS+ signatures and hence gives rise to the following concrete sizes
+
+| Element       | Size with BLS12-381                    |
+| ------------- | -------------------------------------- |
+| Private Key   | 32 Bytes                               |
+| Public Key    | 96 Bytes                               |
+| Signature     | 112 Bytes                              |
+| Proof         | 368 + (no_of_hidden_messages)*32 Bytes |
+
+
 ## Getting started as a contributor
 
 The following describes how to get started as a contributor to this project
