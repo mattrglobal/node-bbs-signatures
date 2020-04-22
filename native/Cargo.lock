@@ -10,19 +10,27 @@ dependencies = [
 ]
 
 [[package]]
-name = "amcl_wrapper"
-version = "0.3.5"
+name = "amcl-milagro"
+version = "3.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2ec0d9cc4f8750027c52bf97d9df7228d7d6e6a5a592dc3a7d11d411bae653f9"
+checksum = "9a7f1be21d1876ce01fe62e2984fd4617fccc251f17d25098e869fd83f71e770"
+
+[[package]]
+name = "amcl_wrapper_ml"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e42a488f50de1a3614f6ee9684c973b70634a03c4873da0141c0e53632677410"
 dependencies = [
+ "amcl-milagro",
+ "arrayref",
  "byteorder",
+ "hash2curve",
  "lazy_static",
- "miracl_amcl",
  "rand",
  "rayon",
  "serde",
- "serde_derive",
  "serde_json",
+ "sha2",
  "sha3",
  "subtle-encoding",
  "zeroize",
@@ -54,9 +62,9 @@ dependencies = [
 
 [[package]]
 name = "backtrace-sys"
-version = "0.1.35"
+version = "0.1.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7de8aba10a69c8e8d7622c5710229485ec32e9d55fdad160ea559c086fdcd118"
+checksum = "78848718ee1255a2485d1309ad9cdecfc2e7d0362dd11c6829364c6b35ae1bc7"
 dependencies = [
  "cc",
  "libc",
@@ -70,10 +78,10 @@ checksum = "7d5ca2cd0adc3f48f9e9ea5a6bbdf9ccc0bfade884847e484d452414c7ccffb3"
 
 [[package]]
 name = "bbs"
-version = "0.2.0"
-source = "git+https://github.com/mikelodder7/ursa?branch=deterministic_bbs#8370362acb29a52ea7438d651e183fc64707db72"
+version = "0.3.0"
+source = "git+https://github.com/mikelodder7/ursa#e60d1184e1d6fc8fe042c6d934b06730a85a0128"
 dependencies = [
- "amcl_wrapper",
+ "amcl_wrapper_ml",
  "arrayref",
  "failure",
  "hash2curve",
@@ -117,9 +125,9 @@ checksum = "08c48aae112d48ed9f069b33538ea9e3e90aa263cfa3d1c24309612b1f7472de"
 
 [[package]]
 name = "cc"
-version = "1.0.50"
+version = "1.0.51"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95e28fa049fda1c330bcf9d723be7663a899c4679724b34c81e9f5a326aab8cd"
+checksum = "9c9384ca4b90c0ea47e19a5c996d6643a3e73dedf9b89c65efb67587e34da1bb"
 
 [[package]]
 name = "cfg-if"
@@ -245,13 +253,14 @@ dependencies = [
 
 [[package]]
 name = "hash2curve"
-version = "0.0.4"
+version = "0.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5a05e2e152ddcce934b90dfff46c68b1bc466a6481b0808d867defa14ec57d4"
+checksum = "e2a6bd19dc0e3fd7a8c1082a5ae48c33f3ef1492c4780f541e1686c6e1e174d8"
 dependencies = [
+ "amcl-milagro",
+ "arrayref",
  "digest",
  "failure",
- "miracl_amcl",
  "sha2",
  "subtle",
  "subtle-encoding",
@@ -310,12 +319,6 @@ checksum = "b4fc2c02a7e374099d4ee95a193111f72d2110197fe200272371758f6c3643d8"
 dependencies = [
  "autocfg",
 ]
-
-[[package]]
-name = "miracl_amcl"
-version = "3.2.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "89d10a1ea3ffe41d318ccd9f21a1f2366c8103b95e1deaa9449793f4b10cefe8"
 
 [[package]]
 name = "neon"
