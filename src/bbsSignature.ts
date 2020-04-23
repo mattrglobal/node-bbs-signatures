@@ -99,6 +99,6 @@ export const verifyProof = (request: BbsVerifyProofRequest): Uint8Array => {
       messages,
     });
   } catch (ex) {
-    throw new Error("Failed to create proof");
+    throw new Error("Failed to verify proof");
   }
 };
