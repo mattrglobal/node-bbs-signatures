@@ -2,7 +2,7 @@
 
 ![Master](https://github.com/mattrglobal/node-bbs-signatures/workflows/push-master/badge.svg)
 
-This repository is the home to a performant multi-message digital signature algorithm which supports deriving zero knowledge proofs that enable selectively disclosure from the originally signed message set.
+This repository is the home to a performant multi-message digital signature algorithm which supports deriving zero knowledge proofs that enable selective disclosure from the originally signed message set.
 
 BBS+ Signatures are a digital signature algorithm originally born from the work on [Short group signatures](https://crypto.stanford.edu/~xb/crypto04a/groupsigs.pdf) by Boneh, Boyen, and Shachum which was later improved on in [Constant-Size Dynamic k-TAA](http://web.cs.iastate.edu/~wzhang/teach-552/ReadingList/552-14.pdf) as BBS+ and touched on again in section 4.3 in [Anonymous Attestation Using the Strong Diffie Hellman Assumption Revisited ](https://www.researchgate.net/publication/306347781_Anonymous_Attestation_Using_the_Strong_Diffie_Hellman_Assumption_Revisited).
 
