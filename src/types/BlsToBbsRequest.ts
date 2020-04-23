@@ -12,19 +12,19 @@
  */
 
 /**
- * A request verify a BBS signature for a set of messages
+ * Converts a BLS12-381 key to a BBS+ public key
  */
-export interface BbsVerifyRequest {
-  /**
-   * Public key of the signer of the signature
-   */
-  readonly publicKey: Uint8Array;
-  /**
-   * Raw signature value
-   */
-  readonly signature: Uint8Array;
-  /**
-   * Messages that were signed to produce the signature
-   */
-  readonly messages: readonly string[];
+export interface BlsToBbsRequest {
+    /**
+     * Can be either the public key or the private key
+    */
+    readonly blsKey: Uint8Array;
+    /**
+     * The number of messages that BBS+ can handle
+     */
+    readonly messageCount: number;
+    /**
+     * The domain separation tag
+     */
+    readonly domainSeparationTag: string;
 }

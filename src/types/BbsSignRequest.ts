@@ -20,9 +20,9 @@ export interface BbsSignRequest {
    */
   readonly secretKey: Uint8Array;
   /**
-   * Domain seperation to feature in the signature
+   * Public key of the signer
    */
-  readonly domainSeparationTag: string;
+  readonly publicKey: Uint8Array;
   /**
    * Messages to sign
    */

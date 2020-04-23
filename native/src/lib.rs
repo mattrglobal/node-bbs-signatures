@@ -284,7 +284,7 @@ struct BlindingContext {
 ///     "proofOfHiddenMessages": ArrayBuffer,   // Proof of commitment to hidden messages
 ///     "challengeHash": ArrayBuffer,           // Fiat-Shamir Challenge
 ///     "publicKey": ArrayBuffer                // The public key of signer
-///     "hidden": [Number, Number],             // The zero based indices to the generators in the public key for the hidden messages.
+///     "blinded": [Number, Number],            // The zero based indices to the generators in the public key for the blinded messages.
 ///     "nonce": String                         // This is an optional nonce from the signer and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
 /// }
 /// `return`: true if valid `signature` on `messages`
@@ -302,7 +302,7 @@ fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoole
 
     let proof_of_hidden_messages = handle_err!(ProofG1::from_compressed_bytes(&obj_field_to_slice!(&mut cx, js_obj, "proofOfHiddenMessages")));
 
-    let hidden = obj_field_to_vec!(&mut cx, js_obj, "hidden");
+    let hidden = obj_field_to_vec!(&mut cx, js_obj, "blinded");
     let mut messages = BTreeMap::new();
     let message_count = public_key.message_count() as f64;
 

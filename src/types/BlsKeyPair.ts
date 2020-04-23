@@ -22,5 +22,5 @@ export interface BlsKeyPair {
   /**
    * Raw secret/private key value for the key pair
    */
-  readonly secretKey: Uint8Array;
+  readonly secretKey?: Uint8Array;
 }

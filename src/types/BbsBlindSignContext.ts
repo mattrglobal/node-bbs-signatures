@@ -12,19 +12,23 @@
  */
 
 /**
- * A request verify a BBS signature for a set of messages
+ * A context to create a blind BBS signature
  */
-export interface BbsVerifyRequest {
+export interface BbsBlindSignContext {
   /**
-   * Public key of the signer of the signature
+   * The resulting commitment of the blinded messages to sign
    */
-  readonly publicKey: Uint8Array;
+  readonly commitment: Uint8Array;
   /**
-   * Raw signature value
+   * The proof of hidden messages to be verified by the signer
    */
-  readonly signature: Uint8Array;
+  readonly proofOfHiddenMessages: Uint8Array;
   /**
-   * Messages that were signed to produce the signature
+   * Fiat-Shamir challenge
    */
-  readonly messages: readonly string[];
+  readonly challengeHash: Uint8Array;
+  /**
+   * The signature blinding factor
+   */
+  readonly blindingFactor: Uint8Array;
 }

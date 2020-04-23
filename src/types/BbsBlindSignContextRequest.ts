@@ -12,19 +12,24 @@
  */
 
 /**
- * A request verify a BBS signature for a set of messages
+ * A request to create a BBS signature that features blinded/committed messages
+ *
  */
-export interface BbsVerifyRequest {
+export interface BbsBlindSignContextRequest {
   /**
-   * Public key of the signer of the signature
+   * The resulting commitment of the blinded messages to sign
    */
   readonly publicKey: Uint8Array;
   /**
-   * Raw signature value
+   * The zero based indices of which messages to hide
    */
-  readonly signature: Uint8Array;
+  readonly hidden: readonly number[];
   /**
-   * Messages that were signed to produce the signature
+   * A nonce for the resulting proof
+   */
+  readonly nonce: string;
+  /**
+   * The known messages to sign
    */
   readonly messages: readonly string[];
 }

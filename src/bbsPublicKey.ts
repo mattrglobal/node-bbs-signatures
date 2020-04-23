@@ -11,29 +11,28 @@
  * limitations under the License.
  */
 
-import { BlsKeyPair } from "./types";
+import { BlsToBbsRequest, BbsKeyPair } from "./types";
+import { DEFAULT_PRIVATE_KEY_LENGTH } from "./bls12381";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const zmix = require("../native/index.node");
 
 /**
- * Private key length
+ * Convert a BLS key to a BBS+ key
  */
-export const DEFAULT_PRIVATE_KEY_LENGTH = 32;
-
-/**
- * Public key length
- */
-export const DEFAULT_PUBLIC_KEY_LENGTH = 96;
-
-/**
- * Generates a BLS12-381 key pair
- */
-export const generateBls12381KeyPair = (seed?: Uint8Array): BlsKeyPair => {
-  const result = seed ? zmix.bls_generate_key(seed?.buffer) : zmix.bls_generate_key();
-  return {
-    publicKey: new Uint8Array(result.publicKey),
-    secretKey: new Uint8Array(result.secretKey),
-  };
-};
-
+export const getBbsPublicKey = (request: BlsToBbsRequest): BbsKeyPair => {
+    if (request.blsKey.byteLength == DEFAULT_PRIVATE_KEY_LENGTH) {
+        let result = zmix.bls_secret_key_to_bbs_key(request);
+        return {
+            publicKey: result,
+            messageCount: request.messageCount,
+            secretKey: request.blsKey
+        };
+    } else {
+        let result = zmix.bls_public_key_to_bbs_key(request);
+        return {
+            publicKey: result,
+            messageCount: request.messageCount,
+        };
+    }
+}

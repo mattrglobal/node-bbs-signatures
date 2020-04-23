@@ -12,19 +12,19 @@
  */
 
 /**
- * A request verify a BBS signature for a set of messages
+ * A BBS+ key pair
  */
-export interface BbsVerifyRequest {
-  /**
-   * Public key of the signer of the signature
-   */
-  readonly publicKey: Uint8Array;
-  /**
-   * Raw signature value
-   */
-  readonly signature: Uint8Array;
-  /**
-   * Messages that were signed to produce the signature
-   */
-  readonly messages: readonly string[];
+export interface BbsKeyPair {
+    /**
+     * Raw public key value for the key pair
+     */
+    readonly publicKey: Uint8Array;
+    /**
+     * Raw secret/private key value for the key pair
+     */
+    readonly secretKey?: Uint8Array;
+    /**
+    * Number of messages that can be sign
+    */
+    readonly messageCount: number;
 }

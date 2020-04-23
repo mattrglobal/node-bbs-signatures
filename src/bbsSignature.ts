@@ -16,6 +16,9 @@ import { BbsCreateProofRequest } from "./types/BbsCreateProofRequest";
 import { BbsSignRequest } from "./types/BbsSignRequest";
 import { BbsVerifyProofRequest } from "./types/BbsVerifyProofRequest";
 import { BbsVerifyRequest } from "./types/BbsVerifyRequest";
+import { BbsBlindSignContextRequest } from "./types/BbsBlindSignContextRequest";
+import { BbsBlindSignContext } from "./types/BbsBlindSignContext";
+import { BbsVerifyBlindSignContextRequest } from "./types/BbsVerifyBlindSignContextRequest";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const zmix = require("../native/index.node");
@@ -24,11 +27,11 @@ const zmix = require("../native/index.node");
  * Signs a set of messages and produces a BBS signature
  */
 export const sign = (request: BbsSignRequest): Uint8Array => {
-  const { domainSeparationTag, secretKey, messages } = request;
+  const { publicKey, secretKey, messages } = request;
   try {
     return new Uint8Array(
       zmix.bbs_sign({
-        dst: domainSeparationTag,
+        publicKey: publicKey.buffer,
         secretKey: secretKey.buffer,
         messages,
       })
@@ -39,16 +42,43 @@ export const sign = (request: BbsSignRequest): Uint8Array => {
 };
 
 /**
- * Signs a set of messages featuring both known and blinded messages and produces a BBS signature
+ * Create a blind signing context for where some messages are blinded to produce a BBS+ signature
+ */
+export const commitmentForBlindSignRequest = (request: BbsBlindSignContextRequest): BbsBlindSignContext => {
+    const { publicKey, messages, hidden, nonce } = request;
+    try {
+        return zmix.bbs_blind_signature_commitment({
+            publicKey: publicKey.buffer,
+            messages,
+            hidden,
+            nonce
+        });
+    } catch {
+        throw new Error("Failed to generate commitment");
+    }
+}
+
+export const verifyBlindSignContext = (request: BbsVerifyBlindSignContextRequest): boolean => {
+    const { commitment, proofOfHiddenMessages, challengeHash, publicKey, blinded, nonce } = request;
+    return zmix.bbs_verify_blind_signature_proof({
+        commitment: commitment.buffer,
+        proofOfHiddenMessages: proofOfHiddenMessages.buffer,
+        challengeHash: challengeHash.buffer,
+        publicKey: publicKey.buffer,
+        blinded,
+        nonce
+    });
+}
+
+/**
+ * Signs a set of messages featuring both known and blinded messages and produces a BBS+ signature
  */
 export const blindSign = (request: BbsBlindSignRequest): Uint8Array => {
-  const { commitment, secretKey, messages, domainSeparationTag, messageCount } = request;
+  const { commitment, secretKey, messages } = request;
   try {
     return new Uint8Array(
       zmix.bbs_blind_sign({
-        messageCount,
         commitment: commitment.buffer,
-        dst: domainSeparationTag,
         secretKey: secretKey.buffer,
         messages,
       })
@@ -62,10 +92,9 @@ export const blindSign = (request: BbsBlindSignRequest): Uint8Array => {
  * Verifies a BBS signature for a set of messages
  */
 export const verify = (request: BbsVerifyRequest): boolean => {
-  const { domainSeparationTag, publicKey, signature, messages } = request;
+  const { publicKey, signature, messages } = request;
   try {
     return zmix.bbs_verify({
-      dst: domainSeparationTag,
       publicKey: publicKey.buffer,
       signature: signature.buffer,
       messages,
