@@ -38,9 +38,8 @@ report(
   benchmark(() => generateBls12381KeyPair())
 );
 
-
 // define verify routine
-const run_benchmark = (numberOfMessages: number, messageSizeInBytes: number, numberRevealed: number) => {
+const run_benchmark = (numberOfMessages: number, messageSizeInBytes: number, numberRevealed: number): void => {
   const MessageSignRequest = generateSignRequest(blsKeyPair.secretKey, domainSeparationTag, 1, 100);
   const MessageSignature = sign(MessageSignRequest);
   const MessageVerifyRequest = {
@@ -49,17 +48,17 @@ const run_benchmark = (numberOfMessages: number, messageSizeInBytes: number, num
     domainSeparationTag,
     messages: MessageSignRequest.messages,
   };
-  
+
   report(
     `BBS Sign ${numberOfMessages}, ${messageSizeInBytes} byte message(s)`,
     benchmark(() => sign(MessageSignRequest))
   );
-  
+
   report(
     `BBS Verify ${numberOfMessages}, ${messageSizeInBytes} byte message(s)`,
     benchmark(() => verify(MessageVerifyRequest))
   );
-  
+
   const revealed_numbers = [...Array(numberRevealed).keys()];
 
   const CreateProofRequest = {
@@ -70,9 +69,9 @@ const run_benchmark = (numberOfMessages: number, messageSizeInBytes: number, num
     nonce,
     domainSeparationTag,
   };
-  
+
   const MessageProof = createProof(CreateProofRequest);
-  
+
   const VerifyProofRequest = {
     proof: MessageProof,
     publicKey: blsKeyPair.publicKey,
@@ -80,20 +79,19 @@ const run_benchmark = (numberOfMessages: number, messageSizeInBytes: number, num
     revealed: revealed_numbers,
     messageCount: MessageSignRequest.messages.length,
     nonce,
-    domainSeparationTag
+    domainSeparationTag,
   };
-  
+
   report(
     `BBS Create Proof ${numberOfMessages}, ${messageSizeInBytes} byte message(s), revealing ${numberRevealed} message(s).`,
     benchmark(() => createProof(CreateProofRequest))
   );
-  
+
   report(
     `BBS Verify Proof ${numberOfMessages}, ${messageSizeInBytes} byte message(s), revealing ${numberRevealed} message(s).`,
     benchmark(() => verifyProof(VerifyProofRequest))
   );
 };
-
 
 // ------------------------------ Sign/Verify 1, 100 byte message ------------------------------
 run_benchmark(1, 100, 1);
