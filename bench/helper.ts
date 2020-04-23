@@ -11,7 +11,7 @@
  * limitations under the License.
  */
 
-import { BbsSignRequest } from "../src";
+import { BbsSignRequest, BbsCreateProofRequest } from "../src";
 import { randomBytes } from "crypto";
 import { Coder } from "@stablelib/base64";
 
