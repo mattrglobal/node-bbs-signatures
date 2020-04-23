@@ -37,6 +37,9 @@ macro_rules! arg_to_fixed_array {
     ($cx:expr, $i:expr, $start:expr, $end:expr) => {
         {
             let a = arg_to_slice!($cx, $i);
+            if a.len() != $end {
+                panic!("Invalid length");
+            }
             *array_ref![a, $start, $end]
         }
     };
@@ -54,6 +57,9 @@ macro_rules! obj_field_to_fixed_array {
     ($cx:expr, $obj:expr, $field:expr, $start:expr, $end:expr) => {
         {
             let a = cast_to_slice!($cx, $obj.get($cx, $field)?);
+            if a.len() != $end {
+                panic!("Invalid length");
+            }
             *array_ref![a, $start, $end]
         }
     }
