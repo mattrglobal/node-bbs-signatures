@@ -84,12 +84,12 @@ const run_benchmark = (numberOfMessages: number, messageSizeInBytes: number, num
   };
   
   report(
-    `BBS Create Proof ${numberOfMessages}, ${messageSizeInBytes} byte message(s)`,
+    `BBS Create Proof ${numberOfMessages}, ${messageSizeInBytes} byte message(s), revealing ${numberRevealed} message(s).`,
     benchmark(() => createProof(CreateProofRequest))
   );
   
   report(
-    `BBS Verify Proof ${numberOfMessages}, ${messageSizeInBytes} byte message(s)`,
+    `BBS Verify Proof ${numberOfMessages}, ${messageSizeInBytes} byte message(s), revealing ${numberRevealed} message(s).`,
     benchmark(() => verifyProof(VerifyProofRequest))
   );
 };
@@ -104,17 +104,17 @@ run_benchmark(1, 1000, 1);
 // ---------------------------------------------------------------------------------------------
 
 // ------------------------------ Sign/Verify 10, 100 byte messages ------------------------------
-run_benchmark(10, 100, 3);
+run_benchmark(10, 100, 1);
 // -----------------------------------------------------------------------------------------------
 
 // ------------------------------ Sign/Verify 10, 1000 byte messages ------------------------------
-run_benchmark(10, 1000, 3);
+run_benchmark(10, 1000, 1);
 // -----------------------------------------------------------------------------------------------
 
 // ------------------------------ Sign/Verify 100, 100 byte messages ------------------------------
-run_benchmark(100, 100, 25);
+run_benchmark(100, 100, 1);
 // -----------------------------------------------------------------------------------------------
 
 // ------------------------------ Sign/Verify 100, 1000 byte messages ------------------------------
-run_benchmark(100, 1000, 25);
+run_benchmark(100, 1000, 1);
 // -----------------------------------------------------------------------------------------------

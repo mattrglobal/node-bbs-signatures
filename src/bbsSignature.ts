@@ -92,7 +92,7 @@ export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
       })
     );
   } catch (ex) {
-    throw new Error("Failed to create proof: " + ex);
+    throw new Error("Failed to create proof");
   }
 };
 
