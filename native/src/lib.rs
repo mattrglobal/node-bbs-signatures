@@ -195,7 +195,7 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 /// {
 ///     "publicKey": ArrayBuffer                // The public key of signer
 ///     "messages": [String, String],           // The messages that will be blinded as strings. They will be SHAKE-256 hashed
-///     "hidden": [Number, Number],             // The zero based indices to the generators in the public key for the messages.
+///     "blinded": [Number, Number],            // The zero based indices to the generators in the public key for the messages.
 ///     "nonce": String                         // This is an optional nonce from the signer and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
 /// }
 ///
@@ -241,7 +241,7 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
     }
     let nonce_str = obj_field_to_opt_string!(cx, js_obj, "nonce");
 
-    let hidden = obj_field_to_vec!(cx, js_obj, "hidden");
+    let hidden = obj_field_to_vec!(cx, js_obj, "blinded");
     let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
 
     if hidden.len() != message_bytes.len() {
