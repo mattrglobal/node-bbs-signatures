@@ -104,9 +104,9 @@ export const verify = (request: BbsVerifyRequest): BbsVerifyResult => {
  * @returns A result indicating if the signature was verified
  */
 export const blsVerify = (request: BlsBbsVerifyRequest): BbsVerifyResult => {
-  const { publicKey, signature, messages } = request;
-  const bbsKeyPair = bls12381toBbs({ keyPair: { publicKey }, messageCount: messages.length });
   try {
+    const { publicKey, signature, messages } = request;
+    const bbsKeyPair = bls12381toBbs({ keyPair: { publicKey }, messageCount: messages.length });
     const result = bbs.bbs_verify({
       publicKey: bbsKeyPair.publicKey.buffer,
       signature: signature.buffer,
@@ -195,9 +195,9 @@ export const verifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult => 
  * @returns A result indicating if the proof was verified
  */
 export const blsVerifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult => {
-  const { publicKey, proof, messages, nonce, revealed, messageCount } = request;
-  const bbsKeyPair = bls12381toBbs({ keyPair: { publicKey }, messageCount });
   try {
+    const { publicKey, proof, messages, nonce, revealed, messageCount } = request;
+    const bbsKeyPair = bls12381toBbs({ keyPair: { publicKey }, messageCount });
     const result = bbs.bbs_verify_proof({
       messageCount,
       nonce,
