@@ -2,8 +2,7 @@
 
 ![Master](https://github.com/mattrglobal/node-bbs-signatures/workflows/push-master/badge.svg)
 
-This repository is the home to a performant multi-message digital signature algorithm which supports deriving zero
-knowledge proofs that enable selective disclosure from the originally signed message set.
+This repository is the home to a performant multi-message digital signature algorithm implementation which supports deriving zero knowledge proofs that enable selective disclosure from the originally signed message set.
 
 BBS+ Signatures are a digital signature algorithm originally born from the work on
 [Short group signatures](https://crypto.stanford.edu/~xb/crypto04a/groupsigs.pdf) by Boneh, Boyen, and Shachum which was
