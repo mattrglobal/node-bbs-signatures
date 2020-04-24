@@ -11,20 +11,18 @@
  * limitations under the License.
  */
 
+import { BlsKeyPair } from "./BlsKeyPair";
+
 /**
  * Converts a BLS12-381 key to a BBS+ public key
  */
-export interface BlsToBbsRequest {
+export interface Bls12381ToBbsRequest {
     /**
-     * Can be either the public key or the private key
-    */
-    readonly blsKey: Uint8Array;
+     * The BLS 12-381 key pair to convert
+     */
+    readonly keyPair: BlsKeyPair;
     /**
-     * The number of messages that BBS+ can handle
+     * The number of messages for the BBS+ key
      */
     readonly messageCount: number;
-    /**
-     * The domain separation tag
-     */
-    readonly domainSeparationTag: string;
 }

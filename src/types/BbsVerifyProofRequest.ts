@@ -39,8 +39,4 @@ export interface BbsVerifyProofRequest {
    * Nonce included in the proof for the un-revealed attributes (OPTIONAL)
    */
   readonly nonce: string;
-  /**
-   * Domain seperation featured in the proof (TODO do we need one for the sig and other for the proof?)
-   */
-  readonly domainSeparationTag: string;
 }

@@ -11,7 +11,16 @@
  * limitations under the License.
  */
 
-export { generateBls12381KeyPair } from "./bls12381";
-export { bls12381toBbs } from "./bls12381toBbs";
-export { BBS_SIGNATURE_LENGTH, sign, blsSign, commitmentForBlindSignRequest, verifyBlindSignContext, blindSign, verify, createProof, verifyProof } from "./bbsSignature";
-export * from "./types";
+/**
+ * The result returned from a verify operation
+ */
+export interface BbsVerifyResult {
+  /**
+   * Indicates whether the verification was successful
+   */
+  readonly verified: boolean;
+  /**
+   * Messages to sign
+   */
+  readonly error?: string;
+}

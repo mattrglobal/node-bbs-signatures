@@ -12,6 +12,16 @@
  */
 
 /**
+ * Default BLS 12-381 private key length
+ */
+export const DEFAULT_BLS12381_PRIVATE_KEY_LENGTH = 32;
+
+/**
+ * Default BLS 12-381 public key length
+ */
+export const DEFAULT_BLS12381_PUBLIC_KEY_LENGTH = 96;
+
+/**
  * A BLS 12-381 key pair
  */
 export interface BlsKeyPair {
