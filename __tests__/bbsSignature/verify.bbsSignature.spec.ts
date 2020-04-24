@@ -167,7 +167,7 @@ describe("bbsSignature", () => {
       expect(verify(verifyRequest).verified).toBeFalsy();
     });
 
-    it("should throw error when messages empty", () => {
+    it("should not verify when messages empty", () => {
       const request: BlsBbsVerifyRequest = {
         publicKey: blsKeyPair.publicKey,
         messages: [],
@@ -175,10 +175,10 @@ describe("bbsSignature", () => {
           "jYidhsdqxvAyNXMV4/vNfGM/4AULfSyfvQiwh+dDd4JtnT5xHnwpzMYdLdHzBYwXaGE1k6ln/pwtI4RwQZpl03SCv/mT/3AdK8PB2y43MGdMSeGTyZGfZf+rUrEDEs3lTfmPK54E+JBzd96gnrF2iQ=="
         ),
       };
-      expect(() => blsVerify(request).verified).toThrowError("Failed to convert key");
+      expect(blsVerify(request).verified).toBeFalsy();
     });
 
-    it("should throw error when public key invalid length", () => {
+    it("should not verify when public key invalid length", () => {
       const request: BlsBbsVerifyRequest = {
         publicKey: new Uint8Array(20),
         messages: [],
@@ -186,7 +186,7 @@ describe("bbsSignature", () => {
           "jYidhsdqxvAyNXMV4/vNfGM/4AULfSyfvQiwh+dDd4JtnT5xHnwpzMYdLdHzBYwXaGE1k6ln/pwtI4RwQZpl03SCv/mT/3AdK8PB2y43MGdMSeGTyZGfZf+rUrEDEs3lTfmPK54E+JBzd96gnrF2iQ=="
         ),
       };
-      expect(() => blsVerify(request).verified).toThrowError("Failed to convert key");
+      expect(blsVerify(request).verified).toBeFalsy();
     });
   });
 });
