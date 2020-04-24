@@ -11,18 +11,16 @@
  * limitations under the License.
  */
 
+import { BbsKeyPair } from "./BbsKeyPair";
+
 /**
  * A request to create a BBS signature for a set of messages
  */
 export interface BbsSignRequest {
   /**
-   * Private/secret key of the signer
+   * BBS key pair
    */
-  readonly secretKey: Uint8Array;
-  /**
-   * Domain seperation to feature in the signature
-   */
-  readonly domainSeparationTag: string;
+  readonly keyPair: BbsKeyPair;
   /**
    * Messages to sign
    */

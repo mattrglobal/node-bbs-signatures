@@ -11,17 +11,24 @@
  * limitations under the License.
  */
 
-export { generateBls12381KeyPair } from "./bls12381";
-export { bls12381toBbs } from "./bls12381toBbs";
-export {
-  BBS_SIGNATURE_LENGTH,
-  sign,
-  blsSign,
-  verify,
-  blsVerify,
-  createProof,
-  blsCreateProof,
-  verifyProof,
-  blsVerifyProof,
-} from "./bbsSignature";
-export * from "./types";
+/**
+ * A context to create a blind BBS signature
+ */
+export interface BbsBlindSignContext {
+  /**
+   * The resulting commitment of the blinded messages to sign
+   */
+  readonly commitment: Uint8Array;
+  /**
+   * The proof of hidden messages to be verified by the signer
+   */
+  readonly proofOfHiddenMessages: Uint8Array;
+  /**
+   * Fiat-Shamir challenge
+   */
+  readonly challengeHash: Uint8Array;
+  /**
+   * The signature blinding factor
+   */
+  readonly blindingFactor: Uint8Array;
+}

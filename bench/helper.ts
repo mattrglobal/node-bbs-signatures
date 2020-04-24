@@ -11,7 +11,7 @@
  * limitations under the License.
  */
 
-import { BbsSignRequest } from "../src";
+import { BbsSignRequest, BbsKeyPair } from "../src";
 import { randomBytes } from "crypto";
 import { Coder } from "@stablelib/base64";
 
@@ -25,14 +25,12 @@ export const generateMessages = (numberOfMessages: number, messageSizeInBytes: n
 };
 
 export const generateSignRequest = (
-  secretKey: Uint8Array,
-  domainSeparationTag: string,
+  keyPair: BbsKeyPair,
   numberOfMessages: number,
   messageSizeInBytes: number
 ): BbsSignRequest => {
   return {
-    secretKey,
-    domainSeparationTag,
+    keyPair,
     messages: generateMessages(numberOfMessages, messageSizeInBytes),
   };
 };

@@ -29,6 +29,7 @@
   },
   "scripts": {
     "test": "jest",
+    "test_vectors": "ts-node ./test_vectors/index.ts",
     "benchmark": "ts-node ./bench/index.ts",
     "benchmark:stress": "ts-node ./bench/stress.ts",
     "build": "yarn build:neon && yarn build:ts",

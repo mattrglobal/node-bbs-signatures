@@ -40,7 +40,13 @@ yarn add @mattrglobal/node-bbs-signatures
 The following is a short sample on how to use the API
 
 ```typescript
-import { generateBls12381KeyPair, sign, verify, createProof, verifyProof } from "@mattrglobal/node-bbs-signatures";
+import {
+  generateBls12381KeyPair,
+  blsSign,
+  blsVerify,
+  blsCreateProof,
+  blsVerifyProof,
+} from "@mattrglobal/node-bbs-signatures";
 
 //Generate a new key pair
 const keyPair = generateBls12381KeyPair();
@@ -49,38 +55,34 @@ const keyPair = generateBls12381KeyPair();
 const messages = ["message1", "message2"];
 
 //Create the signature
-const signature = sign({
-  secretKey: keyPair.secretKey,
-  domainSeparationTag: "domain",
+const signature = blsSign({
+  keyPair,
   messages: messages,
 });
 
 //Verify the signature
-const isVerified = verify({
+const isVerified = blsVerify({
   publicKey: keyPair.publicKey,
-  domainSeparationTag: "domain",
   messages: messages,
   signature,
 });
 
 //Derive a proof from the signature revealing the first message
-const proof = createProof({
+const proof = blsCreateProof({
   signature,
   publicKey: keyPair.publicKey,
   messages,
   nonce: "nonce",
-  domainSeparationTag: "domain",
   revealed: [0],
 });
 
 //Verify the created proof
-const isProofVerified = verifyProof({
+const isProofVerified = blsVerifyProof({
   proof,
   publicKey: keyPair.publicKey,
   messageCount: messages.length,
-  messages,
+  messages: messages.slice(0, 1),
   nonce: "nonce",
-  domainSeparationTag: "domain",
   revealed: [0],
 });
 ```

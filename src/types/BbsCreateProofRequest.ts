@@ -35,8 +35,4 @@ export interface BbsCreateProofRequest {
    * A nonce for the resulting proof
    */
   readonly nonce: string;
-  /**
-   * Domain seperation featured in the signature
-   */
-  readonly domainSeparationTag: string;
 }

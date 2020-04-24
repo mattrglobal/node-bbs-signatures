@@ -11,9 +11,17 @@
  * limitations under the License.
  */
 
-export { BlsKeyPair } from "./BlsKeyPair";
-export { BbsSignRequest } from "./BbsSignRequest";
-export { BbsVerifyRequest } from "./BbsVerifyRequest";
-export { BbsVerifyProofRequest } from "./BbsVerifyProofRequest";
+export { BbsBlindSignContext } from "./BbsBlindSignContext";
+export { BbsBlindSignContextRequest } from "./BbsBlindSignContextRequest";
 export { BbsBlindSignRequest } from "./BbsBlindSignRequest";
 export { BbsCreateProofRequest } from "./BbsCreateProofRequest";
+export { BbsKeyPair } from "./BbsKeyPair";
+export { BbsSignRequest } from "./BbsSignRequest";
+export { BbsVerifyBlindSignContextRequest } from "./BbsVerifyBlindSignContextRequest";
+export { BbsVerifyProofRequest } from "./BbsVerifyProofRequest";
+export { BbsVerifyRequest } from "./BbsVerifyRequest";
+export { BlsKeyPair, DEFAULT_BLS12381_PRIVATE_KEY_LENGTH, DEFAULT_BLS12381_PUBLIC_KEY_LENGTH } from "./BlsKeyPair";
+export { Bls12381ToBbsRequest } from "./Bls12381ToBbsRequest";
+export { BlsBbsSignRequest } from "./BlsBbsSignRequest";
+export { BlsBbsVerifyRequest } from "./BlsBbsVerifyRequest";
+export { BbsVerifyResult } from "./BbsVerifyResult";

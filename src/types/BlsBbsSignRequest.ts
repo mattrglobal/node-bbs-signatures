@@ -11,17 +11,18 @@
  * limitations under the License.
  */
 
-export { generateBls12381KeyPair } from "./bls12381";
-export { bls12381toBbs } from "./bls12381toBbs";
-export {
-  BBS_SIGNATURE_LENGTH,
-  sign,
-  blsSign,
-  verify,
-  blsVerify,
-  createProof,
-  blsCreateProof,
-  verifyProof,
-  blsVerifyProof,
-} from "./bbsSignature";
-export * from "./types";
+import { BlsKeyPair } from "./BlsKeyPair";
+
+/**
+ * A request to create a BBS signature for a set of messages from a BLS12-381 key pair
+ */
+export interface BlsBbsSignRequest {
+  /**
+   * BLS12-381 key pair
+   */
+  readonly keyPair: BlsKeyPair;
+  /**
+   * Messages to sign
+   */
+  readonly messages: readonly string[];
+}
