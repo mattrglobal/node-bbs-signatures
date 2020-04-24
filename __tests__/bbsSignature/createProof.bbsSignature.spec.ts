@@ -13,7 +13,7 @@
 
 import { BbsCreateProofRequest, createProof, blsCreateProof } from "../../src";
 import { Coder } from "@stablelib/base64";
-import { randomBytes } from "crypto";
+import { randomBytes } from "@stablelib/random";
 
 const base64Encode = (bytes: Uint8Array): string => {
   const coder = new Coder();

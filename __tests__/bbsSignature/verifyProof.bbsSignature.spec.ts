@@ -11,9 +11,8 @@
  * limitations under the License.
  */
 
-import { BbsVerifyProofRequest } from "../../src";
+import { BbsVerifyProofRequest, verifyProof, blsVerifyProof } from "../../src";
 import { Coder } from "@stablelib/base64";
-import { verifyProof, blsVerifyProof } from "../../src/bbsSignature";
 
 const base64Decode = (string: string): Uint8Array => {
   const coder = new Coder();
@@ -175,25 +174,25 @@ describe("bbsSignature", () => {
       expect(blsVerifyProof(request).verified).toBeTruthy();
     });
 
-    // it("should not verify with bad nonce", () => {
-    //   const messages = ["KNK0ITRAF+NrGg=="];
-    //   const blsPublicKey = base64Decode(
-    //     "h47St8J+WsxY637WBnXJ+iLIbcA6hyVStxUUk3cq4coVEidovUUovGmLGVH9HXqmAG7Ruam2OBe5L6beoTgh3XH/dUbDg2NKEsjzcAxHAdkBwzsNrgsGdvAf256ptUNEGWK+oCJTwtOcCTtXPOMPLNZcruqsco0AQ3TEn/vL/p2fa/qUurd8LXm7Q1jV2EyiAAAAAQelag0xZRbCLV5ZYhb3m/sstmTB/Y3AtAe5YH+4/Qek/vwBwPziXC0JX318F/+fgQ=="
-    //   );
-    //   const proof = base64Decode(
-    //     "gumaTSrAopa8OltvsU1ZkPRuilINIKBYRCgBSRroijBF++axv6O4Fg6+e15GarGhmEbBubJ70hMKCyHUXzdK3bODkV7NAg7JLFtHqisq47h7vtn2Qr/zggZdRQr5UFM5A7L2sC0AmxnNAA1o3Q2E4krFy9+RENG/3NVxMM2siy0pm+1LG+dTVSNNyPv81H73AAAAdAcynwBL2JoVZTTdbwqSqb5C6CNKCqk9jmECD3CcCcy/QLyJbOznMC/m4K4UKPJTiAAAAAJWXLpMW4bHlLnVIVQsT1JNK9gkM8rs51GiclcsPmfv3j8CzScx+i9JaMx7RHUWaVNWyKZJ2HSR1nxAn5VJ0FVkkT4bvs9APqEFhF7MT3lLdV7knsoYskTfrgV90NU/IEKsOFaMNudsh3wt6agfEGSJAAAAAjkuMTpcoA2OQF5cKYUIklBz/kppcqeJX/PeB3P9dLX/HeVzSP8MloBvFYmk2e87lfjH+ZktrnMx/MtqHEnD2f8="
-    //   );
+    it("should not verify with bad nonce", () => {
+      const messages = ["KnYAbm0fw3mlUA=="];
+      const blsPublicKey = base64Decode(
+        "x45gpyN9ryZHcdlbJCKrM6WAPI6BggO97nmTcimnXwFA7AeMf54x7atqH0BvxV4UA3f7DcWHpq0HEytVwin7pd/AZXjexfTynNgUgVdd/xkcRdwKCgBMnEx5R7csAGVm"
+      );
+      const proof = base64Decode(
+        "FagknzSill0LJXtGH5BzCq4c6xzq2Tlkz2miS/wH3KHELHXVRDAh6gA0JEXJZ1wxDmE7E48gWfNnWYhXLddWwXCqN5U9/Y/YvHskEpphr4r9YllNpvTm64nDfPcGwdwqEouJLdW3KV4FfQxWVBDwP1I5XJoyKuQ6y/mHeJKbpSPfgYIiWX4RyIr6bfkY3X8oAAAAdAEHfTDBk/agRv6zYVllWmPcVB5dmimVexdCio8iRukFlCnUj6MYFSt4vEnUg6iDngAAAAJOeYWML03bKoZGhmKmvgLroVR0Z8S6rjwX5c4vhmm2ejoupjMkwZJwuv5LeSTlEH2zNqanYGIybJ70qxG10ObChGLxINGqCI7fQucyXT71x50ql3PIxhKBbKveZ5MB9L33DOR5mHFvpxKrTy8gP4DZAAAAAkl1ZauWisDi0mCTy0Wqt41+q4++n8DafY2/kItHGYQgABvFjN9Ued6TmhtxIrYuHV48936xnaZaNfavGrXR6ds="
+      );
 
-    //   const request: BbsVerifyProofRequest = {
-    //     proof,
-    //     publicKey: blsPublicKey,
-    //     messageCount: 1,
-    //     messages,
-    //     nonce: "bad",
-    //     revealed: [0],
-    //   };
+      const request: BbsVerifyProofRequest = {
+        proof,
+        publicKey: blsPublicKey,
+        messageCount: 1,
+        messages,
+        nonce: "bad",
+        revealed: [0],
+      };
 
-    //   expect(blsVerifyProof(request).verified).toBeFalsy();
-    // });
+      expect(blsVerifyProof(request).verified).toBeFalsy();
+    });
   });
 });

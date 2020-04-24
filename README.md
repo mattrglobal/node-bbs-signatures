@@ -40,7 +40,13 @@ yarn add @mattrglobal/node-bbs-signatures
 The following is a short sample on how to use the API
 
 ```typescript
-import { generateBls12381KeyPair, blsSign, blsVerify, blsCreateProof, blsVerifyProof } from "@mattrglobal/node-bbs-signatures";
+import {
+  generateBls12381KeyPair,
+  blsSign,
+  blsVerify,
+  blsCreateProof,
+  blsVerifyProof,
+} from "@mattrglobal/node-bbs-signatures";
 
 //Generate a new key pair
 const keyPair = generateBls12381KeyPair();

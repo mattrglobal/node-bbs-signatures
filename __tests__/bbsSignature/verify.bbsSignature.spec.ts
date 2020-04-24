@@ -15,6 +15,7 @@ import {
   verify,
   BbsVerifyRequest,
   bls12381toBbs,
+  blsVerify,
   BbsSignRequest,
   sign,
   generateBls12381KeyPair,
@@ -23,7 +24,6 @@ import {
   BlsBbsVerifyRequest,
 } from "../../src";
 import { Coder } from "@stablelib/base64";
-import { blsVerify } from "../../src/bbsSignature";
 
 const base64Decode = (string: string): Uint8Array => {
   const coder = new Coder();
