@@ -12,96 +12,108 @@
  */
 
 import {
-    generateBls12381KeyPair,
-    BbsSignRequest,
-    BlsBbsSignRequest,
-    sign,
-    bls12381toBbs,
-    BBS_SIGNATURE_LENGTH,
-    BbsKeyPair,
-    blsSign,
-  } from "../../src";
+  generateBls12381KeyPair,
+  BbsSignRequest,
+  BlsBbsSignRequest,
+  sign,
+  bls12381toBbs,
+  BBS_SIGNATURE_LENGTH,
+  BbsKeyPair,
+  blsSign,
+  BlsKeyPair,
+} from "../../src";
 
-  describe("bbsSignature", () => {
-    const blsKeyPair = generateBls12381KeyPair();
-    describe("sign", () => {
-      const bbsKeyPair = bls12381toBbs({ keyPair: blsKeyPair, messageCount: 3 });
-  
-      it("should sign a single message", () => {
-        const bbsKeyPair = bls12381toBbs({ keyPair: blsKeyPair, messageCount: 1 });
-        const request: BbsSignRequest = {
-          keyPair: bbsKeyPair,
-          messages: ["ExampleMessage"],
-        };
-        const signature = sign(request);
-        expect(signature.length).toEqual(BBS_SIGNATURE_LENGTH);
-      });
-  
-      it("should sign multiple messages", () => {
-        const request: BbsSignRequest = {
-          keyPair: bbsKeyPair,
-          messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"],
-        };
-        const signature = sign(request);
-        expect(signature.length).toEqual(BBS_SIGNATURE_LENGTH);
-      });
-  
-      it("should sign multiple messages when public key supports more", () => {
-        const request: BbsSignRequest = {
-          keyPair: bbsKeyPair,
-          messages: ["ExampleMessage", "ExampleMessage"],
-        };
-        const signature = sign(request);
-        expect(signature.length).toEqual(BBS_SIGNATURE_LENGTH);
-      });
+describe("bbsSignature", () => {
+  const blsKeyPair = generateBls12381KeyPair();
+  describe("sign", () => {
+    const bbsKeyPair = bls12381toBbs({ keyPair: blsKeyPair, messageCount: 3 });
 
-      it("should throw error if secret key not present", () => {
-        const bbsKey: BbsKeyPair = {
-            publicKey: bbsKeyPair.publicKey,
-            messageCount: bbsKeyPair.messageCount
-        }
-        const request: BbsSignRequest = {
-          keyPair: bbsKey,
-          messages: ["ExampleMessage"],
-        };
-        expect(() => sign(request)).toThrowError("Failed to sign");
-      });
-
-      it("should throw error if public key does not support message number", () => {
-        const bbsKeyPair = bls12381toBbs({ keyPair: blsKeyPair, messageCount: 1 });
-        const request: BbsSignRequest = {
-          keyPair: bbsKeyPair,
-          messages: ["ExampleMessage", "ExampleMessage", "ExampleMessage"],
-        };
-        expect(() => sign(request)).toThrowError("Failed to sign");
-      });
+    it("should sign a single message", () => {
+      const bbsKeyPair = bls12381toBbs({ keyPair: blsKeyPair, messageCount: 1 });
+      const request: BbsSignRequest = {
+        keyPair: bbsKeyPair,
+        messages: ["ExampleMessage"],
+      };
+      const signature = sign(request);
+      expect(signature.length).toEqual(BBS_SIGNATURE_LENGTH);
     });
 
-    describe("blsSign", () => {
-      it("should sign a single message", () => {
-        const request: BlsBbsSignRequest = {
-          keyPair: blsKeyPair,
-          messages: ["ExampleMessage"],
-        };
-        const signature = blsSign(request);
-        expect(signature.length).toEqual(BBS_SIGNATURE_LENGTH);
-      });
-  
-      it("should sign multiple messages", () => {
-        const request: BlsBbsSignRequest = {
-          keyPair: blsKeyPair,
-          messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"],
-        };
-        const signature = blsSign(request);
-        expect(signature.length).toEqual(BBS_SIGNATURE_LENGTH);
-      });
-
-      it("should throw error when messages empty", () => {
-        const request: BlsBbsSignRequest = {
-          keyPair: blsKeyPair,
-          messages: [],
-        };
-        expect(() => blsSign(request)).toThrowError("Failed to convert key");
-      });
+    it("should sign multiple messages", () => {
+      const request: BbsSignRequest = {
+        keyPair: bbsKeyPair,
+        messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"],
+      };
+      const signature = sign(request);
+      expect(signature.length).toEqual(BBS_SIGNATURE_LENGTH);
     });
+
+    it("should sign multiple messages when public key supports more", () => {
+      const request: BbsSignRequest = {
+        keyPair: bbsKeyPair,
+        messages: ["ExampleMessage", "ExampleMessage"],
+      };
+      const signature = sign(request);
+      expect(signature.length).toEqual(BBS_SIGNATURE_LENGTH);
+    });
+
+    it("should throw error if secret key not present", () => {
+      const bbsKey: BbsKeyPair = {
+        publicKey: bbsKeyPair.publicKey,
+        messageCount: bbsKeyPair.messageCount,
+      };
+      const request: BbsSignRequest = {
+        keyPair: bbsKey,
+        messages: ["ExampleMessage"],
+      };
+      expect(() => sign(request)).toThrowError("Failed to sign");
+    });
+
+    it("should throw error if public key does not support message number", () => {
+      const bbsKeyPair = bls12381toBbs({ keyPair: blsKeyPair, messageCount: 1 });
+      const request: BbsSignRequest = {
+        keyPair: bbsKeyPair,
+        messages: ["ExampleMessage", "ExampleMessage", "ExampleMessage"],
+      };
+      expect(() => sign(request)).toThrowError("Failed to sign");
+    });
+  });
+
+  describe("blsSign", () => {
+    it("should sign a single message", () => {
+      const request: BlsBbsSignRequest = {
+        keyPair: blsKeyPair,
+        messages: ["ExampleMessage"],
+      };
+      const signature = blsSign(request);
+      expect(signature.length).toEqual(BBS_SIGNATURE_LENGTH);
+    });
+
+    it("should sign multiple messages", () => {
+      const request: BlsBbsSignRequest = {
+        keyPair: blsKeyPair,
+        messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"],
+      };
+      const signature = blsSign(request);
+      expect(signature.length).toEqual(BBS_SIGNATURE_LENGTH);
+    });
+
+    it("should throw error if secret key not present", () => {
+      const blsKey: BlsKeyPair = {
+        publicKey: blsKeyPair.publicKey,
+      };
+      const request: BlsBbsSignRequest = {
+        keyPair: blsKey,
+        messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"],
+      };
+      expect(() => blsSign(request)).toThrowError("Failed to sign");
+    });
+
+    it("should throw error when messages empty", () => {
+      const request: BlsBbsSignRequest = {
+        keyPair: blsKeyPair,
+        messages: [],
+      };
+      expect(() => blsSign(request)).toThrowError("Failed to convert key");
+    });
+  });
 });

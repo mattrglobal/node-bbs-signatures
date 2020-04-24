@@ -21,36 +21,34 @@ const BLS_TO_BBS_DOMAIN_SEPARATION_TAG = "BlsToBBSKeyGeneration";
 /**
  * Converts a BLS12-381 key to a BBS+ key
  * @param request Request for the key conversion
- * 
+ *
  * @returns A BbsKeyPair
  */
 export const bls12381toBbs = (request: Bls12381ToBbsRequest): BbsKeyPair => {
-    try {
-        if (request.keyPair.secretKey) {
-            const result = bbs.bls_secret_key_to_bbs_key({
-                secretKey: request.keyPair.secretKey.buffer,
-                messageCount: request.messageCount,
-                dst: BLS_TO_BBS_DOMAIN_SEPARATION_TAG
-            });
-            return {
-                secretKey: request.keyPair.secretKey,
-                publicKey: new Uint8Array(result),
-                messageCount: request.messageCount,
-            };
-        } 
-        else {
-            const result = bbs.bls_public_key_to_bbs_key({
-                publicKey: request.keyPair.publicKey.buffer,
-                messageCount: request.messageCount,
-                dst: BLS_TO_BBS_DOMAIN_SEPARATION_TAG
-            });
-            return {
-                publicKey: new Uint8Array(result),
-                messageCount: request.messageCount,
-            };
-        }
-    } 
-    catch {
-        throw new Error("Failed to convert key");
+  try {
+    if (request.keyPair.secretKey) {
+      const result = bbs.bls_secret_key_to_bbs_key({
+        secretKey: request.keyPair.secretKey.buffer,
+        messageCount: request.messageCount,
+        dst: BLS_TO_BBS_DOMAIN_SEPARATION_TAG,
+      });
+      return {
+        secretKey: request.keyPair.secretKey,
+        publicKey: new Uint8Array(result),
+        messageCount: request.messageCount,
+      };
+    } else {
+      const result = bbs.bls_public_key_to_bbs_key({
+        publicKey: request.keyPair.publicKey.buffer,
+        messageCount: request.messageCount,
+        dst: BLS_TO_BBS_DOMAIN_SEPARATION_TAG,
+      });
+      return {
+        publicKey: new Uint8Array(result),
+        messageCount: request.messageCount,
+      };
     }
-}
+  } catch {
+    throw new Error("Failed to convert key");
+  }
+};

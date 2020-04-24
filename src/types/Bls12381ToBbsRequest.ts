@@ -17,12 +17,12 @@ import { BlsKeyPair } from "./BlsKeyPair";
  * Converts a BLS12-381 key to a BBS+ public key
  */
 export interface Bls12381ToBbsRequest {
-    /**
-     * The BLS 12-381 key pair to convert
-     */
-    readonly keyPair: BlsKeyPair;
-    /**
-     * The number of messages for the BBS+ key
-     */
-    readonly messageCount: number;
+  /**
+   * The BLS 12-381 key pair to convert
+   */
+  readonly keyPair: BlsKeyPair;
+  /**
+   * The number of messages for the BBS+ key
+   */
+  readonly messageCount: number;
 }

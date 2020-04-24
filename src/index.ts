@@ -13,5 +13,15 @@
 
 export { generateBls12381KeyPair } from "./bls12381";
 export { bls12381toBbs } from "./bls12381toBbs";
-export { BBS_SIGNATURE_LENGTH, sign, blsSign, commitmentForBlindSignRequest, verifyBlindSignContext, blindSign, verify, createProof, verifyProof } from "./bbsSignature";
+export {
+  BBS_SIGNATURE_LENGTH,
+  sign,
+  blsSign,
+  verify,
+  blsVerify,
+  createProof,
+  blsCreateProof,
+  verifyProof,
+  blsVerifyProof,
+} from "./bbsSignature";
 export * from "./types";

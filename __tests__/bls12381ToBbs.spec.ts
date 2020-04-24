@@ -18,8 +18,8 @@ describe("bls12381toBbs", () => {
     const blsKeyPair = generateBls12381KeyPair();
     expect(blsKeyPair).toBeDefined();
     const bbsKeyPair = bls12381toBbs({
-        keyPair: blsKeyPair,
-        messageCount: 10,
+      keyPair: blsKeyPair,
+      messageCount: 10,
     });
     expect(bbsKeyPair).toBeDefined();
     expect(bbsKeyPair.messageCount).toEqual(10);
@@ -31,11 +31,11 @@ describe("bls12381toBbs", () => {
     const blsKeyPair = generateBls12381KeyPair();
     expect(blsKeyPair).toBeDefined();
     const blsPublicKey: BlsKeyPair = {
-        publicKey: blsKeyPair.publicKey
+      publicKey: blsKeyPair.publicKey,
     };
     const bbsKeyPair = bls12381toBbs({
-        keyPair: blsPublicKey,
-        messageCount: 10,
+      keyPair: blsPublicKey,
+      messageCount: 10,
     });
     expect(bbsKeyPair).toBeDefined();
     expect(bbsKeyPair).toBeDefined();
@@ -47,10 +47,12 @@ describe("bls12381toBbs", () => {
   it("should throw error when message count 0", () => {
     const blsKeyPair = generateBls12381KeyPair();
     expect(blsKeyPair).toBeDefined();
-    
-    expect(() => bls12381toBbs({
+
+    expect(() =>
+      bls12381toBbs({
         keyPair: blsKeyPair,
         messageCount: 0,
-    })).toThrowError("Failed to convert key");
+      })
+    ).toThrowError("Failed to convert key");
   });
 });

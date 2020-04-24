@@ -70,7 +70,9 @@ describe("bbsSignature", () => {
       const verifyRequest: BbsVerifyRequest = {
         publicKey: BbsPublicKey.publicKey,
         messages,
-        signature: base64Decode("kTV8dar9xLWQZ5EzaWYqTRmgA6dw6wcrUw5c///crRD2QQPXX9Di+lgCPCXAA5D8Pytuh6bNSx6k4NZTR9KfSNdaejKl2zTU9poRfzZ2SIskdgSHTZ2y7jLm/UEGKsAs3tticBVj1Pm2GNhQI/OlXQ=="),
+        signature: base64Decode(
+          "kTV8dar9xLWQZ5EzaWYqTRmgA6dw6wcrUw5c///crRD2QQPXX9Di+lgCPCXAA5D8Pytuh6bNSx6k4NZTR9KfSNdaejKl2zTU9poRfzZ2SIskdgSHTZ2y7jLm/UEGKsAs3tticBVj1Pm2GNhQI/OlXQ=="
+        ),
       };
       expect(verify(verifyRequest).verified).toBeFalsy();
     });
@@ -81,7 +83,9 @@ describe("bbsSignature", () => {
       const verifyRequest: BbsVerifyRequest = {
         publicKey: BbsPublicKey.publicKey,
         messages,
-        signature: base64Decode("jYidhsdqxvAyNXMV4/vNfGM/4AULfSyfvQiwh+dDd4JtnT5xHnwpzMYdLdHzBYwXaGE1k6ln/pwtI4RwQZpl03SCv/mT/3AdK8PB2y43MGdMSeGTyZGfZf+rUrEDEs3lTfmPK54E+JBzd96gnrF2iQ=="),
+        signature: base64Decode(
+          "jYidhsdqxvAyNXMV4/vNfGM/4AULfSyfvQiwh+dDd4JtnT5xHnwpzMYdLdHzBYwXaGE1k6ln/pwtI4RwQZpl03SCv/mT/3AdK8PB2y43MGdMSeGTyZGfZf+rUrEDEs3lTfmPK54E+JBzd96gnrF2iQ=="
+        ),
       };
       expect(verify(verifyRequest).verified).toBeFalsy();
     });
@@ -91,7 +95,9 @@ describe("bbsSignature", () => {
       const request: BbsVerifyRequest = {
         publicKey: BbsPublicKey.publicKey,
         messages: [],
-        signature: base64Decode("jYidhsdqxvAyNXMV4/vNfGM/4AULfSyfvQiwh+dDd4JtnT5xHnwpzMYdLdHzBYwXaGE1k6ln/pwtI4RwQZpl03SCv/mT/3AdK8PB2y43MGdMSeGTyZGfZf+rUrEDEs3lTfmPK54E+JBzd96gnrF2iQ==")
+        signature: base64Decode(
+          "jYidhsdqxvAyNXMV4/vNfGM/4AULfSyfvQiwh+dDd4JtnT5xHnwpzMYdLdHzBYwXaGE1k6ln/pwtI4RwQZpl03SCv/mT/3AdK8PB2y43MGdMSeGTyZGfZf+rUrEDEs3lTfmPK54E+JBzd96gnrF2iQ=="
+        ),
       };
       expect(verify(request).verified).toBeFalsy();
     });
@@ -100,7 +106,9 @@ describe("bbsSignature", () => {
       const request: BbsVerifyRequest = {
         publicKey: new Uint8Array(20),
         messages: [],
-        signature: base64Decode("jYidhsdqxvAyNXMV4/vNfGM/4AULfSyfvQiwh+dDd4JtnT5xHnwpzMYdLdHzBYwXaGE1k6ln/pwtI4RwQZpl03SCv/mT/3AdK8PB2y43MGdMSeGTyZGfZf+rUrEDEs3lTfmPK54E+JBzd96gnrF2iQ=="),
+        signature: base64Decode(
+          "jYidhsdqxvAyNXMV4/vNfGM/4AULfSyfvQiwh+dDd4JtnT5xHnwpzMYdLdHzBYwXaGE1k6ln/pwtI4RwQZpl03SCv/mT/3AdK8PB2y43MGdMSeGTyZGfZf+rUrEDEs3lTfmPK54E+JBzd96gnrF2iQ=="
+        ),
       };
       expect(verify(request).verified).toBeFalsy();
     });
@@ -140,7 +148,9 @@ describe("bbsSignature", () => {
       const verifyRequest: BlsBbsVerifyRequest = {
         publicKey: blsKeyPair.publicKey,
         messages,
-        signature: base64Decode("kTV8dar9xLWQZ5EzaWYqTRmgA6dw6wcrUw5c///crRD2QQPXX9Di+lgCPCXAA5D8Pytuh6bNSx6k4NZTR9KfSNdaejKl2zTU9poRfzZ2SIskdgSHTZ2y7jLm/UEGKsAs3tticBVj1Pm2GNhQI/OlXQ=="),
+        signature: base64Decode(
+          "kTV8dar9xLWQZ5EzaWYqTRmgA6dw6wcrUw5c///crRD2QQPXX9Di+lgCPCXAA5D8Pytuh6bNSx6k4NZTR9KfSNdaejKl2zTU9poRfzZ2SIskdgSHTZ2y7jLm/UEGKsAs3tticBVj1Pm2GNhQI/OlXQ=="
+        ),
       };
       expect(blsVerify(verifyRequest).verified).toBeFalsy();
     });
@@ -150,7 +160,9 @@ describe("bbsSignature", () => {
       const verifyRequest: BlsBbsVerifyRequest = {
         publicKey: blsKeyPair.publicKey,
         messages,
-        signature: base64Decode("jYidhsdqxvAyNXMV4/vNfGM/4AULfSyfvQiwh+dDd4JtnT5xHnwpzMYdLdHzBYwXaGE1k6ln/pwtI4RwQZpl03SCv/mT/3AdK8PB2y43MGdMSeGTyZGfZf+rUrEDEs3lTfmPK54E+JBzd96gnrF2iQ=="),
+        signature: base64Decode(
+          "jYidhsdqxvAyNXMV4/vNfGM/4AULfSyfvQiwh+dDd4JtnT5xHnwpzMYdLdHzBYwXaGE1k6ln/pwtI4RwQZpl03SCv/mT/3AdK8PB2y43MGdMSeGTyZGfZf+rUrEDEs3lTfmPK54E+JBzd96gnrF2iQ=="
+        ),
       };
       expect(verify(verifyRequest).verified).toBeFalsy();
     });
@@ -159,7 +171,9 @@ describe("bbsSignature", () => {
       const request: BlsBbsVerifyRequest = {
         publicKey: blsKeyPair.publicKey,
         messages: [],
-        signature: base64Decode("jYidhsdqxvAyNXMV4/vNfGM/4AULfSyfvQiwh+dDd4JtnT5xHnwpzMYdLdHzBYwXaGE1k6ln/pwtI4RwQZpl03SCv/mT/3AdK8PB2y43MGdMSeGTyZGfZf+rUrEDEs3lTfmPK54E+JBzd96gnrF2iQ==")
+        signature: base64Decode(
+          "jYidhsdqxvAyNXMV4/vNfGM/4AULfSyfvQiwh+dDd4JtnT5xHnwpzMYdLdHzBYwXaGE1k6ln/pwtI4RwQZpl03SCv/mT/3AdK8PB2y43MGdMSeGTyZGfZf+rUrEDEs3lTfmPK54E+JBzd96gnrF2iQ=="
+        ),
       };
       expect(() => blsVerify(request).verified).toThrowError("Failed to convert key");
     });
@@ -168,7 +182,9 @@ describe("bbsSignature", () => {
       const request: BlsBbsVerifyRequest = {
         publicKey: new Uint8Array(20),
         messages: [],
-        signature: base64Decode("jYidhsdqxvAyNXMV4/vNfGM/4AULfSyfvQiwh+dDd4JtnT5xHnwpzMYdLdHzBYwXaGE1k6ln/pwtI4RwQZpl03SCv/mT/3AdK8PB2y43MGdMSeGTyZGfZf+rUrEDEs3lTfmPK54E+JBzd96gnrF2iQ=="),
+        signature: base64Decode(
+          "jYidhsdqxvAyNXMV4/vNfGM/4AULfSyfvQiwh+dDd4JtnT5xHnwpzMYdLdHzBYwXaGE1k6ln/pwtI4RwQZpl03SCv/mT/3AdK8PB2y43MGdMSeGTyZGfZf+rUrEDEs3lTfmPK54E+JBzd96gnrF2iQ=="
+        ),
       };
       expect(() => blsVerify(request).verified).toThrowError("Failed to convert key");
     });

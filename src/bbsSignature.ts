@@ -12,7 +12,19 @@
  */
 
 import { bls12381toBbs } from "./bls12381toBbs";
-import { BbsBlindSignRequest, BbsCreateProofRequest, BbsSignRequest, BlsBbsSignRequest, BbsVerifyProofRequest, BlsBbsVerifyRequest, BbsVerifyRequest, BbsBlindSignContextRequest, BbsVerifyBlindSignContextRequest, BbsBlindSignContext,   BbsVerifyResult } from "./types";
+import {
+  BbsBlindSignRequest,
+  BbsCreateProofRequest,
+  BbsSignRequest,
+  BlsBbsSignRequest,
+  BbsVerifyProofRequest,
+  BlsBbsVerifyRequest,
+  BbsVerifyRequest,
+  BbsBlindSignContextRequest,
+  BbsVerifyBlindSignContextRequest,
+  BbsBlindSignContext,
+  BbsVerifyResult,
+} from "./types";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bbs = require("../native/index.node");
@@ -25,7 +37,7 @@ export const BBS_SIGNATURE_LENGTH = 112;
 /**
  * Signs a set of messages with a BBS key pair and produces a BBS signature
  * @param request Request for the sign operation
- * 
+ *
  * @returns The raw signature value
  */
 export const sign = (request: BbsSignRequest): Uint8Array => {
@@ -46,7 +58,7 @@ export const sign = (request: BbsSignRequest): Uint8Array => {
 /**
  * Signs a set of messages with a BLS 12-381 key pair and produces a BBS signature
  * @param request Request for the sign operation
- * 
+ *
  * @returns The raw signature value
  */
 export const blsSign = (request: BlsBbsSignRequest): Uint8Array => {
@@ -68,8 +80,8 @@ export const blsSign = (request: BlsBbsSignRequest): Uint8Array => {
 /**
  * Verifies a BBS+ signature for a set of messages with a BBS public key
  * @param request Request for the signature verification operation
- * 
- * @returns A boolean indicating if the signature was verified
+ *
+ * @returns A result indicating if the signature was verified
  */
 export const verify = (request: BbsVerifyRequest): BbsVerifyResult => {
   const { publicKey, signature, messages } = request;
@@ -80,7 +92,7 @@ export const verify = (request: BbsVerifyRequest): BbsVerifyResult => {
       messages,
     });
     return { verified: result };
-  } catch(ex) {
+  } catch (ex) {
     return { verified: false, error: ex };
   }
 };
@@ -88,8 +100,8 @@ export const verify = (request: BbsVerifyRequest): BbsVerifyResult => {
 /**
  * Verifies a BBS+ signature for a set of messages with a with a BLS 12-381 public key
  * @param request Request for the signature verification operation
- * 
- * @returns A boolean indicating if the signature was verified
+ *
+ * @returns A result indicating if the signature was verified
  */
 export const blsVerify = (request: BlsBbsVerifyRequest): BbsVerifyResult => {
   const { publicKey, signature, messages } = request;
@@ -101,15 +113,15 @@ export const blsVerify = (request: BlsBbsVerifyRequest): BbsVerifyResult => {
       messages,
     });
     return { verified: result };
-  } catch(ex) {
+  } catch (ex) {
     return { verified: false, error: ex };
   }
 };
 
 /**
- * Creates a BBS+ proof for a set of messages from a BBS signature
+ * Creates a BBS+ proof for a set of messages from a BBS public key and a BBS signature
  * @param request Request for the create proof operation
- * 
+ *
  * @returns The raw proof value
  */
 export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
@@ -130,15 +142,39 @@ export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
 };
 
 /**
- * Verifies a BBS+ proof
- * @param request Request for the verify proof operation
- * 
- * @returns A boolean indicating if the proof was verified
+ * Creates a BBS+ proof for a set of messages from a BLS12-381 public key and a BBS signature
+ * @param request Request for the create proof operation
+ *
+ * @returns The raw proof value
  */
-export const verifyProof = (request: BbsVerifyProofRequest): boolean => {
+export const blsCreateProof = (request: BbsCreateProofRequest): Uint8Array => {
+  const { publicKey, signature, messages, nonce, revealed } = request;
+  const bbsKeyPair = bls12381toBbs({ keyPair: { publicKey }, messageCount: messages.length });
+  try {
+    return new Uint8Array(
+      bbs.bbs_create_proof({
+        nonce,
+        revealed,
+        publicKey: bbsKeyPair.publicKey.buffer,
+        signature: signature.buffer,
+        messages,
+      })
+    );
+  } catch (ex) {
+    throw new Error("Failed to create proof");
+  }
+};
+
+/**
+ * Verifies a BBS+ proof with a BBS public key
+ * @param request Request for the verify proof operation
+ *
+ * @returns A result indicating if the proof was verified
+ */
+export const verifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult => {
   const { publicKey, proof, messages, nonce, revealed, messageCount } = request;
   try {
-    return bbs.bbs_verify_proof({
+    const result = bbs.bbs_verify_proof({
       messageCount,
       nonce,
       revealed,
@@ -146,66 +182,91 @@ export const verifyProof = (request: BbsVerifyProofRequest): boolean => {
       proof: proof.buffer,
       messages,
     });
+    return { verified: result };
   } catch (ex) {
-    throw new Error("Failed to verify proof");
+    return { verified: false, error: ex };
   }
 };
 
 /**
- * Create a blind signing context for where some messages are blinded to produce a BBS+ signature
- * @param request Request for the commitment request
- * 
+ * Verifies a BBS+ proof with a BLS12-381 public key
+ * @param request Request for the verify proof operation
+ *
+ * @returns A result indicating if the proof was verified
+ */
+export const blsVerifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult => {
+  const { publicKey, proof, messages, nonce, revealed, messageCount } = request;
+  const bbsKeyPair = bls12381toBbs({ keyPair: { publicKey }, messageCount });
+  try {
+    const result = bbs.bbs_verify_proof({
+      messageCount,
+      nonce,
+      revealed,
+      publicKey: bbsKeyPair.publicKey.buffer,
+      proof: proof.buffer,
+      messages,
+    });
+    return { verified: result };
+  } catch (ex) {
+    return { verified: false, error: ex };
+  }
+};
+
+/**
+ * Create a blinded commitment of messages for use in producing a blinded BBS+ signature
+ * @param request Request for producing the blinded commitment
+ *
  * @returns A commitment context
  */
 export const commitmentForBlindSignRequest = (request: BbsBlindSignContextRequest): BbsBlindSignContext => {
   const { publicKey, messages, hidden, nonce } = request;
   try {
-      return bbs.bbs_blind_signature_commitment({
-          publicKey: publicKey.buffer,
-          messages,
-          hidden,
-          nonce
-      });
+    return bbs.bbs_blind_signature_commitment({
+      publicKey: publicKey.buffer,
+      messages,
+      hidden,
+      nonce,
+    });
   } catch {
-      throw new Error("Failed to generate commitment");
+    throw new Error("Failed to generate commitment");
   }
-}
+};
 
 /**
-* Verifies a blind signing context
-* @param request Request for the commitment verification
-* 
-* @returns A boolean indicating if the context was verified
-*/
+ * Verifies a blind commitment of messages
+ * @param request Request for the commitment verification
+ *
+ * @returns A boolean indicating if the context was verified
+ */
 export const verifyBlindSignContext = (request: BbsVerifyBlindSignContextRequest): boolean => {
   const { commitment, proofOfHiddenMessages, challengeHash, publicKey, blinded, nonce } = request;
   return bbs.bbs_verify_blind_signature_proof({
-      commitment: commitment.buffer,
-      proofOfHiddenMessages: proofOfHiddenMessages.buffer,
-      challengeHash: challengeHash.buffer,
-      publicKey: publicKey.buffer,
-      blinded,
-      nonce
+    commitment: commitment.buffer,
+    proofOfHiddenMessages: proofOfHiddenMessages.buffer,
+    challengeHash: challengeHash.buffer,
+    publicKey: publicKey.buffer,
+    blinded,
+    nonce,
   });
-}
+};
 
 /**
-* Signs a set of messages featuring both known and blinded messages to the signer and produces a BBS+ signature
-* @param request Request for the blind sign operation
-* 
-* @returns The raw signature value
-*/
+ * Signs a set of messages featuring both known and blinded messages to the signer and produces a BBS+ signature
+ * @param request Request for the blind sign operation
+ *
+ * @returns The raw signature value
+ */
 export const blindSign = (request: BbsBlindSignRequest): Uint8Array => {
-const { commitment, secretKey, messages } = request;
-try {
-  return new Uint8Array(
-    bbs.bbs_blind_sign({
-      commitment: commitment.buffer,
-      secretKey: secretKey.buffer,
-      messages,
-    })
-  );
-} catch (ex) {
-  throw new Error("Failed to sign");
-}
+  const { commitment, secretKey, messages } = request;
+  try {
+    return new Uint8Array(
+      bbs.bbs_blind_sign({
+        commitment: commitment.buffer,
+        secretKey: secretKey.buffer,
+        messages,
+      })
+    );
+  } catch (ex) {
+    throw new Error("Failed to sign");
+  }
 };

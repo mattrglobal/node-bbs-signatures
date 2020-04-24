@@ -19,7 +19,7 @@ const bbs = require("../native/index.node");
 /**
  * Generates a BLS12-381 key pair
  * @param seed [Optional] To derive the key pair from
- * 
+ *
  * @returns A BlsKeyPair
  */
 export const generateBls12381KeyPair = (seed?: Uint8Array): BlsKeyPair => {
@@ -29,4 +29,3 @@ export const generateBls12381KeyPair = (seed?: Uint8Array): BlsKeyPair => {
     secretKey: new Uint8Array(result.secretKey),
   };
 };
-

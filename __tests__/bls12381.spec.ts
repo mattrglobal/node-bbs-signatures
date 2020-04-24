@@ -12,7 +12,11 @@
  */
 
 import { randomBytes } from "@stablelib/random";
-import { generateBls12381KeyPair, DEFAULT_BLS12381_PUBLIC_KEY_LENGTH, DEFAULT_BLS12381_PRIVATE_KEY_LENGTH } from "../src";
+import {
+  generateBls12381KeyPair,
+  DEFAULT_BLS12381_PUBLIC_KEY_LENGTH,
+  DEFAULT_BLS12381_PRIVATE_KEY_LENGTH,
+} from "../src";
 
 describe("bls12381", () => {
   it("should be able to generate a key pair", () => {
