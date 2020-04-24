@@ -15,20 +15,21 @@ jobs:
           node-version: [10.x]
     steps:
         - uses: actions/checkout@v2
-        # Setup .npmrc file to publish to GitHub Packages
         - uses: actions/setup-node@v1
           with:
             node-version: ${{ matrix.node-version }}
-            registry-url: 'https://npm.pkg.github.com'
-            scope: '@mattrglobal' # Defaults to the user or organization that owns the workflow file
         - run: yarn
         - run: yarn install --frozen-lockfile
         - run: yarn lint
         - run: yarn build
         - run: yarn test
-        - run: yarn publish:unstable:ts
+        - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc 2> /dev/null
           env:
-            NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            NPM_TOKEN: ${{ secrets.NPMJS_TOKEN }}
+        - run: git config user.name "Mattr CI"
+        - run: git config user.email "npmjs_ci_mattr_public@mattr.global"
+        - run: yarn publish:unstable:ts
   build_pub_binaries:
     name: Publish binaries for supported environments for unstable release
     needs: build_test_publish
