@@ -39,7 +39,10 @@
     "lint:fix": "yarn lint --fix",
     "pre-pr": "yarn clean && yarn format && yarn lint:fix && yarn build && yarn test",
     "publish:unstable:binary": "./scripts/publish_unstable_binary.sh",
-    "publish:unstable:ts": "./scripts/publish_unstable_ts.sh"
+    "publish:unstable:ts": "./scripts/publish_unstable_ts.sh",
+    "publish:binary": "./scripts/publish_binary.sh",
+    "publish:ts": "./scripts/publish_ts.sh",
+    "version:release": "yarn version --minor --message \"chore(release): publish [skip ci]\""
   },
   "devDependencies": {
     "@stablelib/base64": "1.0.0",

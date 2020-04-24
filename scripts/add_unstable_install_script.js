@@ -3,6 +3,7 @@
 const fs = require('fs');
 let packageJson = require('../package.json');
 
+// Add the post install script that will build the rust using neon
 packageJson.scripts.install = "yarn build:neon";
 
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
