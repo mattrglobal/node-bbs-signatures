@@ -13,7 +13,7 @@ export PATH="$PATH:node_modules/.bin"
 rm native/index.node
 
 # Add in the install script to package.json
-node scripts/add_unstable_install_script.js
+node scripts/add_stable_install_script.js
 
 # Fetch the current version from the package.json
 new_version=$(node -pe "require('./package.json').version")
