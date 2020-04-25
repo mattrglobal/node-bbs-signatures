@@ -4,6 +4,10 @@
   "description": "",
   "homepage": "https://github.com/mattrglobal/node-bbs-signatures",
   "main": "lib/index.js",
+  "engines": {
+    "node": ">=10",
+    "yarn": "1.x"
+  },
   "directories": {
     "lib": "lib"
   },
@@ -55,6 +59,8 @@
     "@types/node": "12.7.2",
     "@typescript-eslint/eslint-plugin": "2.28.0",
     "@typescript-eslint/parser": "2.28.0",
+    "conventional-changelog": "3.1.18",
+    "conventional-changelog-cli": "2.0.31",
     "cz-conventional-changelog": "3.1.0",
     "eslint": "6.8.0",
     "eslint-config-prettier": "^6.10.1",
