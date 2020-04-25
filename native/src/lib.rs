@@ -531,9 +531,10 @@ fn verify_proof(vcx: VerifyProofContext) -> Result<Vec<SignatureMessage>, Throw>
         verification_key: vcx.public_key.clone()
     };
 
+    let revealed = vcx.revealed.iter().collect::<Vec<&usize>>();
     let mut revealed_messages = BTreeMap::new();
-    for i in &vcx.revealed {
-        revealed_messages.insert(*i, vcx.messages[*i].clone());
+    for i in 0..vcx.revealed.len() {
+        revealed_messages.insert(*revealed[i], vcx.messages[i].clone());
     }
 
     let signature_proof = SignatureProof {
