@@ -4,14 +4,16 @@ To create a stable release follow the following steps
 
 1. Checkout the head of master `git checkout master && git pull`
 2. Create a new release branch from master e.g `release`
-2. Ensure the package is clean from previous branches/builds `yarn clean`
-3. Install the dependencies `yarn install --frozen-lockfile`
-4. Build the package `yarn build`
-5. Test the package `yarn test`
-6. Run `yarn version:release`
-7. Observe the correctly incremented change to the `package.json` file and the newly created commit
-9. Open a pull request for the release, once approvals have been sought, merge the pull request using squash, preserving the commit message as `chore(release): publish [skip ci]`
-10. Observe the triggering of the `/.github/workflows/release-master.yaml`
+3. Ensure the package is clean from previous branches/builds `yarn clean`
+4. Install the dependencies `yarn install --frozen-lockfile`
+5. Build the package `yarn build`
+6. Test the package `yarn test`
+7. Run `yarn version:release`
+8. Observe the correctly incremented change to the `package.json` file and the newly created commit
+9. Push the release branch including the newly created tags `git push origin release --tags`
+10. Open a pull request for the release, once approvals have been sought, merge the pull request using squash,
+    preserving the commit message as `chore(release): publish [skip ci]`
+11. Observe the triggering of the `/.github/workflows/release-master.yaml`
 
 The resulting release will publish the new package to NPM and the resulting binaries to github packages.
 
