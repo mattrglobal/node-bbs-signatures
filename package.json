@@ -4,6 +4,10 @@
   "description": "",
   "homepage": "https://github.com/mattrglobal/node-bbs-signatures",
   "main": "lib/index.js",
+  "engines": {
+    "node": ">=10",
+    "yarn": "1.x"
+  },
   "directories": {
     "lib": "lib"
   },
