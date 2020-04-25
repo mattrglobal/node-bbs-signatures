@@ -2,7 +2,8 @@
 
 ![Master](https://github.com/mattrglobal/node-bbs-signatures/workflows/push-master/badge.svg)
 
-This repository is the home to a performant multi-message digital signature algorithm implementation which supports deriving zero knowledge proofs that enable selective disclosure from the originally signed message set.
+This repository is the home to a performant multi-message digital signature algorithm implementation which supports
+deriving zero knowledge proofs that enable selective disclosure from the originally signed message set.
 
 BBS+ Signatures are a digital signature algorithm originally born from the work on
 [Short group signatures](https://crypto.stanford.edu/~xb/crypto04a/groupsigs.pdf) by Boneh, Boyen, and Shachum which was
@@ -125,6 +126,8 @@ The following is a list of dependencies you must install to build and contribute
 - [Yarn](https://yarnpkg.com/)
 - [Rust](https://www.rust-lang.org/)
 
+For more details see our [contribution guidelines](./docs/CONTRIBUTING.md)
+
 #### Install
 
 To install the package dependencies run:
@@ -159,9 +162,9 @@ yarn benchmark
 
 ## Dependencies
 
-This library uses the rust crate of BBS+ signatures and BLS12-381 from the
-[Hyperledger Ursa Project](https://github.com/hyperledger/ursa), which is then wrapped and exposed in
-javascript/typescript using [neon-bindings](https://github.com/neon-bindings/neon).
+This library uses the [bbs](https://crates.io/crates/bbs) rust crate for the implementation of BBS+ signatures and
+BLS12-381 which is then wrapped and exposed in javascript/typescript using
+[neon-bindings](https://github.com/neon-bindings/neon).
 
 ## Relevant References
 
