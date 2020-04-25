@@ -1,13 +1,33 @@
-## Unstable Releases
+# Stable Releases
 
-Unstable releases include the un-compiled rust required to build the project and hence require rust to install.
+To create a stable release follow the following steps
 
-### Automatic Release
+1. Checkout the head of master `git checkout master && git pull`
+2. Create a new release branch from master e.g `release`
+2. Ensure the package is clean from previous branches/builds `yarn clean`
+3. Install the dependencies `yarn install --frozen-lockfile`
+4. Build the package `yarn build`
+5. Test the package `yarn test`
+6. Run `yarn version:release`
+7. Observe the correctly incremented change to the `package.json` file and the newly created commit
+9. Open a pull request for the release, once approvals have been sought, merge the pull request using squash, preserving the commit message as `chore(release): publish [skip ci]`
+10. Observe the triggering of the `/.github/workflows/release-master.yaml`
 
-Each time a push to master is made, the `push-master` workflow will run which automatically creates an unstable release
-and pushes this to the package manager.
+The resulting release will publish the new package to NPM and the resulting binaries to github packages.
 
-### Manual Release
+# Unstable Releases
+
+The releases have the following version syntax `0.1.1-unstable.(current git commit reference)`
+
+## Automatic Release
+
+An unstable release is triggered on every commit to master, where the `/.github/workflows/push-master.yaml` is run.
+
+**Note** Unstable releases include the un-compiled rust required to build the project and hence require rust to install.
+
+**Note** The `/.github/workflows/push-master.yaml` will skip if the commit message includes `[skip ci]`
+
+## Manual Release
 
 If the automated unstable release fails, please run the following manually
 
@@ -19,7 +39,7 @@ If the automated unstable release fails, please run the following manually
    3. Enter the generated personal access token as the password
    4. Enter your github email
 3. Ensure the package is clean from previous branches/builds `yarn clean`
-4. Install the dependencies `yarn install`
+4. Install the dependencies `yarn install --frozen-lockfile`
 5. Build the package `yarn build`
 6. Publish the package `yarn publish:unstable:ts`
 7. Observe the newly created unstable packages in the github package manager.
