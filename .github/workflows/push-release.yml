@@ -1,4 +1,4 @@
-name: push-master
+name: push-release
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build_test_publish:
-    name: Build, test, and publish unstable release
+    name: Build, test, and publish release
     if: "contains(github.event.head_commit.message, 'chore(release): publish')"
     runs-on: ubuntu-latest
     strategy:
@@ -31,7 +31,7 @@ jobs:
         - run: git config user.email "npmjs_ci_mattr_public@mattr.global"
         - run: yarn publish:ts
   build_pub_binaries:
-    name: Publish binaries for supported environments for unstable release
+    name: Publish binaries for supported environments for release
     if: "contains(github.event.head_commit.message, 'chore(release): publish')"
     needs: build_test_publish
     runs-on: ${{matrix.os}}
