@@ -25,7 +25,7 @@ new_version=$(node -pe "require('./package.json').version")
 new_unstable_version=$new_version"-unstable.$(git rev-parse --short HEAD)"
 
 # Version to this new unstable version
-yarn publish --no-git-tag-version --new-version $new_unstable_version
+yarn publish --no-git-tag-version --new-version $new_unstable_version --tag unstable
 
 # Reset changes to the package.json
 git checkout -- package.json

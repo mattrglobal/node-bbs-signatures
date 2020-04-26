@@ -19,7 +19,7 @@ node scripts/add_stable_install_script.js
 new_version=$(node -pe "require('./package.json').version")
 
 # Version to this new unstable version
-yarn publish --no-git-tag-version --new-version $new_version --tag unstable
+yarn publish --no-git-tag-version --new-version $new_version
 
 # Reset changes to the package.json
 git checkout -- package.json
