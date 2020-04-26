@@ -1,6 +1,7 @@
 # Node BBS Signatures
 
 ![Master](https://github.com/mattrglobal/node-bbs-signatures/workflows/push-master/badge.svg)
+![Release](https://github.com/mattrglobal/node-bbs-signatures/workflows/push-release/badge.svg)
 
 This repository is the home to a performant multi-message digital signature algorithm implementation which supports
 deriving zero knowledge proofs that enable selective disclosure from the originally signed message set.

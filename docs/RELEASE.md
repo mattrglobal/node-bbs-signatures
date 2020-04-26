@@ -30,6 +30,9 @@ An unstable release is triggered on every commit to master, where the `/.github/
 
 **Note** The `/.github/workflows/push-master.yaml` will skip if the commit message includes `[skip ci]`
 
+**Note** To skip the automatic release of a new unstable version append `[skip ci]` to the end of the commit message
+that is merged into master.
+
 ## Manual Release
 
 If the automated unstable release fails, please run the following manually
