@@ -137,7 +137,7 @@ export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
       })
     );
   } catch (ex) {
-    throw new Error("Failed to create proof");
+    throw new Error("Failed to create proof: " + ex.toString());
   }
 };
 

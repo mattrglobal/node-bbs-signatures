@@ -154,12 +154,23 @@ describe("bbsSignature", () => {
       proof,
       publicKey: bbsPublicKey,
       messageCount: 4,
-      messages: proofMessages,
+      messages: proof_messages,
       nonce,
-      revealed: [0],
+      revealed: [0]
     };
 
     expect(verifyProof(request).verified).toBeFalsy();
+
+    proof_messages = ["Message1"];
+    request = {
+      proof,
+      publicKey: bbsPublicKey,
+      messageCount: 4,
+      messages: proof_messages,
+      nonce,
+      revealed: [0]
+    };
+    expect(verifyProof(request).verified).toBeTruthy();
   });
 
   describe("blsVerifyProof", () => {
