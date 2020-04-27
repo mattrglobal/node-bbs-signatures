@@ -79,7 +79,7 @@ checksum = "7d5ca2cd0adc3f48f9e9ea5a6bbdf9ccc0bfade884847e484d452414c7ccffb3"
 [[package]]
 name = "bbs"
 version = "0.3.0"
-source = "git+https://github.com/mikelodder7/ursa#edab3cf7e7003484adbf192839dd822de281a4c8"
+source = "git+https://github.com/mikelodder7/ursa#082930e3488f74cfd8260559e3172067b0d78050"
 dependencies = [
  "amcl_wrapper_ml",
  "arrayref",

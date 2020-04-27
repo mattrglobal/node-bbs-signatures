@@ -22,7 +22,7 @@ const DOMAIN_SEPARATION_TAG: &str = "BBSSignature2020";
 /// Computed by calling
 ///
 /// SecretKey::from_msg_hash(b"aaaaaaaa");
-// const SECRET_KEY: &str = "GztATHHZwdAp9wwEiHIshRDi4wMZJjKq0pT5etGII3g=";
+const SECRET_KEY: &str = "GztATHHZwdAp9wwEiHIshRDi4wMZJjKq0pT5etGII3g=";
 
 /// Computed by calling
 ///
@@ -254,6 +254,60 @@ fn proof_with_8_messages() {
     // assert_eq!(proved_messages, vec![SignatureMessage::from_msg_hash(b"Message9")])
 }
 
+#[ignore]
+#[test]
+fn print() {
+    let sk = get_secret_key(SECRET_KEY);
+    let dpk = get_public_key(PUBLIC_KEY);
+    let dst = get_dst(DOMAIN_SEPARATION_TAG);
+
+    let messages = vec![
+        SignatureMessage::from_msg_hash(b"Message1"),
+        SignatureMessage::from_msg_hash(b"Message2"),
+        SignatureMessage::from_msg_hash(b"Message3"),
+        SignatureMessage::from_msg_hash(b"Message4")
+    ];
+    let pk = dpk.to_public_key(4, dst).unwrap();
+    let sig = Signature::new(messages.as_slice(), &sk, &pk).unwrap();
+    println!("pk  = {}", base64::encode(&pk.to_compressed_bytes()[..]));
+    println!("sig = {}", base64::encode(&sig.to_compressed_bytes()[..]));
+
+    let nonce = SignatureNonce::from_msg_hash(b"0123456789");
+    let proof_request = Verifier::new_proof_request(&[0], &pk).unwrap();
+
+    // Sends `proof_request` and `nonce` to the prover
+    let proof_messages = vec![
+        pm_revealed!(b"Message1"),
+        pm_hidden!(b"Message2"),
+        pm_hidden!(b"Message3"),
+        pm_hidden!(b"Message4"),
+    ];
+
+    let pok = Prover::commit_signature_pok(&proof_request, proof_messages.as_slice(), &sig)
+        .unwrap();
+
+    // complete other zkps as desired and compute `challenge_hash`
+    // add bytes from other proofs
+
+    let mut challenge_bytes = Vec::new();
+    challenge_bytes.extend_from_slice(pok.to_bytes().as_slice());
+    challenge_bytes.extend_from_slice(&nonce.to_bytes()[..]);
+
+    let challenge = SignatureNonce::from_msg_hash(&challenge_bytes);
+
+    let proof = Prover::generate_signature_pok(pok, &challenge).unwrap();
+    println!("proof = {}", base64::encode(&proof.proof.to_compressed_bytes()[..]));
+
+    let res = Verifier::verify_signature_pok(&proof_request, &proof, &nonce);
+
+    assert!(res.is_ok());
+    let proved_messages = res.unwrap();
+
+    proof_request.revealed_messages = BTreeSet::new();
+    proof_request.revealed_messages.insert(1);
+    proof.revealed_messages = vec![SignatureMessage::from_msg_hash(b"Message2")];
+}
+
 fn get_dst(dst: &str) -> DomainSeparationTag {
     DomainSeparationTag::new(dst.as_bytes(), None, None, None).unwrap()
 }
@@ -263,10 +317,10 @@ fn get_public_key(key: &str) -> DeterministicPublicKey {
     DeterministicPublicKey::from(*array_ref![dpk_bytes, 0, COMPRESSED_DETERMINISTIC_PUBLIC_KEY_SIZE])
 }
 
-// fn get_secret_key(key: &str) -> SecretKey {
-//     let sk_bytes = base64::decode(key).unwrap();
-//     SecretKey::from(array_ref![sk_bytes, 0, COMPRESSED_SECRET_KEY_SIZE])
-// }
+fn get_secret_key(key: &str) -> SecretKey {
+    let sk_bytes = base64::decode(key).unwrap();
+    SecretKey::from(array_ref![sk_bytes, 0, COMPRESSED_SECRET_KEY_SIZE])
+}
 
 fn get_signature(sig: &str) -> Signature {
     let sig_bytes = base64::decode(sig).unwrap();
