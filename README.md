@@ -1,3 +1,5 @@
+![Mattr logo](./docs/assets/mattr-black.svg)
+
 # Node BBS Signatures
 
 ![Master](https://github.com/mattrglobal/node-bbs-signatures/workflows/push-master/badge.svg)
