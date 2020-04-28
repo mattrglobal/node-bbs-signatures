@@ -11,8 +11,9 @@
  * limitations under the License.
  */
 
-import { BbsVerifyProofRequest, verifyProof, blsVerifyProof } from "../../src";
+import { BbsVerifyProofRequest, verifyProof, blsVerifyProof, BbsCreateProofRequest } from "../../src";
 import { Coder } from "@stablelib/base64";
+import { createProof } from "../../lib";
 
 const base64Decode = (string: string): Uint8Array => {
   const coder = new Coder();
@@ -106,6 +107,59 @@ describe("bbsSignature", () => {
 
       expect(verifyProof(request).verified).toBeFalsy();
     });
+
+    it("should not verify with a message that wasn't signed", () => {
+      // Expects messages to be ["Message1", "Message2", "Message3", "Message4"];
+      const messages = ["BadMessage1", "Message2", "Message3", "Message4"];
+      const bbsPublicKey = base64Decode(
+        "S+bRoSJJOet/8hKDpXFV+8TXzg0gPcD64lMFtIUzhYtMJAnNqfJRJnFIS0Vs2VC8AK6MBa6TYgILMqVv4RTSEl3H66mOF6jrEOHelKGlkJCNY8u3bI2aXrmqTkhnjxck"
+      );
+      const proof = base64Decode(
+        "hB0FDeTQc5KEm00wG5HNRvCJ6uoA9flPeTv08PGQct5URoP+mxn6K4hmgRFUMPDZGGspwrc4fCs5SDF+O0nbSyHNLRemj8IMsoruTqhLWrqDWxDhdDDoPYZ4uYoOGIuTBoJqxkv9uFjDRiRnINGvcIJ+QV2iwzwesAHcFmQnxOu/UBEm4XMCDiU93HABZn1uAAAAdJbRgZKb314nZ/PcSUH79GQacq9OAtiOfrCxyaVL5Nt8wXmoY0ri9cBF3XzrySjY7QAAAAIfsXyZmQFTmcislP+mYAk+9nl3V7hTQnc6VIz1Vzayyyses57/fYftogle+iFyMP9kfMujXAf0AOx268LFfZnuA4+PYfY+mH1l/ieGMkvaTFRrfi+sfxFX14wCTH8Qy7Z4+DjTUIPIBGwqCMiBWZ3ZAAAABUtLeqN3HfQNyXQNf7A5MKx00tYvssxatlylAv+lmU2cD2ke0dY7hltzXgGFJ8LjtPIe6uMlZdmdu6+l/0IHK4RGYhEYGwZ4NHu6mlydV/7XiFpJKd9vtmfGBYXU6nXHkxGZ3I0D3FfFFA30B/UFBYqGZ7EKFIObMmvmcQWbTFkkHYAlabXh2RAVSlTmNL+NrIu1LbLW0CBExF4f+H8kZmM="
+      );
+
+      const request: BbsVerifyProofRequest = {
+        proof,
+        publicKey: bbsPublicKey,
+        messageCount: 4,
+        messages,
+        nonce: "0123456789",
+        revealed: [0],
+      };
+      expect(verifyProof(request).verified).toBeFalsy();
+    });
+  });
+
+  it("should not verify with revealed message that was supposed to be hidden", () => {
+    const messages = ["Message1", "Message2", "Message3", "Message4"];
+    const signature = base64Decode(
+      "jps9JChJlTj8upAO+S+0PFH1FFjEC/6wsACGO8sDnsDtH53KbWhiN7Xo/UpAe3q2CydfRcjUi3oOTfxj+IOC9dooSjsfy4WXwBIwAKuD74tc1B+b9ORf/SM2+EM3BVLdPmgj8i4gA1NTdQdbyznHQg=="
+    );
+    const bbsPublicKey = base64Decode(
+      "S+bRoSJJOet/8hKDpXFV+8TXzg0gPcD64lMFtIUzhYtMJAnNqfJRJnFIS0Vs2VC8AK6MBa6TYgILMqVv4RTSEl3H66mOF6jrEOHelKGlkJCNY8u3bI2aXrmqTkhnjxckD1f1djGEQgco//uD1BMpDNmv/OMlQqECeBeev7wJnkXFDfiO6Dw1TvAqTo1HyHcAAAAABI0jHoOG0vFL+EGcD4P5yGs4rlO17j/6dYqrltPk8PwMfe9pDK6zPFcdRbXpFgUHvQTwjgDAEee7S318rCU0h665rUq8ZXJ2R2rS0UpvoHuy+29oJsBWQeIxquKH8pt0YRTZbFJQ+o+6rFrzHyRFcYz9y3f8BsG7wuRsmkENYLfWVUN9MFhfrmEu8re5/ZWmZwxbPPEi7Lo45QS9BQdFPmvRC+GcKP5hfdKz2HulxyJcBnxFmguFoZgldmZGrvmGew=="
+    );
+    const nonce = "0123456789";
+
+    const proofRequest: BbsCreateProofRequest = {
+      signature,
+      publicKey: bbsPublicKey,
+      messages,
+      revealed: [0],
+      nonce,
+    };
+    const proof = createProof(proofRequest);
+
+    const proofMessages = ["BadMessage9"];
+    const request = {
+      proof,
+      publicKey: bbsPublicKey,
+      messageCount: 4,
+      messages: proofMessages,
+      nonce,
+      revealed: [0],
+    };
+
+    expect(verifyProof(request).verified).toBeFalsy();
   });
 
   describe("blsVerifyProof", () => {

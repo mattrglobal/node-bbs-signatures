@@ -28,7 +28,7 @@ export interface BbsVerifyProofRequest {
    */
   readonly messages: readonly string[];
   /**
-   * Zero based indicies of the revealed messages in original signature
+   * Zero based indices of the revealed messages in original signature
    */
   readonly revealed: readonly number[];
   /**

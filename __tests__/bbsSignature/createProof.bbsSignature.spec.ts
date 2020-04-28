@@ -70,7 +70,7 @@ describe("bbsSignature", () => {
       expect(proof.length).toEqual(380); //TODO add a reason for this and some constants?
     });
 
-    it("should create proof revealing single messages from multi-message signature", () => {
+    it("should create proof revealing single message from multi-message signature", () => {
       const messages = ["J42AxhciOVkE9w==", "PNMnARWIHP+s2g==", "ti9WYhhEej85jw=="];
 
       const bbsPublicKey = base64Decode(
@@ -159,14 +159,14 @@ describe("bbsSignature", () => {
       expect(proof.length).toEqual(380); //TODO add a reason for this and some constants?
     });
 
-    it("should create proof revealing single messages from multi-message signature", () => {
-      const messages = ["J42AxhciOVkE9w==", "PNMnARWIHP+s2g==", "ti9WYhhEej85jw=="];
+    it("should create proof revealing single message from multi-message signature", () => {
+      const messages = ["uiSKIfNoO2rMrA==", "lMoHHrFx0LxwAw==", "wdwqLVm9chMMnA=="];
 
       const blsPublicKey = base64Decode(
-        "hmkyvMRoyPLss8TOaencpCmin1Lm0uW8+/N3ZI/ekj/LhCcr4EGCT3rpalTyyNa7B97znLHxW4mijINkyfRhNwSsWxCXHnzFShj3sT4jsCzaGQMqccdZU5qEkpmg9Isl"
+        "V3FW9jlCSwPYOr7SVFXID0nytBj/e6wHoc8dK0Kn3pkckX2+UVKVgpCsFdSweJyvAc9wk6suCxmFJtfojw8BQmG3DtHbyHFWqgxIk9JyH2ZlR6fxtvZKkSlc0LDHHSN2"
       );
       const signature = base64Decode(
-        "D3+1eJbJ3FgSNAq5IoZDUAEC2haOw4F1h2+wsoyfKRIfIwatCfJ5x5apyXnqfLnuAr/tunzDy+xE00CdLvwp9cMKqgphbiqHMXFfAAIPYiMjQZmnrvty6cHCD3nbLTajWuJKB7uM5UTiixByY//GHA=="
+        "AgRmGhPpX/BhxmMHSgRjkjm8v2v7ZT+D4lLbOhQZkU1o8pic21gOPuP6tRBbNKByDWrM4usV+wQgncqA7KdbWbHl3u8PDZvoCsFs2JVs+nAJdK7/BMmAPu1bncufslXMdp9RjXCDYlHfxbYVKhQotQ=="
       );
 
       const request: BbsCreateProofRequest = {
@@ -182,13 +182,13 @@ describe("bbsSignature", () => {
     });
 
     it("should create proof revealing multiple messages from multi-message signature", () => {
-      const messages = ["J42AxhciOVkE9w==", "PNMnARWIHP+s2g==", "ti9WYhhEej85jw=="];
+      const messages = ["uiSKIfNoO2rMrA==", "lMoHHrFx0LxwAw==", "wdwqLVm9chMMnA=="];
 
       const blsPublicKey = base64Decode(
-        "hmkyvMRoyPLss8TOaencpCmin1Lm0uW8+/N3ZI/ekj/LhCcr4EGCT3rpalTyyNa7B97znLHxW4mijINkyfRhNwSsWxCXHnzFShj3sT4jsCzaGQMqccdZU5qEkpmg9Isl"
+        "V3FW9jlCSwPYOr7SVFXID0nytBj/e6wHoc8dK0Kn3pkckX2+UVKVgpCsFdSweJyvAc9wk6suCxmFJtfojw8BQmG3DtHbyHFWqgxIk9JyH2ZlR6fxtvZKkSlc0LDHHSN2"
       );
       const signature = base64Decode(
-        "D3+1eJbJ3FgSNAq5IoZDUAEC2haOw4F1h2+wsoyfKRIfIwatCfJ5x5apyXnqfLnuAr/tunzDy+xE00CdLvwp9cMKqgphbiqHMXFfAAIPYiMjQZmnrvty6cHCD3nbLTajWuJKB7uM5UTiixByY//GHA=="
+        "AgRmGhPpX/BhxmMHSgRjkjm8v2v7ZT+D4lLbOhQZkU1o8pic21gOPuP6tRBbNKByDWrM4usV+wQgncqA7KdbWbHl3u8PDZvoCsFs2JVs+nAJdK7/BMmAPu1bncufslXMdp9RjXCDYlHfxbYVKhQotQ=="
       );
 
       const request: BbsCreateProofRequest = {

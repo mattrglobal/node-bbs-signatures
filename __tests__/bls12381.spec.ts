@@ -29,11 +29,23 @@ describe("bls12381", () => {
   });
 
   it("should be able to generate a key pair with a seed", () => {
-    const seed = randomBytes(50);
-    const result = generateBls12381KeyPair(seed);
+    const result = generateBls12381KeyPair(
+      new Uint8Array(new Buffer("H297BpoOgkfpXcxr1fJyQRiNx1+ZekeQ+OU/AYV/lVxaPXXhFBIbxeIU8kIAAX68cwQ=", "base64"))
+    );
     expect(result.publicKey).toBeDefined();
     expect(result.secretKey).toBeDefined();
     expect(result.secretKey?.length as number).toEqual(DEFAULT_BLS12381_PRIVATE_KEY_LENGTH);
     expect(result.publicKey.length).toEqual(DEFAULT_BLS12381_PUBLIC_KEY_LENGTH);
+    expect(result.publicKey).toEqual(
+      new Uint8Array(
+        new Buffer(
+          "ha+sckj0C+dXR6IPUfxGJMCc3XHkGgoDz2PHPMVrMMhJXSGO5y7VrAHrZt64MThKGXE+SAOTHFS5jGoP5uHWvhabYHuIlHLpZHiLyg2m4sc6yfMG3tloUxLY+TiaeQCG",
+          "base64"
+        )
+      )
+    );
+    expect(result.secretKey as Uint8Array).toEqual(
+      new Uint8Array(new Buffer("Ovy0NyLx6ET9/AkuSmxw7X3IGMRq4IqrmFRfzWf/QvQ=", "base64"))
+    );
   });
 });
