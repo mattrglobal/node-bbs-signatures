@@ -1,3 +1,7 @@
+# [0.3.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.1.0...0.3.0) (2020-04-28)
+
+Version bump due to NPM package publishing issue caused by prior delete 0.2.0 release
+
 # [0.2.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.1.0...0.2.0) (2020-04-28)
 
 ### Bug Fixes
