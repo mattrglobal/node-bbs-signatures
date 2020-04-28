@@ -6,7 +6,7 @@ module.exports = {
   testPathIgnorePatterns: ["/node_modules/", "/output/"],
   testRegex: [".spec.ts$"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
-  coveragePathIgnorePatterns: ["<rootDir>/__tests__"],
+  coveragePathIgnorePatterns: ["<rootDir>/__tests__", "<rootDir>/lib"],
   verbose: true,
   name: pack.name,
   displayName: pack.name,
