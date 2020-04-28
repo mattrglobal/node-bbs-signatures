@@ -11,16 +11,18 @@
  * limitations under the License.
  */
 
-#[macro_use] extern crate arrayref;
-#[macro_use] extern crate bbs;
+#[macro_use]
+extern crate arrayref;
+#[macro_use]
+extern crate bbs;
 #[macro_use]
 mod macros;
 
+use bbs::prelude::*;
 use neon::prelude::*;
 use neon::register_module;
 use neon::result::Throw;
 use std::collections::{BTreeMap, BTreeSet};
-use bbs::prelude::*;
 
 /// Generate a BLS key pair where secret key `x` in Fp
 /// and public key `w` = `g2` ^ `x`
@@ -60,7 +62,13 @@ fn bls_secret_key_to_bbs_key(mut cx: FunctionContext) -> JsResult<JsArrayBuffer>
     let js_obj = cx.argument::<JsObject>(0)?;
 
     let message_count = get_message_count!(&mut cx, js_obj, "messageCount");
-    let sk = SecretKey::from(obj_field_to_fixed_array!(&mut cx, js_obj, "secretKey", 0, COMPRESSED_SECRET_KEY_SIZE));
+    let sk = SecretKey::from(obj_field_to_fixed_array!(
+        &mut cx,
+        js_obj,
+        "secretKey",
+        0,
+        COMPRESSED_SECRET_KEY_SIZE
+    ));
     let t = obj_field_to_string!(&mut cx, js_obj, "dst");
 
     let (dpk, _) = DeterministicPublicKey::new(Some(KeyGenOption::FromSecretKey(sk)));
@@ -72,7 +80,10 @@ fn bls_secret_key_to_bbs_key(mut cx: FunctionContext) -> JsResult<JsArrayBuffer>
         panic!("Invalid key");
     }
 
-    Ok(slice_to_js_array_buffer!(&pk.to_compressed_bytes()[..], cx))
+    Ok(slice_to_js_array_buffer!(
+        &pk.to_bytes_compressed_form()[..],
+        cx
+    ))
 }
 
 /// Get the public key associated with the private key
@@ -87,7 +98,13 @@ fn bls_public_key_to_bbs_key(mut cx: FunctionContext) -> JsResult<JsArrayBuffer>
     let js_obj = cx.argument::<JsObject>(0)?;
 
     let message_count = get_message_count!(&mut cx, js_obj, "messageCount");
-    let dpk = DeterministicPublicKey::from(obj_field_to_fixed_array!(&mut cx, js_obj, "publicKey", 0, COMPRESSED_DETERMINISTIC_PUBLIC_KEY_SIZE));
+    let dpk = DeterministicPublicKey::from(obj_field_to_fixed_array!(
+        &mut cx,
+        js_obj,
+        "publicKey",
+        0,
+        COMPRESSED_DETERMINISTIC_PUBLIC_KEY_SIZE
+    ));
 
     let t = obj_field_to_string!(&mut cx, js_obj, "dst");
     let dst = handle_err!(DomainSeparationTag::new(t.as_bytes(), None, None, None));
@@ -98,7 +115,10 @@ fn bls_public_key_to_bbs_key(mut cx: FunctionContext) -> JsResult<JsArrayBuffer>
         panic!("Invalid key");
     }
 
-    Ok(slice_to_js_array_buffer!(&pk.to_compressed_bytes()[..], cx))
+    Ok(slice_to_js_array_buffer!(
+        &pk.to_bytes_compressed_form()[..],
+        cx
+    ))
 }
 
 /// Generate a BBS+ signature
@@ -119,10 +139,16 @@ fn bls_public_key_to_bbs_key(mut cx: FunctionContext) -> JsResult<JsArrayBuffer>
 fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
-    let sk = SecretKey::from(obj_field_to_fixed_array!(&mut cx, js_obj, "secretKey", 0, COMPRESSED_SECRET_KEY_SIZE));
+    let sk = SecretKey::from(obj_field_to_fixed_array!(
+        &mut cx,
+        js_obj,
+        "secretKey",
+        0,
+        COMPRESSED_SECRET_KEY_SIZE
+    ));
 
     let pk_bytes = obj_field_to_slice!(&mut cx, js_obj, "publicKey");
-    let pk = PublicKey::from_compressed_bytes(pk_bytes.as_slice()).unwrap();
+    let pk = PublicKey::from_bytes_compressed_form(pk_bytes.as_slice()).unwrap();
 
     if pk.validate().is_err() {
         panic!("Invalid key");
@@ -137,7 +163,7 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     }
 
     let signature = handle_err!(Signature::new(messages.as_slice(), &sk, &pk));
-    let result = slice_to_js_array_buffer!(&signature.to_compressed_bytes()[..], cx);
+    let result = slice_to_js_array_buffer!(&signature.to_bytes_compressed_form()[..], cx);
     Ok(result)
 }
 
@@ -158,10 +184,16 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
 fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
-    let signature = Signature::from(obj_field_to_fixed_array!(&mut cx, js_obj, "signature", 0, COMPRESSED_SIGNATURE_SIZE));
+    let signature = Signature::from(obj_field_to_fixed_array!(
+        &mut cx,
+        js_obj,
+        "signature",
+        0,
+        COMPRESSED_SIGNATURE_SIZE
+    ));
 
     let pk_bytes = obj_field_to_slice!(&mut cx, js_obj, "publicKey");
-    let pk = PublicKey::from_compressed_bytes(pk_bytes.as_slice()).unwrap();
+    let pk = PublicKey::from_bytes_compressed_form(pk_bytes.as_slice()).unwrap();
 
     if pk.validate().is_err() {
         panic!("Invalid key");
@@ -177,7 +209,7 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 
     match signature.verify(messages.as_slice(), &pk) {
         Ok(b) => Ok(cx.boolean(b)),
-        Err(_) => Ok(cx.boolean(false))
+        Err(_) => Ok(cx.boolean(false)),
     }
 }
 
@@ -212,15 +244,26 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 /// values.
 fn bbs_blind_signature_commitment(mut cx: FunctionContext) -> JsResult<JsObject> {
     let bcx = extract_blinding_context(&mut cx)?;
-    let (bcx, bf) = Prover::new_blind_signature_context(&bcx.public_key, &bcx.messages, &bcx.nonce).unwrap();
+    let (bcx, bf) =
+        Prover::new_blind_signature_context(&bcx.public_key, &bcx.messages, &bcx.nonce).unwrap();
     get_blind_commitment(cx, bcx, bf)
 }
 
-fn get_blind_commitment(mut cx: FunctionContext, bcx: BlindSignatureContext, bf: SignatureBlinding) -> JsResult<JsObject> {
+fn get_blind_commitment(
+    mut cx: FunctionContext,
+    bcx: BlindSignatureContext,
+    bf: SignatureBlinding,
+) -> JsResult<JsObject> {
     let commitment = slice_to_js_array_buffer!(&bcx.commitment.to_compressed_bytes()[..], cx);
-    let challenge_hash = slice_to_js_array_buffer!(&bcx.challenge_hash.to_compressed_bytes()[..], cx);
+    let challenge_hash =
+        slice_to_js_array_buffer!(&bcx.challenge_hash.to_compressed_bytes()[..], cx);
     let blinding_factor = slice_to_js_array_buffer!(&bf.to_compressed_bytes()[..], cx);
-    let proof = slice_to_js_array_buffer!(bcx.proof_of_hidden_messages.to_compressed_bytes().as_slice(), cx);
+    let proof = slice_to_js_array_buffer!(
+        bcx.proof_of_hidden_messages
+            .to_bytes_compressed_form()
+            .as_slice(),
+        cx
+    );
 
     let result = JsObject::new(&mut cx);
     result.set(&mut cx, "commitment", commitment)?;
@@ -234,7 +277,7 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
     let js_obj = cx.argument::<JsObject>(0)?;
 
     let pk_bytes = obj_field_to_slice!(cx, js_obj, "publicKey");
-    let public_key = PublicKey::from_compressed_bytes(pk_bytes.as_slice()).unwrap();
+    let public_key = PublicKey::from_bytes_compressed_form(pk_bytes.as_slice()).unwrap();
 
     if public_key.validate().is_err() {
         panic!("Invalid key");
@@ -245,7 +288,11 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
     let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
 
     if hidden.len() != message_bytes.len() {
-        panic!("hidden length is not the same as messages: {} != {}", hidden.len(), message_bytes.len());
+        panic!(
+            "hidden length is not the same as messages: {} != {}",
+            hidden.len(),
+            message_bytes.len()
+        );
     }
 
     let mut messages = BTreeMap::new();
@@ -254,12 +301,22 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
     for i in 0..hidden.len() {
         let index = cast_to_number!(cx, hidden[i]);
         if index < 0f64 || index > message_count {
-            panic!("Index is out of bounds. Must be between {} and {}: found {}", 0, public_key.message_count(), index);
+            panic!(
+                "Index is out of bounds. Must be between {} and {}: found {}",
+                0,
+                public_key.message_count(),
+                index
+            );
         }
         let message = obj_field_to_field_elem!(cx, message_bytes[i]);
         messages.insert(index as usize, message);
     }
-    let nonce = SignatureNonce::from_msg_hash(&(nonce_str.map_or_else(|| "bbs+nodejswrapper".as_bytes().to_vec(), |m| m.as_bytes().to_vec())));
+    let nonce = SignatureNonce::from_msg_hash(
+        &(nonce_str.map_or_else(
+            || "bbs+nodejswrapper".as_bytes().to_vec(),
+            |m| m.as_bytes().to_vec(),
+        )),
+    );
 
     Ok(BlindingContext {
         public_key,
@@ -291,16 +348,35 @@ struct BlindingContext {
 fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoolean> {
     let js_obj = cx.argument::<JsObject>(0)?;
     let pk_bytes = obj_field_to_slice!(&mut cx, js_obj, "publicKey");
-    let public_key = PublicKey::from_compressed_bytes(pk_bytes.as_slice()).unwrap();
+    let public_key = PublicKey::from_bytes_compressed_form(pk_bytes.as_slice()).unwrap();
     if public_key.validate().is_err() {
         panic!("Invalid key");
     }
     let nonce_str = obj_field_to_opt_string!(&mut cx, js_obj, "nonce");
-    let nonce = SignatureNonce::from_msg_hash(&(nonce_str.map_or_else(|| "bbs+nodejswrapper".as_bytes().to_vec(), |m| m.as_bytes().to_vec())));
-    let commitment = BlindedSignatureCommitment::from(obj_field_to_fixed_array!(&mut cx, js_obj, "commitment", 0, COMPRESSED_COMMITMENT_SIZE));
-    let challenge_hash = SignatureNonce::from(obj_field_to_fixed_array!(&mut cx, js_obj, "commitment", 0, COMPRESSED_MESSAGE_SIZE));
+    let nonce = SignatureNonce::from_msg_hash(
+        &(nonce_str.map_or_else(
+            || "bbs+nodejswrapper".as_bytes().to_vec(),
+            |m| m.as_bytes().to_vec(),
+        )),
+    );
+    let commitment = BlindedSignatureCommitment::from(obj_field_to_fixed_array!(
+        &mut cx,
+        js_obj,
+        "commitment",
+        0,
+        COMPRESSED_COMMITMENT_SIZE
+    ));
+    let challenge_hash = SignatureNonce::from(obj_field_to_fixed_array!(
+        &mut cx,
+        js_obj,
+        "commitment",
+        0,
+        COMPRESSED_MESSAGE_SIZE
+    ));
 
-    let proof_of_hidden_messages = handle_err!(ProofG1::from_compressed_bytes(&obj_field_to_slice!(&mut cx, js_obj, "proofOfHiddenMessages")));
+    let proof_of_hidden_messages = handle_err!(ProofG1::from_bytes_compressed_form(
+        &obj_field_to_slice!(&mut cx, js_obj, "proofOfHiddenMessages")
+    ));
 
     let hidden = obj_field_to_vec!(&mut cx, js_obj, "blinded");
     let mut messages = BTreeMap::new();
@@ -309,7 +385,12 @@ fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoole
     for i in 0..hidden.len() {
         let index = cast_to_number!(cx, hidden[i]);
         if index < 0f64 || index > message_count {
-            panic!("Index is out of bounds. Must be between {} and {}: found {}", 0, public_key.message_count(), index);
+            panic!(
+                "Index is out of bounds. Must be between {} and {}: found {}",
+                0,
+                public_key.message_count(),
+                index
+            );
         }
         messages.insert(index as usize, SignatureMessage::new());
     }
@@ -317,12 +398,12 @@ fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoole
     let ctx = BlindSignatureContext {
         commitment,
         challenge_hash,
-        proof_of_hidden_messages
+        proof_of_hidden_messages,
     };
 
     match ctx.verify(&messages, &public_key, &nonce) {
         Ok(b) => Ok(cx.boolean(b)),
-        Err(_) => Ok(cx.boolean(false))
+        Err(_) => Ok(cx.boolean(false)),
     }
 }
 
@@ -345,7 +426,12 @@ fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoole
 /// `return`: `ArrayBuffer` the blinded signature. Recipient must unblind before it is valid
 fn bbs_blind_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     let bcx = extract_blind_signature_context(&mut cx)?;
-    let signature = handle_err!(BlindSignature::new(&bcx.commitment, &bcx.messages, &bcx.secret_key, &bcx.public_key));
+    let signature = handle_err!(BlindSignature::new(
+        &bcx.commitment,
+        &bcx.messages,
+        &bcx.secret_key,
+        &bcx.public_key
+    ));
     let result = slice_to_js_array_buffer!(&signature.to_bytes()[..], cx);
     Ok(result)
 }
@@ -353,10 +439,16 @@ fn bbs_blind_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
 fn extract_blind_signature_context(cx: &mut FunctionContext) -> Result<BlindSignContext, Throw> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
-    let secret_key = SecretKey::from(obj_field_to_fixed_array!(cx, js_obj, "secretKey", 0, COMPRESSED_SECRET_KEY_SIZE));
+    let secret_key = SecretKey::from(obj_field_to_fixed_array!(
+        cx,
+        js_obj,
+        "secretKey",
+        0,
+        COMPRESSED_SECRET_KEY_SIZE
+    ));
 
     let pk_bytes = obj_field_to_slice!(cx, js_obj, "publicKey");
-    let public_key = PublicKey::from_compressed_bytes(pk_bytes.as_slice()).unwrap();
+    let public_key = PublicKey::from_bytes_compressed_form(pk_bytes.as_slice()).unwrap();
     if public_key.validate().is_err() {
         panic!("Invalid key");
     }
@@ -364,7 +456,11 @@ fn extract_blind_signature_context(cx: &mut FunctionContext) -> Result<BlindSign
 
     let known = obj_field_to_vec!(cx, js_obj, "known");
     if known.len() != message_bytes.len() {
-        panic!("known length != messages: {} != {}", known.len(), message_bytes.len());
+        panic!(
+            "known length != messages: {} != {}",
+            known.len(),
+            message_bytes.len()
+        );
     }
 
     let message_count = public_key.message_count() as f64;
@@ -373,13 +469,24 @@ fn extract_blind_signature_context(cx: &mut FunctionContext) -> Result<BlindSign
     for i in 0..known.len() {
         let index = cast_to_number!(cx, known[i]);
         if index < 0f64 || index > message_count {
-            panic!("Index is out of bounds. Must be between {} and {}: found {}", 0, public_key.message_count(), index);
+            panic!(
+                "Index is out of bounds. Must be between {} and {}: found {}",
+                0,
+                public_key.message_count(),
+                index
+            );
         }
         let message = obj_field_to_field_elem!(cx, message_bytes[i]);
         messages.insert(index as usize, message);
     }
 
-    let commitment = BlindedSignatureCommitment::from(obj_field_to_fixed_array!(cx, js_obj, "commitment", 0, COMPRESSED_COMMITMENT_SIZE));
+    let commitment = BlindedSignatureCommitment::from(obj_field_to_fixed_array!(
+        cx,
+        js_obj,
+        "commitment",
+        0,
+        COMPRESSED_COMMITMENT_SIZE
+    ));
 
     Ok(BlindSignContext {
         commitment,
@@ -407,11 +514,16 @@ struct BlindSignContext {
 /// `return`: `ArrayBuffer` the unblinded signature
 fn bbs_get_unblinded_signature(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     let sig = BlindSignature::from(arg_to_fixed_array!(cx, 0, 0, COMPRESSED_SIGNATURE_SIZE));
-    let bf = SignatureBlinding::from(arg_to_fixed_array!(cx, 1, 0, COMPRESSED_BLINDING_FACTOR_SIZE));
+    let bf = SignatureBlinding::from(arg_to_fixed_array!(
+        cx,
+        1,
+        0,
+        COMPRESSED_BLINDING_FACTOR_SIZE
+    ));
 
     let sig = sig.to_unblinded(&bf);
 
-    let result = slice_to_js_array_buffer!(&sig.to_compressed_bytes()[..], cx);
+    let result = slice_to_js_array_buffer!(&sig.to_bytes_compressed_form()[..], cx);
     Ok(result)
 }
 
@@ -433,11 +545,18 @@ fn bbs_get_unblinded_signature(mut cx: FunctionContext) -> JsResult<JsArrayBuffe
 fn bbs_create_proof(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     let pcx = extract_create_proof_context(&mut cx)?;
     let proof = generate_proof(pcx)?;
-    Ok(slice_to_js_array_buffer!(proof.to_compressed_bytes().as_slice(), cx))
+    Ok(slice_to_js_array_buffer!(
+        proof.to_bytes_compressed_form().as_slice(),
+        cx
+    ))
 }
 
 fn generate_proof(pcx: CreateProofContext) -> Result<PoKOfSignatureProof, Throw> {
-    let pok = handle_err!(PoKOfSignature::init(&pcx.signature, &pcx.public_key, &pcx.messages.as_slice()));
+    let pok = handle_err!(PoKOfSignature::init(
+        &pcx.signature,
+        &pcx.public_key,
+        &pcx.messages.as_slice()
+    ));
     let mut challenge_bytes = pok.to_bytes();
     if let Some(b) = pcx.nonce {
         challenge_bytes.extend_from_slice(&SignatureNonce::from_msg_hash(b.as_bytes()).to_bytes());
@@ -452,9 +571,15 @@ fn generate_proof(pcx: CreateProofContext) -> Result<PoKOfSignatureProof, Throw>
 fn extract_create_proof_context(cx: &mut FunctionContext) -> Result<CreateProofContext, Throw> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
-    let signature = Signature::from(obj_field_to_fixed_array!(cx, js_obj, "signature", 0, COMPRESSED_SIGNATURE_SIZE));
+    let signature = Signature::from(obj_field_to_fixed_array!(
+        cx,
+        js_obj,
+        "signature",
+        0,
+        COMPRESSED_SIGNATURE_SIZE
+    ));
     let pk_bytes = obj_field_to_slice!(cx, js_obj, "publicKey");
-    let public_key = PublicKey::from_compressed_bytes(pk_bytes.as_slice()).unwrap();
+    let public_key = PublicKey::from_bytes_compressed_form(pk_bytes.as_slice()).unwrap();
     if public_key.validate().is_err() {
         panic!("Invalid key");
     }
@@ -468,7 +593,11 @@ fn extract_create_proof_context(cx: &mut FunctionContext) -> Result<CreateProofC
     for i in 0..revealed_indices.len() {
         let index = cast_to_number!(cx, revealed_indices[i]);
         if index < 0f64 || index as usize > message_bytes.len() {
-            panic!("Index is out of bounds. Must be between 0 and {}: {}", message_bytes.len(), index);
+            panic!(
+                "Index is out of bounds. Must be between 0 and {}: {}",
+                message_bytes.len(),
+                index
+            );
         }
         revealed.insert(index as usize);
     }
@@ -524,11 +653,11 @@ fn bbs_verify_proof(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 fn verify_proof(vcx: VerifyProofContext) -> Result<Vec<SignatureMessage>, Throw> {
     let nonce = match vcx.nonce {
         Some(ref s) => SignatureNonce::from_msg_hash(s.as_bytes()),
-        None => SignatureNonce::new()
+        None => SignatureNonce::new(),
     };
     let proof_request = ProofRequest {
         revealed_messages: vcx.revealed.clone(),
-        verification_key: vcx.public_key.clone()
+        verification_key: vcx.public_key.clone(),
     };
 
     let revealed = vcx.revealed.iter().collect::<Vec<&usize>>();
@@ -539,7 +668,7 @@ fn verify_proof(vcx: VerifyProofContext) -> Result<Vec<SignatureMessage>, Throw>
 
     let signature_proof = SignatureProof {
         revealed_messages,
-        proof: vcx.proof.clone()
+        proof: vcx.proof.clone(),
     };
 
     Ok(handle_err!(Verifier::verify_signature_pok(
@@ -552,9 +681,11 @@ fn verify_proof(vcx: VerifyProofContext) -> Result<Vec<SignatureMessage>, Throw>
 fn extract_verify_proof_context(cx: &mut FunctionContext) -> Result<VerifyProofContext, Throw> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
-    let proof = handle_err!(PoKOfSignatureProof::from_compressed_bytes(&obj_field_to_slice!(cx, js_obj, "proof")));
+    let proof = handle_err!(PoKOfSignatureProof::from_bytes_compressed_form(
+        &obj_field_to_slice!(cx, js_obj, "proof")
+    ));
     let pk_bytes = obj_field_to_slice!(cx, js_obj, "publicKey");
-    let public_key = PublicKey::from_compressed_bytes(pk_bytes.as_slice()).unwrap();
+    let public_key = PublicKey::from_bytes_compressed_form(pk_bytes.as_slice()).unwrap();
     if public_key.validate().is_err() {
         panic!("Invalid key");
     }
@@ -573,11 +704,13 @@ fn extract_verify_proof_context(cx: &mut FunctionContext) -> Result<VerifyProofC
     for i in 0..revealed_indices.len() {
         let index = cast_to_number!(cx, revealed_indices[i]);
         if index < 0f64 || index > message_count {
-            panic!("Index is out of bounds. Must be between 0 and {}: {}", message_count, index);
+            panic!(
+                "Index is out of bounds. Must be between 0 and {}: {}",
+                message_count, index
+            );
         }
         revealed.insert(index as usize);
     }
-
 
     Ok(VerifyProofContext {
         proof,
@@ -602,8 +735,14 @@ register_module!(mut m, {
     m.export_function("bls_public_key_to_bbs_key", bls_public_key_to_bbs_key)?;
     m.export_function("bbs_sign", bbs_sign)?;
     m.export_function("bbs_verify", bbs_verify)?;
-    m.export_function("bbs_blind_signature_commitment", bbs_blind_signature_commitment)?;
-    m.export_function("bbs_verify_blind_signature_proof", bbs_verify_blind_signature_proof)?;
+    m.export_function(
+        "bbs_blind_signature_commitment",
+        bbs_blind_signature_commitment,
+    )?;
+    m.export_function(
+        "bbs_verify_blind_signature_proof",
+        bbs_verify_blind_signature_proof,
+    )?;
     m.export_function("bbs_blind_sign", bbs_blind_sign)?;
     m.export_function("bbs_get_unblinded_signature", bbs_get_unblinded_signature)?;
     m.export_function("bbs_create_proof", bbs_create_proof)?;
