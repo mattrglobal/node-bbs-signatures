@@ -11,18 +11,9 @@
  * limitations under the License.
  */
 
-import {
-  BbsVerifyProofRequest,
-  verifyProof,
-  blsVerifyProof,
-  BbsCreateProofRequest,
-  bls12381toBbs,
-  Bls12381ToBbsRequest,
-} from "../../src";
+import { BbsVerifyProofRequest, verifyProof, blsVerifyProof, BbsCreateProofRequest } from "../../src";
 import { Coder } from "@stablelib/base64";
 import { createProof } from "../../lib";
-import { BlsToBbsRequest } from "../../lib/types/BlsToBbsRequest";
-import { BlsKeyPair } from "../../lib/types/BlsKeyPair";
 
 const base64Decode = (string: string): Uint8Array => {
   const coder = new Coder();
@@ -140,7 +131,7 @@ describe("bbsSignature", () => {
   });
 
   it("should not verify with revealed message that was supposed to be hidden", () => {
-    let messages = ["Message1", "Message2", "Message3", "Message4"];
+    const messages = ["Message1", "Message2", "Message3", "Message4"];
     const signature = base64Decode(
       "jps9JChJlTj8upAO+S+0PFH1FFjEC/6wsACGO8sDnsDtH53KbWhiN7Xo/UpAe3q2CydfRcjUi3oOTfxj+IOC9dooSjsfy4WXwBIwAKuD74tc1B+b9ORf/SM2+EM3BVLdPmgj8i4gA1NTdQdbyznHQg=="
     );
@@ -149,53 +140,53 @@ describe("bbsSignature", () => {
     );
     const nonce = "0123456789";
 
-    const proof_request: BbsCreateProofRequest = {
+    const proofRequest: BbsCreateProofRequest = {
       signature,
       publicKey: bbsPublicKey,
       messages,
       revealed: [0],
       nonce,
     };
-    let proof = createProof(proof_request);
+    const proof = createProof(proofRequest);
 
-    let proof_messages = ["Message2", "Message3"];
+    let proofMessages = ["Message2", "Message3"];
     let request: BbsVerifyProofRequest = {
       proof,
       publicKey: bbsPublicKey,
       messageCount: 4,
-      messages: proof_messages,
+      messages: proofMessages,
       nonce,
       revealed: [1, 2],
     };
 
-    proof_messages = ["Message2"];
+    proofMessages = ["Message2"];
     request = {
       proof,
       publicKey: bbsPublicKey,
       messageCount: 4,
-      messages: proof_messages,
+      messages: proofMessages,
       nonce,
       revealed: [1],
     };
 
-    proof_messages = ["BadMessage9"];
+    proofMessages = ["BadMessage9"];
     request = {
       proof,
       publicKey: bbsPublicKey,
       messageCount: 4,
-      messages: proof_messages,
+      messages: proofMessages,
       nonce,
       revealed: [0],
     };
 
     expect(verifyProof(request).verified).toBeFalsy();
 
-    proof_messages = ["Message1"];
+    proofMessages = ["Message1"];
     request = {
       proof,
       publicKey: bbsPublicKey,
       messageCount: 4,
-      messages: proof_messages,
+      messages: proofMessages,
       nonce,
       revealed: [0],
     };
