@@ -1,3 +1,7 @@
+# [0.5.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.3.0...0.5.0) (2020-04-28)
+
+Updates to package release configuration
+
 # [0.4.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.3.0...0.4.0) (2020-04-28)
 
 Updates to package release configuration
