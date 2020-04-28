@@ -11,14 +11,7 @@
  * limitations under the License.
  */
 
-import {
-  BbsVerifyProofRequest,
-  verifyProof,
-  blsVerifyProof,
-  BbsCreateProofRequest,
-  bls12381toBbs,
-  Bls12381ToBbsRequest,
-} from "../../src";
+import { BbsVerifyProofRequest, verifyProof, blsVerifyProof, BbsCreateProofRequest } from "../../src";
 import { Coder } from "@stablelib/base64";
 import { createProof } from "../../lib";
 
@@ -161,19 +154,19 @@ describe("bbsSignature", () => {
       proof,
       publicKey: bbsPublicKey,
       messageCount: 4,
-      messages: proof_messages,
+      messages: proofMessages,
       nonce,
       revealed: [0],
     };
 
     expect(verifyProof(request).verified).toBeFalsy();
 
-    proof_messages = ["Message1"];
+    proofMessages = ["Message1"];
     request = {
       proof,
       publicKey: bbsPublicKey,
       messageCount: 4,
-      messages: proof_messages,
+      messages: proofMessages,
       nonce,
       revealed: [0],
     };
