@@ -9,11 +9,12 @@
     "yarn": "1.x"
   },
   "directories": {
-    "lib": "lib"
+    "lib": "lib",
+    "native": "native"
   },
   "files": [
     "lib",
-    "native"
+    "native/index.node"
   ],
   "typings": "lib/index.d.ts",
   "repository": {
