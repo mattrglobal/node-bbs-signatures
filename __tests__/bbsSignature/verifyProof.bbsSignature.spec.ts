@@ -11,7 +11,14 @@
  * limitations under the License.
  */
 
-import { BbsVerifyProofRequest, verifyProof, blsVerifyProof, BbsCreateProofRequest } from "../../src";
+import {
+  BbsVerifyProofRequest,
+  verifyProof,
+  blsVerifyProof,
+  BbsCreateProofRequest,
+  bls12381toBbs,
+  Bls12381ToBbsRequest,
+} from "../../src";
 import { Coder } from "@stablelib/base64";
 import { createProof } from "../../lib";
 
@@ -156,7 +163,7 @@ describe("bbsSignature", () => {
       messageCount: 4,
       messages: proof_messages,
       nonce,
-      revealed: [0]
+      revealed: [0],
     };
 
     expect(verifyProof(request).verified).toBeFalsy();
@@ -168,7 +175,7 @@ describe("bbsSignature", () => {
       messageCount: 4,
       messages: proof_messages,
       nonce,
-      revealed: [0]
+      revealed: [0],
     };
     expect(verifyProof(request).verified).toBeTruthy();
   });
