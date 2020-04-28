@@ -1,6 +1,6 @@
 {
   "name": "@mattrglobal/node-bbs-signatures",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "An implementation of BBS+ signatures using rust and typescript for node.js",
   "homepage": "https://github.com/mattrglobal/node-bbs-signatures",
   "main": "lib/index.js",
