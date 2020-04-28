@@ -149,8 +149,8 @@ describe("bbsSignature", () => {
     };
     const proof = createProof(proofRequest);
 
-    const proofMessages = ["BadMessage9"];
-    const request = {
+    let proofMessages = ["BadMessage9"];
+    let request = {
       proof,
       publicKey: bbsPublicKey,
       messageCount: 4,

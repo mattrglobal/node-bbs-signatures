@@ -11,7 +11,6 @@
  * limitations under the License.
  */
 
-import { randomBytes } from "@stablelib/random";
 import {
   generateBls12381KeyPair,
   DEFAULT_BLS12381_PUBLIC_KEY_LENGTH,
