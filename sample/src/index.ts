@@ -24,7 +24,7 @@ const main = (): void => {
   const keyPair = generateBls12381KeyPair();
 
   console.log("Key pair generated");
-  console.log(`Public key base64 = ${new Buffer(keyPair.publicKey).toString("base64")}`);
+  console.log(`Public key base64 = ${Buffer.from(keyPair.publicKey).toString("base64")}`);
 
   //Set of messages we wish to sign
   const messages = ["message1", "message2"];
@@ -37,7 +37,7 @@ const main = (): void => {
     messages: messages,
   });
 
-  console.log(`Output signature base64 = ${new Buffer(signature).toString("base64")}`);
+  console.log(`Output signature base64 = ${Buffer.from(signature).toString("base64")}`);
 
   //Verify the signature
   const isVerified = blsVerify({
@@ -46,7 +46,8 @@ const main = (): void => {
     signature,
   });
 
-  console.log(`Signature verified ? ${isVerified}`);
+  const isVerifiedString = JSON.stringify(isVerified);
+  console.log(`Signature verified ? ${isVerifiedString}`);
 
   //Derive a proof from the signature revealing the first message
   const proof = blsCreateProof({
@@ -57,7 +58,7 @@ const main = (): void => {
     revealed: [0],
   });
 
-  console.log(`Output proof base64 = ${new Buffer(proof).toString("base64")}`);
+  console.log(`Output proof base64 = ${Buffer.from(proof).toString("base64")}`);
 
   //Verify the created proof
   const isProofVerified = blsVerifyProof({
@@ -69,7 +70,8 @@ const main = (): void => {
     revealed: [0],
   });
 
-  console.log(`Proof verified ? ${isProofVerified}`);
+  const isProofVerifiedString = JSON.stringify(isProofVerified);
+  console.log(`Proof verified ? ${isProofVerifiedString}`);
 };
 
 main();
