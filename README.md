@@ -40,6 +40,8 @@ yarn add @mattrglobal/node-bbs-signatures
 
 ## Usage
 
+See the [sample](./sample) directory for a runnable demo.
+
 The following is a short sample on how to use the API
 
 ```typescript
