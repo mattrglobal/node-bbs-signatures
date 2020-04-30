@@ -4,6 +4,7 @@
 
 ![Master](https://github.com/mattrglobal/node-bbs-signatures/workflows/push-master/badge.svg)
 ![Release](https://github.com/mattrglobal/node-bbs-signatures/workflows/push-release/badge.svg)
+![codecov](https://codecov.io/gh/mattrglobal/node-bbs-signatures/branch/master/graph/badge.svg)
 
 This repository is the home to a performant multi-message digital signature algorithm implementation which supports
 deriving zero knowledge proofs that enable selective disclosure from the originally signed message set.
@@ -39,6 +40,8 @@ yarn add @mattrglobal/node-bbs-signatures
 ```
 
 ## Usage
+
+See the [sample](./sample) directory for a runnable demo.
 
 The following is a short sample on how to use the API
 
