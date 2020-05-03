@@ -11,7 +11,7 @@
  * limitations under the License.
  */
 
-import { BbsSignRequest, BbsKeyPair } from "../src";
+import { BbsSignRequest, BbsKeyPair, BlsKeyPair, BlsBbsSignRequest } from "../src";
 import { randomBytes } from "crypto";
 import { Coder } from "@stablelib/base64";
 
@@ -24,11 +24,22 @@ export const generateMessages = (numberOfMessages: number, messageSizeInBytes: n
   return messages;
 };
 
-export const generateSignRequest = (
+export const generateBbsSignRequest = (
   keyPair: BbsKeyPair,
   numberOfMessages: number,
   messageSizeInBytes: number
 ): BbsSignRequest => {
+  return {
+    keyPair,
+    messages: generateMessages(numberOfMessages, messageSizeInBytes),
+  };
+};
+
+export const generateBlsSignRequest = (
+  keyPair: BlsKeyPair,
+  numberOfMessages: number,
+  messageSizeInBytes: number
+): BlsBbsSignRequest => {
   return {
     keyPair,
     messages: generateMessages(numberOfMessages, messageSizeInBytes),
