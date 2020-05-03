@@ -63,7 +63,7 @@ fn verify_valid_signature_with_multiple_messages() {
     let messages = vec![
         SignatureMessage::from_msg_hash(b"ExampleMessage"),
         SignatureMessage::from_msg_hash(b"ExampleMessage2"),
-        SignatureMessage::from_msg_hash(b"ExampleMessage3")
+        SignatureMessage::from_msg_hash(b"ExampleMessage3"),
     ];
 
     let dst = get_dst(DOMAIN_SEPARATION_TAG);
@@ -81,7 +81,7 @@ fn no_verify_valid_signature_with_wrong_messages() {
     let messages = vec![
         SignatureMessage::from_msg_hash(b"BadMessage"),
         SignatureMessage::from_msg_hash(b"BadMessage"),
-        SignatureMessage::from_msg_hash(b"BadMessage")
+        SignatureMessage::from_msg_hash(b"BadMessage"),
     ];
 
     let dpk = get_public_key(PUBLIC_KEY);
@@ -116,7 +116,7 @@ fn proof_revealing_single_message_from_single_message_signature() {
 
     let sig_pok = Prover::generate_signature_pok(pok, &challenge).unwrap();
 
-    let proof_bytes = sig_pok.proof.to_compressed_bytes();
+    let proof_bytes = sig_pok.proof.to_bytes_compressed_form();
 
     assert_eq!(proof_bytes.len(), 380);
 
@@ -124,7 +124,10 @@ fn proof_revealing_single_message_from_single_message_signature() {
 
     assert!(res.is_ok());
     let proved_messages = res.unwrap();
-    assert_eq!(proved_messages, vec![SignatureMessage::from_msg_hash(b"ExampleMessage")])
+    assert_eq!(
+        proved_messages,
+        vec![SignatureMessage::from_msg_hash(b"ExampleMessage")]
+    )
 }
 
 #[test]
@@ -134,7 +137,7 @@ fn proof_revealing_single_message_from_multiple_message_signature() {
     let messages = vec![
         pm_revealed!(b"ExampleMessage"),
         pm_hidden!(b"ExampleMessage2"),
-        pm_hidden!(b"ExampleMessage3")
+        pm_hidden!(b"ExampleMessage3"),
     ];
     let nonce = SignatureNonce::from_msg_hash(b"0123456789");
 
@@ -155,7 +158,7 @@ fn proof_revealing_single_message_from_multiple_message_signature() {
 
     let sig_pok = Prover::generate_signature_pok(pok, &challenge).unwrap();
 
-    let proof_bytes = sig_pok.proof.to_compressed_bytes();
+    let proof_bytes = sig_pok.proof.to_bytes_compressed_form();
 
     assert_eq!(proof_bytes.len(), 444);
 
@@ -163,7 +166,10 @@ fn proof_revealing_single_message_from_multiple_message_signature() {
 
     assert!(res.is_ok());
     let proved_messages = res.unwrap();
-    assert_eq!(proved_messages, vec![SignatureMessage::from_msg_hash(b"ExampleMessage")])
+    assert_eq!(
+        proved_messages,
+        vec![SignatureMessage::from_msg_hash(b"ExampleMessage")]
+    )
 }
 
 #[test]
@@ -200,7 +206,7 @@ fn proof_with_10_messages() {
 
     let sig_pok = Prover::generate_signature_pok(pok, &challenge).unwrap();
 
-    let proof_bytes = sig_pok.proof.to_compressed_bytes();
+    let proof_bytes = sig_pok.proof.to_bytes_compressed_form();
 
     assert_eq!(proof_bytes.len(), 668);
 
@@ -208,7 +214,10 @@ fn proof_with_10_messages() {
 
     assert!(res.is_ok());
     let proved_messages = res.unwrap();
-    assert_eq!(proved_messages, vec![SignatureMessage::from_msg_hash(b"Message9")])
+    assert_eq!(
+        proved_messages,
+        vec![SignatureMessage::from_msg_hash(b"Message9")]
+    )
 }
 
 #[test]
@@ -243,9 +252,9 @@ fn proof_with_8_messages() {
 
     let sig_pok = Prover::generate_signature_pok(pok, &challenge).unwrap();
 
-    let proof_bytes = sig_pok.proof.to_compressed_bytes();
+    let proof_bytes = sig_pok.proof.to_bytes_compressed_form();
 
-    assert_eq!( proof_bytes.len(), 476);
+    assert_eq!(proof_bytes.len(), 476);
 
     let res = Verifier::verify_signature_pok(&pr, &sig_pok, &nonce);
 
@@ -265,12 +274,18 @@ fn print() {
         SignatureMessage::from_msg_hash(b"Message1"),
         SignatureMessage::from_msg_hash(b"Message2"),
         SignatureMessage::from_msg_hash(b"Message3"),
-        SignatureMessage::from_msg_hash(b"Message4")
+        SignatureMessage::from_msg_hash(b"Message4"),
     ];
     let pk = dpk.to_public_key(4, dst).unwrap();
     let sig = Signature::new(messages.as_slice(), &sk, &pk).unwrap();
-    println!("pk  = {}", base64::encode(&pk.to_compressed_bytes()[..]));
-    println!("sig = {}", base64::encode(&sig.to_compressed_bytes()[..]));
+    println!(
+        "pk  = {}",
+        base64::encode(&pk.to_bytes_compressed_form()[..])
+    );
+    println!(
+        "sig = {}",
+        base64::encode(&sig.to_bytes_compressed_form()[..])
+    );
 
     let nonce = SignatureNonce::from_msg_hash(b"0123456789");
     let proof_request = Verifier::new_proof_request(&[0], &pk).unwrap();
@@ -283,8 +298,8 @@ fn print() {
         pm_hidden!(b"Message4"),
     ];
 
-    let pok = Prover::commit_signature_pok(&proof_request, proof_messages.as_slice(), &sig)
-        .unwrap();
+    let pok =
+        Prover::commit_signature_pok(&proof_request, proof_messages.as_slice(), &sig).unwrap();
 
     // complete other zkps as desired and compute `challenge_hash`
     // add bytes from other proofs
@@ -296,16 +311,19 @@ fn print() {
     let challenge = SignatureNonce::from_msg_hash(&challenge_bytes);
 
     let proof = Prover::generate_signature_pok(pok, &challenge).unwrap();
-    println!("proof = {}", base64::encode(&proof.proof.to_compressed_bytes()[..]));
+    println!(
+        "proof = {}",
+        base64::encode(&proof.proof.to_bytes_compressed_form()[..])
+    );
 
     let res = Verifier::verify_signature_pok(&proof_request, &proof, &nonce);
 
     assert!(res.is_ok());
-    let proved_messages = res.unwrap();
+    // let proved_messages = res.unwrap();
 
-    proof_request.revealed_messages = BTreeSet::new();
-    proof_request.revealed_messages.insert(1);
-    proof.revealed_messages = vec![SignatureMessage::from_msg_hash(b"Message2")];
+    // proof_request.revealed_messages = BTreeSet::new();
+    // proof_request.revealed_messages.insert(1);
+    // proof.revealed_messages = vec![SignatureMessage::from_msg_hash(b"Message2")];
 }
 
 fn get_dst(dst: &str) -> DomainSeparationTag {
@@ -314,7 +332,11 @@ fn get_dst(dst: &str) -> DomainSeparationTag {
 
 fn get_public_key(key: &str) -> DeterministicPublicKey {
     let dpk_bytes = base64::decode(key).unwrap();
-    DeterministicPublicKey::from(*array_ref![dpk_bytes, 0, COMPRESSED_DETERMINISTIC_PUBLIC_KEY_SIZE])
+    DeterministicPublicKey::from(*array_ref![
+        dpk_bytes,
+        0,
+        COMPRESSED_DETERMINISTIC_PUBLIC_KEY_SIZE
+    ])
 }
 
 fn get_secret_key(key: &str) -> SecretKey {

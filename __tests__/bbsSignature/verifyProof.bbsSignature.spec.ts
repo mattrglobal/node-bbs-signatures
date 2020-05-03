@@ -149,8 +149,8 @@ describe("bbsSignature", () => {
     };
     const proof = createProof(proofRequest);
 
-    const proofMessages = ["BadMessage9"];
-    const request = {
+    let proofMessages = ["BadMessage9"];
+    let request = {
       proof,
       publicKey: bbsPublicKey,
       messageCount: 4,
@@ -160,6 +160,17 @@ describe("bbsSignature", () => {
     };
 
     expect(verifyProof(request).verified).toBeFalsy();
+
+    proofMessages = ["Message1"];
+    request = {
+      proof,
+      publicKey: bbsPublicKey,
+      messageCount: 4,
+      messages: proofMessages,
+      nonce,
+      revealed: [0],
+    };
+    expect(verifyProof(request).verified).toBeTruthy();
   });
 
   describe("blsVerifyProof", () => {

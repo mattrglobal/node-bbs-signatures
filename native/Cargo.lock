@@ -79,7 +79,8 @@ checksum = "7d5ca2cd0adc3f48f9e9ea5a6bbdf9ccc0bfade884847e484d452414c7ccffb3"
 [[package]]
 name = "bbs"
 version = "0.3.0"
-source = "git+https://github.com/mikelodder7/ursa#082930e3488f74cfd8260559e3172067b0d78050"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d46a4277ac8d7b97bbb1f9e393ec74a25ffa572e71ffcd7dbd0c6b914d418c93"
 dependencies = [
  "amcl_wrapper_ml",
  "arrayref",
@@ -583,9 +584,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.51"
+version = "1.0.52"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da07b57ee2623368351e9a0488bb0b261322a15a6e0ae53e243cbdc0f4208da9"
+checksum = "a7894c8ed05b7a3a279aeb79025fdec1d3158080b75b98a08faf2806bb799edd"
 dependencies = [
  "itoa",
  "ryu",
