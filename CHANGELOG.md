@@ -1,3 +1,12 @@
+# [0.6.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.5.0...0.6.0) (2020-05-03)
+
+### Features
+
+- add simple runnable sample ([#94](https://github.com/mattrglobal/node-bbs-signatures/issues/94))
+  ([5b7acd4](https://github.com/mattrglobal/node-bbs-signatures/commit/5b7acd4092fec1e3cd459297fb74b11f7fa05079))
+- update to bbs 0.3.0 crate
+  ([c6f635e](https://github.com/mattrglobal/node-bbs-signatures/commit/c6f635e5c2734ee76d7a36ef3f7b26ba48d51d16))
+
 # [0.5.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.3.0...0.5.0) (2020-04-28)
 
 Updates to package release configuration
