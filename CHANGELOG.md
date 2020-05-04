@@ -1,3 +1,9 @@
+# [0.7.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.6.0...0.7.0) (2020-05-04)
+
+- add support for publishing Node 11 and Node 12 binaries ([#100](https://github.com/mattrglobal/node-bbs-signatures/issues/100))
+  ([eb9a667](https://github.com/mattrglobal/node-bbs-signatures/pull/104/commits/eb9a667e98a9bade59d874a5f91bcc862f130a32))
+  ([f1af7ee](https://github.com/mattrglobal/node-bbs-signatures/pull/105/commits/f1af7eebc8561b43cea286426e744dbb8758a450))
+
 # [0.6.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.5.0...0.6.0) (2020-05-03)
 
 ### Features
