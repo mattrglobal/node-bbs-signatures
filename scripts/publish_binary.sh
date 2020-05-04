@@ -12,6 +12,15 @@ export PATH="$PATH:node_modules/.bin"
 # Add in the install script to package.json
 node scripts/add_stable_install_script.js
 
+# Move out the generated index.node file
+copyfiles -f native/index.node .
+
+# Recursively delete the contents of the native folder
+rimraf native/*
+
+# Copy back in the binary
+copyfiles index.node native
+
 # Package the binary
 yarn package
 
@@ -20,4 +29,7 @@ node-pre-gyp-github publish --release
 
 # Reset changes to the package.json
 git checkout -- package.json
+
+# Reset changes to the native folder
+git checkout -- native/
     
