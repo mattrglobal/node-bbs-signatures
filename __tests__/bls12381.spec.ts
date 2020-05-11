@@ -38,13 +38,13 @@ describe("bls12381", () => {
     expect(result.publicKey).toEqual(
       new Uint8Array(
         new Buffer(
-          "ha+sckj0C+dXR6IPUfxGJMCc3XHkGgoDz2PHPMVrMMhJXSGO5y7VrAHrZt64MThKGXE+SAOTHFS5jGoP5uHWvhabYHuIlHLpZHiLyg2m4sc6yfMG3tloUxLY+TiaeQCG",
+          "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pb",
           "base64"
         )
       )
     );
     expect(result.secretKey as Uint8Array).toEqual(
-      new Uint8Array(new Buffer("Ovy0NyLx6ET9/AkuSmxw7X3IGMRq4IqrmFRfzWf/QvQ=", "base64"))
+      new Uint8Array(new Buffer("YoASulEi3WV7yfJ+yWctJRCbHfr7WjK7JjcMrRqbL6E=", "base64"))
     );
   });
 });

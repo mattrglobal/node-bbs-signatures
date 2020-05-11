@@ -18,27 +18,25 @@ extern crate bbs;
 
 use bbs::prelude::*;
 
-const DOMAIN_SEPARATION_TAG: &str = "BBSSignature2020";
 /// Computed by calling
 ///
-/// SecretKey::from_msg_hash(b"aaaaaaaa");
-const SECRET_KEY: &str = "GztATHHZwdAp9wwEiHIshRDi4wMZJjKq0pT5etGII3g=";
+/// SecretKey::hash(b"aaaaaaaa");
+const SECRET_KEY: &str = "csxPwY1AGplWf2efwLRRosnGmzcufHUSHr+bdz3xKQI=";
 
 /// Computed by calling
 ///
 /// let (dpk, sk) = DeterministicPublicKey::new(Some(KeyGenOption::FromSecretKey(sk)));
 ///
 /// where `sk` = base64::decode(SECRET_KEY);
-const PUBLIC_KEY: &str = "S+bRoSJJOet/8hKDpXFV+8TXzg0gPcD64lMFtIUzhYtMJAnNqfJRJnFIS0Vs2VC8AK6MBa6TYgILMqVv4RTSEl3H66mOF6jrEOHelKGlkJCNY8u3bI2aXrmqTkhnjxck";
+const PUBLIC_KEY: &str = "q4OA1O/iLQyZkwil2XatmWC1nWVSml3rd9UKV8zfy0hKOuzxpq0dJZhbRCp3tvCIGOkpRfSXKbUU9ns93QUas8n16nv6voGvffPNezqhnYknkzlnp2CwXgsEuVMp01l5";
 
 #[test]
 fn verify_single_message() {
-    const SIGNATURE: &str = "i3k6l6KEdd6TtyC3FPHIfBb6nfFh3bCDYhrw3yqNkayjUTHh5Vg3aGHSJNUcwmd4MOwc65nGQmcalszpT6WTDdF3OLaQzZD5ZBufSvTVAaU89LQzQ4gqOCvDUIj3WvN78+C59zwWxM/mTCD+WkiQ5A==";
-    let messages = vec![SignatureMessage::from_msg_hash(b"ExampleMessage")];
+    const SIGNATURE: &str = "rRcuRnYdwerxuywxOKmRmpmKTVM8SlG8deJNK0lfzs3+hneLwGicrkjc3w4bZnc6SvGwdMH7xZawlMQVtMUEZW+4R7lU7L6vyYGAEHb2jyA+5PihP618CMbPgq2SkIPkDOU2WknrpdZpFbqzfe2erQ==";
+    let messages = vec![SignatureMessage::hash(b"ExampleMessage")];
 
-    let dst = get_dst(DOMAIN_SEPARATION_TAG);
     let dpk = get_public_key(PUBLIC_KEY);
-    let pk = dpk.to_public_key(messages.len(), dst).unwrap();
+    let pk = dpk.to_public_key(messages.len()).unwrap();
     let sig = get_signature(SIGNATURE);
 
     assert!(sig.verify(messages.as_slice(), &pk).unwrap());
@@ -46,29 +44,27 @@ fn verify_single_message() {
 
 #[test]
 fn no_verify_valid_signature_with_wrong_single_message() {
-    const SIGNATURE: &str = "i3k6l6KEdd6TtyC3FPHIfBb6nfFh3bCDYhrw3yqNkayjUTHh5Vg3aGHSJNUcwmd4MOwc65nGQmcalszpT6WTDdF3OLaQzZD5ZBufSvTVAaU89LQzQ4gqOCvDUIj3WvN78+C59zwWxM/mTCD+WkiQ5A==";
-    let messages = vec![SignatureMessage::from_msg_hash(b"BadMessage")];
+    const SIGNATURE: &str = "rRcuRnYdwerxuywxOKmRmpmKTVM8SlG8deJNK0lfzs3+hneLwGicrkjc3w4bZnc6SvGwdMH7xZawlMQVtMUEZW+4R7lU7L6vyYGAEHb2jyA+5PihP618CMbPgq2SkIPkDOU2WknrpdZpFbqzfe2erQ==";
+    let messages = vec![SignatureMessage::hash(b"BadMessage")];
 
-    let dst = get_dst(DOMAIN_SEPARATION_TAG);
     let dpk = get_public_key(PUBLIC_KEY);
-    let pk = dpk.to_public_key(messages.len(), dst).unwrap();
+    let pk = dpk.to_public_key(messages.len()).unwrap();
     let sig = get_signature(SIGNATURE);
     assert!(!sig.verify(messages.as_slice(), &pk).unwrap());
 }
 
 #[test]
 fn verify_valid_signature_with_multiple_messages() {
-    const SIGNATURE: &str  = "ige9cYZGOC+hRvQr0NpMvWru3Og+37JFgT9XQ0Z9U0W9RXAs52WebHbuFokVHgsaAm1lZ+eDAoUsf84ySvq9BEdYQyitysignwQ9zhly8bhgWnYH5TciVJVULlLml8DcMlMekv1QXExpblWpjtgJwg==";
+    const SIGNATURE: &str  = "r/h/EGXheiRm0Ku78HyYd6cHRUPdJoZcbqbNdcrHd+vfUgcHZ7DYxz/BPJvUey9IRpUj/0aDBk1Wu8GigfqTVcqnVZhtyjCwIKklMl47pCBSyV4qvnBKEWV/rWFcbuJxyiwGSyrMNj6ik2Kh7QKoIQ==";
 
     let messages = vec![
-        SignatureMessage::from_msg_hash(b"ExampleMessage"),
-        SignatureMessage::from_msg_hash(b"ExampleMessage2"),
-        SignatureMessage::from_msg_hash(b"ExampleMessage3"),
+        SignatureMessage::hash(b"ExampleMessage"),
+        SignatureMessage::hash(b"ExampleMessage2"),
+        SignatureMessage::hash(b"ExampleMessage3"),
     ];
 
-    let dst = get_dst(DOMAIN_SEPARATION_TAG);
     let dpk = get_public_key(PUBLIC_KEY);
-    let pk = dpk.to_public_key(messages.len(), dst).unwrap();
+    let pk = dpk.to_public_key(messages.len()).unwrap();
     let sig = get_signature(SIGNATURE);
 
     assert!(sig.verify(messages.as_slice(), &pk).unwrap());
@@ -76,43 +72,41 @@ fn verify_valid_signature_with_multiple_messages() {
 
 #[test]
 fn no_verify_valid_signature_with_wrong_messages() {
-    const SIGNATURE: &str  = "ige9cYZGOC+hRvQr0NpMvWru3Og+37JFgT9XQ0Z9U0W9RXAs52WebHbuFokVHgsaAm1lZ+eDAoUsf84ySvq9BEdYQyitysignwQ9zhly8bhgWnYH5TciVJVULlLml8DcMlMekv1QXExpblWpjtgJwg==";
+    const SIGNATURE: &str  = "r/h/EGXheiRm0Ku78HyYd6cHRUPdJoZcbqbNdcrHd+vfUgcHZ7DYxz/BPJvUey9IRpUj/0aDBk1Wu8GigfqTVcqnVZhtyjCwIKklMl47pCBSyV4qvnBKEWV/rWFcbuJxyiwGSyrMNj6ik2Kh7QKoIQ==";
 
     let messages = vec![
-        SignatureMessage::from_msg_hash(b"BadMessage"),
-        SignatureMessage::from_msg_hash(b"BadMessage"),
-        SignatureMessage::from_msg_hash(b"BadMessage"),
+        SignatureMessage::hash(b"BadMessage"),
+        SignatureMessage::hash(b"BadMessage"),
+        SignatureMessage::hash(b"BadMessage"),
     ];
 
     let dpk = get_public_key(PUBLIC_KEY);
     let sig = get_signature(SIGNATURE);
-    let dst = get_dst(DOMAIN_SEPARATION_TAG);
 
-    let pk = dpk.to_public_key(messages.len(), dst).unwrap();
+    let pk = dpk.to_public_key(messages.len()).unwrap();
     assert!(!sig.verify(messages.as_slice(), &pk).unwrap());
 }
 
 #[test]
 fn proof_revealing_single_message_from_single_message_signature() {
-    const SIGNATURE: &str = "i3k6l6KEdd6TtyC3FPHIfBb6nfFh3bCDYhrw3yqNkayjUTHh5Vg3aGHSJNUcwmd4MOwc65nGQmcalszpT6WTDdF3OLaQzZD5ZBufSvTVAaU89LQzQ4gqOCvDUIj3WvN78+C59zwWxM/mTCD+WkiQ5A==";
+    const SIGNATURE: &str = "rRcuRnYdwerxuywxOKmRmpmKTVM8SlG8deJNK0lfzs3+hneLwGicrkjc3w4bZnc6SvGwdMH7xZawlMQVtMUEZW+4R7lU7L6vyYGAEHb2jyA+5PihP618CMbPgq2SkIPkDOU2WknrpdZpFbqzfe2erQ==";
 
     let messages = vec![pm_revealed!(b"ExampleMessage")];
-    let nonce = SignatureNonce::from_msg_hash(b"0123456789");
+    let nonce = ProofNonce::hash(b"0123456789");
 
     let dpk = get_public_key(PUBLIC_KEY);
     let sig = get_signature(SIGNATURE);
-    let dst = get_dst(DOMAIN_SEPARATION_TAG);
 
-    let pk = dpk.to_public_key(messages.len(), dst).unwrap();
+    let pk = dpk.to_public_key(messages.len()).unwrap();
     let pr = Verifier::new_proof_request(&[0], &pk).unwrap();
 
     let pok = Prover::commit_signature_pok(&pr, messages.as_slice(), &sig).unwrap();
 
     let mut challenge_bytes = Vec::new();
     challenge_bytes.extend_from_slice(pok.to_bytes().as_slice());
-    challenge_bytes.extend_from_slice(&nonce.to_bytes()[..]);
+    challenge_bytes.extend_from_slice(&nonce.to_bytes_uncompressed_form()[..]);
 
-    let challenge = SignatureNonce::from_msg_hash(&challenge_bytes);
+    let challenge = ProofChallenge::hash(&challenge_bytes);
 
     let sig_pok = Prover::generate_signature_pok(pok, &challenge).unwrap();
 
@@ -126,24 +120,23 @@ fn proof_revealing_single_message_from_single_message_signature() {
     let proved_messages = res.unwrap();
     assert_eq!(
         proved_messages,
-        vec![SignatureMessage::from_msg_hash(b"ExampleMessage")]
+        vec![SignatureMessage::hash(b"ExampleMessage")]
     )
 }
 
 #[test]
 fn proof_revealing_single_message_from_multiple_message_signature() {
-    const SIGNATURE: &str  = "ige9cYZGOC+hRvQr0NpMvWru3Og+37JFgT9XQ0Z9U0W9RXAs52WebHbuFokVHgsaAm1lZ+eDAoUsf84ySvq9BEdYQyitysignwQ9zhly8bhgWnYH5TciVJVULlLml8DcMlMekv1QXExpblWpjtgJwg==";
+    const SIGNATURE: &str  = "r/h/EGXheiRm0Ku78HyYd6cHRUPdJoZcbqbNdcrHd+vfUgcHZ7DYxz/BPJvUey9IRpUj/0aDBk1Wu8GigfqTVcqnVZhtyjCwIKklMl47pCBSyV4qvnBKEWV/rWFcbuJxyiwGSyrMNj6ik2Kh7QKoIQ==";
 
     let messages = vec![
         pm_revealed!(b"ExampleMessage"),
         pm_hidden!(b"ExampleMessage2"),
         pm_hidden!(b"ExampleMessage3"),
     ];
-    let nonce = SignatureNonce::from_msg_hash(b"0123456789");
+    let nonce = ProofNonce::hash(b"0123456789");
 
-    let dst = get_dst(DOMAIN_SEPARATION_TAG);
     let dpk = get_public_key(PUBLIC_KEY);
-    let pk = dpk.to_public_key(messages.len(), dst).unwrap();
+    let pk = dpk.to_public_key(messages.len()).unwrap();
     let sig = get_signature(SIGNATURE);
 
     let pr = Verifier::new_proof_request(&[0], &pk).unwrap();
@@ -152,9 +145,9 @@ fn proof_revealing_single_message_from_multiple_message_signature() {
 
     let mut challenge_bytes = Vec::new();
     challenge_bytes.extend_from_slice(pok.to_bytes().as_slice());
-    challenge_bytes.extend_from_slice(&nonce.to_bytes()[..]);
+    challenge_bytes.extend_from_slice(&nonce.to_bytes_uncompressed_form()[..]);
 
-    let challenge = SignatureNonce::from_msg_hash(&challenge_bytes);
+    let challenge = ProofChallenge::hash(&challenge_bytes);
 
     let sig_pok = Prover::generate_signature_pok(pok, &challenge).unwrap();
 
@@ -168,13 +161,13 @@ fn proof_revealing_single_message_from_multiple_message_signature() {
     let proved_messages = res.unwrap();
     assert_eq!(
         proved_messages,
-        vec![SignatureMessage::from_msg_hash(b"ExampleMessage")]
+        vec![SignatureMessage::hash(b"ExampleMessage")]
     )
 }
 
 #[test]
 fn proof_with_10_messages() {
-    const SIGNATURE: &str = "jASoA+RvzeclUteE/FSymRRKAmL4IYaPDptYjRoYk2OzbHKTMQ2NMJt+C+v0veXZKHeTbmX5ALUQMQqTY7I3JyOUojIlF0gXFoBgNGN0T18SkRGKrLTdWCClphujzA6HnWKhsJiiEsjlN/wJ9blmjg==";
+    const SIGNATURE: &str = "l26W5/CWylRvLz+3UaRvr5VyUXMzFl84Nl19DfhfzTnAYtUGh8nX3k708CrLt8EEAIoCkUTk4pCGKEqUeCdhdv3v6udRscMgSdkZ/JWhXs4Dc2CLXy4XCRNDTcvuqmTbi2hEuVQgGrb1snItjVMUhw==";
     let messages = vec![
         pm_hidden!(b"Message0"),
         pm_hidden!(b"Message1"),
@@ -188,21 +181,20 @@ fn proof_with_10_messages() {
         pm_revealed!(b"Message9"),
     ];
 
-    let dst = get_dst(DOMAIN_SEPARATION_TAG);
     let dpk = get_public_key(PUBLIC_KEY);
-    let pk = dpk.to_public_key(messages.len(), dst).unwrap();
+    let pk = dpk.to_public_key(messages.len()).unwrap();
     let sig = get_signature(SIGNATURE);
 
-    let nonce = SignatureNonce::from_msg_hash(b"0123456789");
+    let nonce = ProofNonce::hash(b"0123456789");
     let pr = Verifier::new_proof_request(&[9], &pk).unwrap();
 
     let pok = Prover::commit_signature_pok(&pr, messages.as_slice(), &sig).unwrap();
 
     let mut challenge_bytes = Vec::new();
     challenge_bytes.extend_from_slice(pok.to_bytes().as_slice());
-    challenge_bytes.extend_from_slice(&nonce.to_bytes()[..]);
+    challenge_bytes.extend_from_slice(&nonce.to_bytes_uncompressed_form()[..]);
 
-    let challenge = SignatureNonce::from_msg_hash(&challenge_bytes);
+    let challenge = ProofChallenge::hash(&challenge_bytes);
 
     let sig_pok = Prover::generate_signature_pok(pok, &challenge).unwrap();
 
@@ -216,13 +208,13 @@ fn proof_with_10_messages() {
     let proved_messages = res.unwrap();
     assert_eq!(
         proved_messages,
-        vec![SignatureMessage::from_msg_hash(b"Message9")]
+        vec![SignatureMessage::hash(b"Message9")]
     )
 }
 
 #[test]
 fn proof_with_8_messages() {
-    const SIGNATURE: &str = "kfNRQ42vqk1nEOJFIb6E8OZSGrJPSD9gizCxM0Ha5tDyUYbzKqjhD0eSPJdKLm7lTU8DrSDwt3WCIb72Jl9fkiQzpqyP6WULJLLBCN5oGEpYAttnymNU2aVEvaseey+6by0QW8K/J5FOy4xFz2YvRw==";
+    const SIGNATURE: &str = "kQv6mualVu5VPRfyRPToLcgcdGW4iMuUhXXs7W+O0V4hMmo0yBPiBNLStfFyZQZpbgbICxAMYnbowlF4EKdI8zne2NIcyBAQ/47OI8Y1JhlQL4GRLvR+4725M4V2Pi0T7GCNr9nnxKg8vrAG1x+UXQ==";
 
     let messages = vec![
         pm_revealed!(b"Message0"),
@@ -235,20 +227,19 @@ fn proof_with_8_messages() {
         pm_hidden!(b"Message7"),
     ];
     let dpk = get_public_key(PUBLIC_KEY);
-    let dst = get_dst(DOMAIN_SEPARATION_TAG);
-    let pk = dpk.to_public_key(messages.len(), dst).unwrap();
+    let pk = dpk.to_public_key(messages.len()).unwrap();
     let sig = get_signature(SIGNATURE);
 
-    let nonce = SignatureNonce::from_msg_hash(b"0123456789");
+    let nonce = ProofNonce::hash(b"0123456789");
     let pr = Verifier::new_proof_request(&[0, 1, 2, 4, 6], &pk).unwrap();
 
     let pok = Prover::commit_signature_pok(&pr, messages.as_slice(), &sig).unwrap();
 
     let mut challenge_bytes = Vec::new();
     challenge_bytes.extend_from_slice(pok.to_bytes().as_slice());
-    challenge_bytes.extend_from_slice(&nonce.to_bytes()[..]);
+    challenge_bytes.extend_from_slice(&nonce.to_bytes_uncompressed_form()[..]);
 
-    let challenge = SignatureNonce::from_msg_hash(&challenge_bytes);
+    let challenge = ProofChallenge::hash(&challenge_bytes);
 
     let sig_pok = Prover::generate_signature_pok(pok, &challenge).unwrap();
 
@@ -266,36 +257,23 @@ fn proof_with_8_messages() {
 #[ignore]
 #[test]
 fn print() {
-    let sk = get_secret_key(SECRET_KEY);
-    let dpk = get_public_key(PUBLIC_KEY);
-    let dst = get_dst(DOMAIN_SEPARATION_TAG);
-
-    let messages = vec![
-        SignatureMessage::from_msg_hash(b"Message1"),
-        SignatureMessage::from_msg_hash(b"Message2"),
-        SignatureMessage::from_msg_hash(b"Message3"),
-        SignatureMessage::from_msg_hash(b"Message4"),
-    ];
-    let pk = dpk.to_public_key(4, dst).unwrap();
+    let (dpk, sk) = DeterministicPublicKey::new(Some(KeyGenOption::UseSeed(base64::decode("H297BpoOgkfpXcxr1fJyQRiNx1+ZekeQ+OU/AYV/lVxaPXXhFBIbxeIU8kIAAX68cwQ=").unwrap())));
+    println!("sk  = {}", base64::encode(sk.to_bytes_compressed_form().as_ref()));
+    println!("dpk = {}", base64::encode(dpk.to_bytes_compressed_form().as_ref()));
+    let messages: Vec<SignatureMessage> = ["BVB6lAn912sz9Q==", "b45VqRkIo5R5Zw==", "yPqox0TIKS6vCA=="].iter().map(|m| SignatureMessage::hash(m.as_bytes())).collect();
+    let pk = dpk.to_public_key(messages.len()).unwrap();
     let sig = Signature::new(messages.as_slice(), &sk, &pk).unwrap();
-    println!(
-        "pk  = {}",
-        base64::encode(&pk.to_bytes_compressed_form()[..])
-    );
-    println!(
-        "sig = {}",
-        base64::encode(&sig.to_bytes_compressed_form()[..])
-    );
-
-    let nonce = SignatureNonce::from_msg_hash(b"0123456789");
+    println!("pk  = {}", base64::encode(pk.to_bytes_compressed_form()));
+    println!("sig = {}", base64::encode(sig.to_bytes_compressed_form().as_ref()));
+    let nonce = ProofNonce::hash(b"dVPpzuQtJVAZzAw73beWiXLtoT4=");
     let proof_request = Verifier::new_proof_request(&[0], &pk).unwrap();
 
     // Sends `proof_request` and `nonce` to the prover
     let proof_messages = vec![
-        pm_revealed!(b"Message1"),
-        pm_hidden!(b"Message2"),
-        pm_hidden!(b"Message3"),
-        pm_hidden!(b"Message4"),
+        pm_revealed_raw!(messages[0]),
+        pm_revealed_raw!(messages[1]),
+        pm_revealed_raw!(messages[2]),
+    //     pm_hidden!(b"Message4"),
     ];
 
     let pok =
@@ -306,9 +284,9 @@ fn print() {
 
     let mut challenge_bytes = Vec::new();
     challenge_bytes.extend_from_slice(pok.to_bytes().as_slice());
-    challenge_bytes.extend_from_slice(&nonce.to_bytes()[..]);
+    challenge_bytes.extend_from_slice(&nonce.to_bytes_uncompressed_form()[..]);
 
-    let challenge = SignatureNonce::from_msg_hash(&challenge_bytes);
+    let challenge = ProofChallenge::hash(&challenge_bytes);
 
     let proof = Prover::generate_signature_pok(pok, &challenge).unwrap();
     println!(
@@ -326,25 +304,21 @@ fn print() {
     // proof.revealed_messages = vec![SignatureMessage::from_msg_hash(b"Message2")];
 }
 
-fn get_dst(dst: &str) -> DomainSeparationTag {
-    DomainSeparationTag::new(dst.as_bytes(), None, None, None).unwrap()
-}
-
 fn get_public_key(key: &str) -> DeterministicPublicKey {
     let dpk_bytes = base64::decode(key).unwrap();
     DeterministicPublicKey::from(*array_ref![
         dpk_bytes,
         0,
-        COMPRESSED_DETERMINISTIC_PUBLIC_KEY_SIZE
+        DETERMINISTIC_PUBLIC_KEY_COMPRESSED_SIZE
     ])
 }
 
 fn get_secret_key(key: &str) -> SecretKey {
     let sk_bytes = base64::decode(key).unwrap();
-    SecretKey::from(array_ref![sk_bytes, 0, COMPRESSED_SECRET_KEY_SIZE])
+    SecretKey::from(array_ref![sk_bytes, 0, FR_COMPRESSED_SIZE])
 }
 
 fn get_signature(sig: &str) -> Signature {
     let sig_bytes = base64::decode(sig).unwrap();
-    Signature::from(*array_ref![sig_bytes, 0, COMPRESSED_SIGNATURE_SIZE])
+    Signature::from(*array_ref![sig_bytes, 0, SIGNATURE_COMPRESSED_SIZE])
 }

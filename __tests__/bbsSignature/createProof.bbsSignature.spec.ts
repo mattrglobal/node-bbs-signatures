@@ -30,10 +30,10 @@ describe("bbsSignature", () => {
     it("should create proof revealing single message from single message signature", () => {
       const messages = ["RmtnDBJHso5iSg=="];
       const bbsPublicKey = base64Decode(
-        "wQLIhzBtR0MDmxo+OYoNF27fWcRVmGUzYDUC4iMU7qS53M8RIOuug10K7rygy2CGCJ7qLTBmT1HYU4na0uNrdvIjXtDZy7MWPmt9XVBvlmwxma2rFT5wnFrNXiepQsALFHYYdumiCO2dDvM5rOIyrnCDGNxwMb60w/JydBnJkf+OcYww68oSa9clZnKOXC96AAAAARNWR6dIznHmRL4DS+RiUbP4eMrx5skM0d1JZDssrYP/rSVeET+FMGhym5fRUg/m4w=="
+        "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pboZyjM38YgjaUBcjftZi5gb58Qz13XeRJpiuUHH06I7/1Eb8oVtIW5SGMNfKaqKhBAAAAAYPPztgxfWWw01/0SSug1oLfVuI4XUqhgyZ3rS6eTkOLjnyR3ObXb0XCD2Mfcxiv6w=="
       );
       const signature = base64Decode(
-        "DWc6iJ/69RD+gw57DDbjx1bZhtuaFsRM1UCQOVc5KkBzVxghJP/yRrEPGEiYXpy+BVyn98dzXmFruQ9tiOd8ksmtLIQ8hZVxFICwp+BqnR0rTWPBEkM9+fglqa1/cAdhaGoM5gTezNCIeqxwmKMoKg=="
+        "rpldJh9DkYe4FvX7WPYI+GNhBM7uB3UGg3NcJX+NTts9E5R9TtHSYszqVfLxdq0Mb45jyd82laouneFYjB5TreM5Qpo9TyO0yNPdaanmfW0wCeLp3r0bhdfOF67GGL01KHY56ojoaSWBmr2lpqRU2Q=="
       );
 
       const request: BbsCreateProofRequest = {
@@ -52,10 +52,10 @@ describe("bbsSignature", () => {
       const messages = ["J42AxhciOVkE9w==", "PNMnARWIHP+s2g==", "ti9WYhhEej85jw=="];
 
       const bbsPublicKey = base64Decode(
-        "QNTo9lTZXfOKkWJO5Furc961teq1G9owfPIHqkMbURERbCW1S791w3FI9AI3TbQ8GGt8M3yrv+l7pHpunYoapk5rVkC5E7ayMFPWxg2vf2UbDhVxczn0+cJm82FptfWODO71c/5aMkr9MR2u+kcztWohg3V71JrptpomItbDx062ifg+qDy6ZG3cmZxIMM4uAAAAA4DsCC23t5+HWEP+TgOM7b99V7v1hKMiDnOszLEDoZ3cdI7qxlai225ULc/7DB14fxfurM3RHQiDafModRi5biRJg3oEZ3pKlPss+bNGpGnAHZn1uUOg/+hEOLbi5VRYwoKF6fJfIMCzAO3bGT3cmGKGd/a+UqeIs3MmVJbLgeE8/xD/iL/ywdXJombIErO08w=="
+        "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pbiZ/pmArLDr3oSCqthKgSZw4VFzzJMFEuHP9AAnOnUJmqkOmvI1ctGLO6kCLFuwQVAAAAA4GrOHdyZEbTWRrTwIdz+KXWcEUHdIx41XSr/RK0TE5+qU7irAhQekOGFpGWQY4rYrDxoHToB4DblaJWUgkSZQLQ5sOfJg3qUJr9MpnDNJ8nNNitL65e6mqnpfsbbT3k94LBQI3/HijeRl29y5dGcLhOxldMtx2SvQg//kWOJ/Ug8e1aVo3V07XkR1Ltx76uzA=="
       );
       const signature = base64Decode(
-        "ECU5n50Wio3vSbP0uFRyzV+sha40PlyRDcaUkF5BVtbiBZNI0aZSwJ5HWQk518vDCYhU582qfh5uqu5q37y3mWDqIA/ZmQB80zlwz878Z4Q933Q7CwsBsG26LebVst6hX/0LbNAjYLD/2exR1LTGsw=="
+        "qg3PfohWGvbOCZWxcWIZ779aOuNSafjCXLdDux01TTNGm/Uqhr/kZZ1wSmxKwbEWAhctrDCp2mGE0M0l6DlA5R38chMbtnyWMfQgbQpzMQZgPBPUvVWivJyYEysZnQWrAYzZzRPe36VFbFy5ynWx0w=="
       );
 
       const request: BbsCreateProofRequest = {
@@ -74,10 +74,10 @@ describe("bbsSignature", () => {
       const messages = ["J42AxhciOVkE9w==", "PNMnARWIHP+s2g==", "ti9WYhhEej85jw=="];
 
       const bbsPublicKey = base64Decode(
-        "QNTo9lTZXfOKkWJO5Furc961teq1G9owfPIHqkMbURERbCW1S791w3FI9AI3TbQ8GGt8M3yrv+l7pHpunYoapk5rVkC5E7ayMFPWxg2vf2UbDhVxczn0+cJm82FptfWODO71c/5aMkr9MR2u+kcztWohg3V71JrptpomItbDx062ifg+qDy6ZG3cmZxIMM4uAAAAA4DsCC23t5+HWEP+TgOM7b99V7v1hKMiDnOszLEDoZ3cdI7qxlai225ULc/7DB14fxfurM3RHQiDafModRi5biRJg3oEZ3pKlPss+bNGpGnAHZn1uUOg/+hEOLbi5VRYwoKF6fJfIMCzAO3bGT3cmGKGd/a+UqeIs3MmVJbLgeE8/xD/iL/ywdXJombIErO08w=="
+        "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pbiZ/pmArLDr3oSCqthKgSZw4VFzzJMFEuHP9AAnOnUJmqkOmvI1ctGLO6kCLFuwQVAAAAA4GrOHdyZEbTWRrTwIdz+KXWcEUHdIx41XSr/RK0TE5+qU7irAhQekOGFpGWQY4rYrDxoHToB4DblaJWUgkSZQLQ5sOfJg3qUJr9MpnDNJ8nNNitL65e6mqnpfsbbT3k94LBQI3/HijeRl29y5dGcLhOxldMtx2SvQg//kWOJ/Ug8e1aVo3V07XkR1Ltx76uzA=="
       );
       const signature = base64Decode(
-        "ECU5n50Wio3vSbP0uFRyzV+sha40PlyRDcaUkF5BVtbiBZNI0aZSwJ5HWQk518vDCYhU582qfh5uqu5q37y3mWDqIA/ZmQB80zlwz878Z4Q933Q7CwsBsG26LebVst6hX/0LbNAjYLD/2exR1LTGsw=="
+        "qg3PfohWGvbOCZWxcWIZ779aOuNSafjCXLdDux01TTNGm/Uqhr/kZZ1wSmxKwbEWAhctrDCp2mGE0M0l6DlA5R38chMbtnyWMfQgbQpzMQZgPBPUvVWivJyYEysZnQWrAYzZzRPe36VFbFy5ynWx0w=="
       );
 
       const request: BbsCreateProofRequest = {
@@ -96,10 +96,10 @@ describe("bbsSignature", () => {
       const messages = ["J42AxhciOVkE9w==", "PNMnARWIHP+s2g==", "ti9WYhhEej85jw=="];
 
       const bbsPublicKey = base64Decode(
-        "QNTo9lTZXfOKkWJO5Furc961teq1G9owfPIHqkMbURERbCW1S791w3FI9AI3TbQ8GGt8M3yrv+l7pHpunYoapk5rVkC5E7ayMFPWxg2vf2UbDhVxczn0+cJm82FptfWODO71c/5aMkr9MR2u+kcztWohg3V71JrptpomItbDx062ifg+qDy6ZG3cmZxIMM4uAAAAA4DsCC23t5+HWEP+TgOM7b99V7v1hKMiDnOszLEDoZ3cdI7qxlai225ULc/7DB14fxfurM3RHQiDafModRi5biRJg3oEZ3pKlPss+bNGpGnAHZn1uUOg/+hEOLbi5VRYwoKF6fJfIMCzAO3bGT3cmGKGd/a+UqeIs3MmVJbLgeE8/xD/iL/ywdXJombIErO08w=="
+        "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pbiZ/pmArLDr3oSCqthKgSZw4VFzzJMFEuHP9AAnOnUJmqkOmvI1ctGLO6kCLFuwQVAAAAA4GrOHdyZEbTWRrTwIdz+KXWcEUHdIx41XSr/RK0TE5+qU7irAhQekOGFpGWQY4rYrDxoHToB4DblaJWUgkSZQLQ5sOfJg3qUJr9MpnDNJ8nNNitL65e6mqnpfsbbT3k94LBQI3/HijeRl29y5dGcLhOxldMtx2SvQg//kWOJ/Ug8e1aVo3V07XkR1Ltx76uzA=="
       );
       const signature = base64Decode(
-        "ECU5n50Wio3vSbP0uFRyzV+sha40PlyRDcaUkF5BVtbiBZNI0aZSwJ5HWQk518vDCYhU582qfh5uqu5q37y3mWDqIA/ZmQB80zlwz878Z4Q933Q7CwsBsG26LebVst6hX/0LbNAjYLD/2exR1LTGsw=="
+        "qg3PfohWGvbOCZWxcWIZ779aOuNSafjCXLdDux01TTNGm/Uqhr/kZZ1wSmxKwbEWAhctrDCp2mGE0M0l6DlA5R38chMbtnyWMfQgbQpzMQZgPBPUvVWivJyYEysZnQWrAYzZzRPe36VFbFy5ynWx0w=="
       );
 
       const request: BbsCreateProofRequest = {
@@ -119,10 +119,10 @@ describe("bbsSignature", () => {
     it("should create proof revealing single message from single message signature", () => {
       const messages = ["uzAoQFqLgReidw=="];
       const blsPublicKey = base64Decode(
-        "QxKqQn2uYPwHsDZoAN9G45nlDO3goV7NKLsUr0a/2PxtTYTeb6RpcbQdu4fXU082Ac1cegmB8COZFRCT6PDHkgTlTuxoLK6aoWlvD6VW7Vspo9vd3QI7jBkAK81CUVeV"
+        "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pb"
       );
       const signature = base64Decode(
-        "ksCY3OEhXZbNydMVJqnJ3ygN0LkWU20X0/sdytoqpyzuy0koza+8IiGU27yGTaceRdxAQkwv8WQ6UI3x9gbWcI8632bGpyV4Fu23Uhaj4S4EgJyqV7FMJz7RrxasUmkyUAnGdjhzuSlRKAlXVcQNhg=="
+        "r00WeXEj+07DUZb3JY6fbbKhHtQcxtLZsJUVU6liFZQKCLQYu77EXFZx4Vaa5VBtKpPK6tDGovHGgrgyizOm70VUZgzzBb0emvRIGSWhAKkcLL1z1HYwApnUE6XFFb96LUF4XM//QhEM774dX4ciqQ=="
       );
 
       const request: BbsCreateProofRequest = {
@@ -141,10 +141,10 @@ describe("bbsSignature", () => {
       const messages = ["C+n1rPz1/tVzPg==", "h3x8cbySqC4rLA==", "MGf74ofGdRwNbw=="];
 
       const blsPublicKey = base64Decode(
-        "ygMDbk5ItiEB/LNocLLRUNQfpDHUngTjD+YErlx+1/WPh5ZzcxX9LpsuTUslPMRZCXqBBowbq7rof3HuSLDwtcFET2kLt0qJTE8mjdnhOmEKTOl3vmEWylz3yH+jlBy1"
+        "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pb"
       );
       const signature = base64Decode(
-        "AZOeIFhWATpeWCTm1NaJW2YjIaqEeOrlDcj+W9U7Jp+JSFMlga3hMjbJxaFkRFLwWJN9NbdpDYxGrePwRGAXzdQrcgcTRiU+f2QX00Xkrg0UfmWdnTBI6NJyYeeHtPO/6D0onuQst9sNdKY5AZPTqQ=="
+        "uISPYALbiNZwIgu1ndj9onUbkFA9trrhGFQJqJHFOSWCZYAIDUNTysXziar6+MdbPEiJS34OOlKAzxxnxIhFW0lBd4dbLOKf59LZPMRYc91tALAZeriyKcSVa7RzZl50UPjHfs31JrH6RgZ1V9/OVg=="
       );
 
       const request: BbsCreateProofRequest = {
@@ -163,10 +163,10 @@ describe("bbsSignature", () => {
       const messages = ["uiSKIfNoO2rMrA==", "lMoHHrFx0LxwAw==", "wdwqLVm9chMMnA=="];
 
       const blsPublicKey = base64Decode(
-        "V3FW9jlCSwPYOr7SVFXID0nytBj/e6wHoc8dK0Kn3pkckX2+UVKVgpCsFdSweJyvAc9wk6suCxmFJtfojw8BQmG3DtHbyHFWqgxIk9JyH2ZlR6fxtvZKkSlc0LDHHSN2"
+        "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pb"
       );
       const signature = base64Decode(
-        "AgRmGhPpX/BhxmMHSgRjkjm8v2v7ZT+D4lLbOhQZkU1o8pic21gOPuP6tRBbNKByDWrM4usV+wQgncqA7KdbWbHl3u8PDZvoCsFs2JVs+nAJdK7/BMmAPu1bncufslXMdp9RjXCDYlHfxbYVKhQotQ=="
+        "jU9tKKvDDqoSUTMPDGfw/1GlnOnRD56wEM2iftL7NPBlT3JxP2YY5SnR32nra0bmR//r8JH7fvgYuqpXHJB+vsYj7xoeyQtvoPZArti0YiYML2utQmsV4zN1W0sWH7+myPL/7H/m6PgxL/CjYzAaRg=="
       );
 
       const request: BbsCreateProofRequest = {
@@ -185,10 +185,10 @@ describe("bbsSignature", () => {
       const messages = ["uiSKIfNoO2rMrA==", "lMoHHrFx0LxwAw==", "wdwqLVm9chMMnA=="];
 
       const blsPublicKey = base64Decode(
-        "V3FW9jlCSwPYOr7SVFXID0nytBj/e6wHoc8dK0Kn3pkckX2+UVKVgpCsFdSweJyvAc9wk6suCxmFJtfojw8BQmG3DtHbyHFWqgxIk9JyH2ZlR6fxtvZKkSlc0LDHHSN2"
+        "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pb"
       );
       const signature = base64Decode(
-        "AgRmGhPpX/BhxmMHSgRjkjm8v2v7ZT+D4lLbOhQZkU1o8pic21gOPuP6tRBbNKByDWrM4usV+wQgncqA7KdbWbHl3u8PDZvoCsFs2JVs+nAJdK7/BMmAPu1bncufslXMdp9RjXCDYlHfxbYVKhQotQ=="
+        "jU9tKKvDDqoSUTMPDGfw/1GlnOnRD56wEM2iftL7NPBlT3JxP2YY5SnR32nra0bmR//r8JH7fvgYuqpXHJB+vsYj7xoeyQtvoPZArti0YiYML2utQmsV4zN1W0sWH7+myPL/7H/m6PgxL/CjYzAaRg=="
       );
 
       const request: BbsCreateProofRequest = {
