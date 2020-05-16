@@ -372,7 +372,7 @@ fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoole
     ));
 
     let hidden = obj_field_to_vec!(&mut cx, js_obj, "blinded");
-    let mut messages = BTreeSet::new();
+    let mut messages = (0..public_key.message_count()).collect();
     let message_count = public_key.message_count() as f64;
 
     for i in 0..hidden.len() {
@@ -385,7 +385,7 @@ fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoole
                 index
             );
         }
-        messages.insert(index as usize);
+        messages.remove(index as usize);
     }
 
     let ctx = BlindSignatureContext {
