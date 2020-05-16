@@ -45,7 +45,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = createProof(request);
-      expect(proof.length).toEqual(380);
+      expect(proof.length).toEqual(383);
     });
 
     it("should create proof revealing all messages from multi-message signature", () => {
@@ -67,7 +67,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = createProof(request);
-      expect(proof.length).toEqual(380); //TODO add a reason for this and some constants?
+      expect(proof.length).toEqual(383); //TODO add a reason for this and some constants?
     });
 
     it("should create proof revealing single message from multi-message signature", () => {
@@ -89,7 +89,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = createProof(request);
-      expect(proof.length).toEqual(444); //TODO add a reason for this and some constants?
+      expect(proof.length).toEqual(447); //TODO add a reason for this and some constants?
     });
 
     it("should create proof revealing multiple messages from multi-message signature", () => {
@@ -111,7 +111,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = createProof(request);
-      expect(proof.length).toEqual(412); //TODO evaluate this length properly add a reason for this and some constants?
+      expect(proof.length).toEqual(415); //TODO evaluate this length properly add a reason for this and some constants?
     });
   });
 
@@ -134,7 +134,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = blsCreateProof(request);
-      expect(proof.length).toEqual(380);
+      expect(proof.length).toEqual(383);
     });
 
     it("should create proof revealing all messages from multi-message signature", () => {
@@ -156,7 +156,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = blsCreateProof(request);
-      expect(proof.length).toEqual(380); //TODO add a reason for this and some constants?
+      expect(proof.length).toEqual(383); //TODO add a reason for this and some constants?
     });
 
     it("should create proof revealing single message from multi-message signature", () => {
@@ -178,7 +178,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = blsCreateProof(request);
-      expect(proof.length).toEqual(444); //TODO add a reason for this and some constants?
+      expect(proof.length).toEqual(447); //TODO add a reason for this and some constants?
     });
 
     it("should create proof revealing multiple messages from multi-message signature", () => {
@@ -200,7 +200,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = blsCreateProof(request);
-      expect(proof.length).toEqual(412); //TODO evaluate this length properly add a reason for this and some constants?
+      expect(proof.length).toEqual(415); //TODO evaluate this length properly add a reason for this and some constants?
     });
   });
 });

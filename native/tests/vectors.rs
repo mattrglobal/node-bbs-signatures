@@ -17,6 +17,7 @@ extern crate arrayref;
 extern crate bbs;
 
 use bbs::prelude::*;
+use std::collections::BTreeSet;
 
 /// Computed by calling
 ///
@@ -254,25 +255,24 @@ fn proof_with_8_messages() {
     // assert_eq!(proved_messages, vec![SignatureMessage::from_msg_hash(b"Message9")])
 }
 
-#[ignore]
 #[test]
 fn print() {
     let (dpk, sk) = DeterministicPublicKey::new(Some(KeyGenOption::UseSeed(base64::decode("H297BpoOgkfpXcxr1fJyQRiNx1+ZekeQ+OU/AYV/lVxaPXXhFBIbxeIU8kIAAX68cwQ=").unwrap())));
     println!("sk  = {}", base64::encode(sk.to_bytes_compressed_form().as_ref()));
     println!("dpk = {}", base64::encode(dpk.to_bytes_compressed_form().as_ref()));
-    let messages: Vec<SignatureMessage> = ["BVB6lAn912sz9Q==", "b45VqRkIo5R5Zw==", "yPqox0TIKS6vCA=="].iter().map(|m| SignatureMessage::hash(m.as_bytes())).collect();
+    let messages: Vec<SignatureMessage> = ["KNK0ITRAF+NrGg=="].iter().map(|m| SignatureMessage::hash(m.as_bytes())).collect();
     let pk = dpk.to_public_key(messages.len()).unwrap();
     let sig = Signature::new(messages.as_slice(), &sk, &pk).unwrap();
     println!("pk  = {}", base64::encode(pk.to_bytes_compressed_form()));
     println!("sig = {}", base64::encode(sig.to_bytes_compressed_form().as_ref()));
-    let nonce = ProofNonce::hash(b"dVPpzuQtJVAZzAw73beWiXLtoT4=");
+    let nonce = ProofNonce::hash(b"v3bb/Mz+JajUdiM2URfZYcPuqxw=");
     let proof_request = Verifier::new_proof_request(&[0], &pk).unwrap();
 
     // Sends `proof_request` and `nonce` to the prover
     let proof_messages = vec![
         pm_revealed_raw!(messages[0]),
-        pm_revealed_raw!(messages[1]),
-        pm_revealed_raw!(messages[2]),
+        // pm_revealed_raw!(messages[1]),
+        // pm_revealed_raw!(messages[2]),
     //     pm_hidden!(b"Message4"),
     ];
 
@@ -289,9 +289,12 @@ fn print() {
     let challenge = ProofChallenge::hash(&challenge_bytes);
 
     let proof = Prover::generate_signature_pok(pok, &challenge).unwrap();
+    let mut prefix = (messages.len() as u16).to_be_bytes().to_vec();
+    prefix.append(&mut revealed_to_bitvector(messages.len(), &proof_request.revealed_messages));
+    prefix.extend_from_slice(proof.proof.to_bytes_compressed_form().as_ref());
     println!(
         "proof = {}",
-        base64::encode(&proof.proof.to_bytes_compressed_form()[..])
+        base64::encode(&prefix)
     );
 
     let res = Verifier::verify_signature_pok(&proof_request, &proof, &nonce);
@@ -321,4 +324,41 @@ fn get_secret_key(key: &str) -> SecretKey {
 fn get_signature(sig: &str) -> Signature {
     let sig_bytes = base64::decode(sig).unwrap();
     Signature::from(*array_ref![sig_bytes, 0, SIGNATURE_COMPRESSED_SIZE])
+}
+
+/// Expects `revealed` to be sorted
+fn revealed_to_bitvector(total: usize, revealed: &BTreeSet<usize>) -> Vec<u8> {
+    let mut bytes = vec![0u8; (total / 8) + 1];
+
+    for r in revealed {
+        let idx = *r / 8;
+        let bit = (*r % 8) as u8;
+        bytes[idx] |= 1u8 << bit;
+    }
+
+    // Convert to big endian
+    bytes.reverse();
+    bytes
+}
+
+/// Convert big-endian vector to u32
+fn bitvector_to_revealed(data: &[u8]) -> BTreeSet<usize> {
+    let mut revealed_messages = BTreeSet::new();
+    let mut scalar = 0;
+
+    for b in data.iter().rev() {
+        let mut v = *b;
+        let mut remaining = 8;
+        while v > 0 {
+            let revealed = v & 1u8;
+            if revealed == 1 {
+                revealed_messages.insert(scalar);
+            }
+            v >>= 1;
+            scalar += 1;
+            remaining -= 1;
+        }
+        scalar += remaining;
+    }
+    revealed_messages
 }

@@ -172,12 +172,10 @@ export const blsCreateProof = (request: BbsCreateProofRequest): Uint8Array => {
  * @returns A result indicating if the proof was verified
  */
 export const verifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult => {
-  const { publicKey, proof, messages, nonce, revealed, messageCount } = request;
+  const { publicKey, proof, messages, nonce } = request;
   try {
     const result = bbs.bbs_verify_proof({
-      messageCount,
       nonce,
-      revealed,
       publicKey: publicKey.buffer,
       proof: proof.buffer,
       messages,
@@ -196,13 +194,10 @@ export const verifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult => 
  */
 export const blsVerifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult => {
   try {
-    const { publicKey, proof, messages, nonce, revealed, messageCount } = request;
-    const bbsKeyPair = bls12381toBbs({ keyPair: { publicKey }, messageCount });
-    const result = bbs.bbs_verify_proof({
-      messageCount,
+    const { publicKey, proof, messages, nonce } = request;
+    const result = bbs.bls_verify_proof({
       nonce,
-      revealed,
-      publicKey: bbsKeyPair.publicKey.buffer,
+      publicKey: publicKey.buffer,
       proof: proof.buffer,
       messages,
     });

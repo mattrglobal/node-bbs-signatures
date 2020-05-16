@@ -28,16 +28,14 @@ describe("bbsSignature", () => {
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pboZyjM38YgjaUBcjftZi5gb58Qz13XeRJpiuUHH06I7/1Eb8oVtIW5SGMNfKaqKhBAAAAAYPPztgxfWWw01/0SSug1oLfVuI4XUqhgyZ3rS6eTkOLjnyR3ObXb0XCD2Mfcxiv6w=="
       );
       const proof = base64Decode(
-        "hDkH8srulv5qanhoI4vM9y4g1xTXUjsA04QBZGZ6OYcZN8I/SejmS1U89jrPzZ0/qFxjrUXSNOc1nzlQ84k9fCVPwJ6BsVmkCRzKzfLCoOSoe3PFBkrUWobQ7XlpP+yJqmVoefy1ECE9goWI9jamFZGEqqvZULGbCIKD81g+9dApcSVQQI4SrKe46mmV2spaAAAAdIkvTluLBkJGAPbieSGCwmUu4O5tiuy1liu/9rqWfTLCdqHCfOLSZEewcI/ouTslrQAAAAIywGSn1EndT+invB7sf3vjv5enDIhC/aMpyY9ZOF21S1/pJC0YiH6GNiWKCvb7rjib8MBwz3TDU2MFa7z1IfzEoG7aJiHfY0vDLUCEf81rXGMTxY/0ceaRYTlxUO6r30pJXHt04O6QZgGwl9G9+voQAAAAAkbYUeerG6ltVyg8Pm3Em1Bse1kZwmk8y/jpgU/S/4BWOe/H8+YTZB3ylwmZa6ZhJdk8g6zLwr6KQJbhQn8mBvU="
+        "AAEBoyrn7FHZEDAfMBckBd9x4N1m5kpnjh/Oryw5XYkpqr7iqtSxYIqS7pmKAA/DjDt7lFkfu7oAYdKJlSD6WVGokHwtOW/EDkJXjrjQ4NVktiu0vfy0dEhy+CBhhcnwBQyfseuIeIuTZ1+2cAVaiOlzdc/K/yEKjSAQPqIOkmj9OaLLkfmljd5abf7dYMap0UugAAAAdKdyg+I6PbYt6HpcGCEX9KhVD0axbsNjch87YqUy3daNKsV5IQB3e3rKK5yR2sPpjgAAAAJvj/vM9cIsN/hZQEVpMwGVGAp39yWx0zsguRORUz2gXg8/IuO8e6l4L1ZZ7viCOgP9hYK9ZCeoMknyF4OhsuwpqF2pddX8+5FEuN2IDZTX+NFYmPnp/60HGLU4lmN2xS1XIWU5UzFAi6N6VQLyOQbKAAAAAlXEI+c6GIRznGyDVAj3UaukO+z2I3V/HsS9XQFrjwgPDphFi+XQwULUNGUzGins9XMU+m44a+SqiRu6tahdZFk="
       );
 
       const request: BbsVerifyProofRequest = {
         proof,
         publicKey: bbsPublicKey,
-        messageCount: 1,
         messages,
         nonce: "v3bb/Mz+JajUdiM2URfZYcPuqxw=",
-        revealed: [0],
       };
 
       expect(verifyProof(request).verified).toBeTruthy();
@@ -49,16 +47,14 @@ describe("bbsSignature", () => {
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pbiZ/pmArLDr3oSCqthKgSZw4VFzzJMFEuHP9AAnOnUJmqkOmvI1ctGLO6kCLFuwQVAAAAA4GrOHdyZEbTWRrTwIdz+KXWcEUHdIx41XSr/RK0TE5+qU7irAhQekOGFpGWQY4rYrDxoHToB4DblaJWUgkSZQLQ5sOfJg3qUJr9MpnDNJ8nNNitL65e6mqnpfsbbT3k94LBQI3/HijeRl29y5dGcLhOxldMtx2SvQg//kWOJ/Ug8e1aVo3V07XkR1Ltx76uzA=="
       );
       const proof = base64Decode(
-        "h3Rn4cwHd2RwX/ZESqhxxFBFV2X3O+P1cuNVk/ZC8CVOzDXQpRIoZYE0Ux2up0TWgobGiXN3y46mvmj8wnMze7DQUKzgaMFERjhXZeiDhfAQOIsQqnQY0t+FUiSiOS3gmSjpak02wupc48e/PBopay5RM3DCWwc/9JENIlR8Xi6/pdnxkO96FUFnNL/F5mwuAAAAdI7sOIEZtkR80Fns81n00GtVzcpuRpN0QjwniggoKyC4TeXNcVDqGSvLllKLnKm7lgAAAAJzP+FK7nWiPt5vX/wF0S6b5Qv8+JW0EkLbb8SMp4hfD28qwCnQJv22DOcqWZHrPgyNmWwLyXYB74qjIsWBt/4wqa7cBc02ydJM50iTIg6QJ/PfAULF8uvm0J4emLind5A5BUO2KON5bpTawdrM8w6pAAAAAlAmx4V4qRfdXx3KfIi9kEFx/KGrC2E09xJaZyCQ8xLUDHAKZTctLm17Q2JKYk/F5xW39KPSH3fBuK/ghVJAe2Y="
+        "AAMHlMA5fdGj+q/odkuWQqeIvwJhBybYDWNB4n2FHNfjz7FQyhYhynyqCzsZML0zxgobtvW8h2yWKhO6lJdNngoSZCz9NBukGK9XNT1f+9/9oej8Kb7kQZn8bvBBGTTq7AiHl4JJ9jzleS691Rm1M22QAbGQB1hFvN6ztPLgj2ySTvxQAS8InyH4PIhdWvtdXOm0AAAAdJlx5B4XLCodJI5Iz0gbd4OUnB23Kp1d95P0IMSF1qQPxhWkdQply9gIYL7jGo709QAAAAIN6CB7Wg/HGNwlz1Ez0w+H0/pHU7lXQLqlPbr1q16ZBDNOD83l6YwklUo844OgBBqlgEWyBYYreSumlOlt/LRHpu6bsdZEk6dKs9DOZVteFKF7J26HoPnIZu382Aq3HpXvRADR+kax0U2BEHOZkYugAAAAAgw5IFEkwfqSDw5ZACA9NUpvUscXQVuKWTQxA2vjmmNpL+OWDHRphIyOtLGY7ss1LKJg4BO760sBClRA73Si2LI="
       );
 
       const request: BbsVerifyProofRequest = {
         proof,
         publicKey: bbsPublicKey,
-        messageCount: 3,
         messages,
         nonce: "dVPpzuQtJVAZzAw73beWiXLtoT4=",
-        revealed: [0, 1, 2],
       };
 
       expect(verifyProof(request).verified).toBeTruthy();
@@ -70,7 +66,7 @@ describe("bbsSignature", () => {
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pbiZ/pmArLDr3oSCqthKgSZw4VFzzJMFEuHP9AAnOnUJmqkOmvI1ctGLO6kCLFuwQVAAAAA4GrOHdyZEbTWRrTwIdz+KXWcEUHdIx41XSr/RK0TE5+qU7irAhQekOGFpGWQY4rYrDxoHToB4DblaJWUgkSZQLQ5sOfJg3qUJr9MpnDNJ8nNNitL65e6mqnpfsbbT3k94LBQI3/HijeRl29y5dGcLhOxldMtx2SvQg//kWOJ/Ug8e1aVo3V07XkR1Ltx76uzA=="
       );
       const proof = base64Decode(
-        "ikkpFypR34Mdn/wNP2RZtrqwcpoj+SjmR1uydDyEk8kInc/vf7oPbHrCtTiWa1mVrWEnCaGGZZmCcd8wRIWpcNQHWX66CF/UCYu2CUBW0kzIs1lG3fQq/5p0/0yuP0kvtYyAyovMUA1fx5i3kKEx+rkBBfQ1ErdCa073stgmPhHJZwBDICdLyXOsKe8vYtVbAAAAdLlW+LN+6vQWWi2GzciOe77qbZn8iu0pNSALjO/PzdWUT+1wNpDbsJ9ZbdhkX66AwQAAAAIouU0cL04T3rWhktuqqtQNEFbWGWArUp9xNvfgVyqAqhGDlt0bhcjaf+LggYOesc1813Qi/yZBudQGvL6GLbU3qmAvW5hyL3fp8I4d8f2cJKwol+CvJm+W4NJT82uZsRyZGdg/O37T1xOEKMn2zdy7AAAABE4lg9P3JxB9OIXLcE6iMIeJ/CZuLHCr6XUXd1zl4ywjEpJkxGtm9+BI3pQ38oJiI7Q04xlbisK52FE2EqqkQARiB1+0UFslkJHPPBFTHN6ZTZgraMHiC8X7cxNfjMhgxijz1ePrsfBlnZD2JKwvGTB9BvXhnOE5RsIdxaa9qW+T"
+        "AAMBtYbI5XYKqYgFVgMdEovJHnlRl8lDQip5D8N6JD9YfLwUmGPaPRbRw8aR3QJHLhkWtALo0Msuiql9AaDMhkshRATUutehh842NnKmZtdd0OhXYhpJvwoC7WLGrAEB+LQFph77cf1v2xSmY95BfHzRz3vX8+YUQRyuwsIse0opGRUp1kdZr2eO+TNk7PcRQJTFAAAAdKxmSYThRhrGI/WGgsTjDwWHh1LTrll49TJRC3mph2OJFdGDbcILW9qevWaQzA12AwAAAAIVaiyc+IcLxbPeujcSffRFOCms5hlJiTv4ljz11PyAOwg/cw6SgfblY8GQ6pwEfn+MlJko4ibs06UeXGLnqVmepTylcwtv226DzfPm0Qpgkh7j5q5zCzLu9LVyCMDfrIEnmjIJZtucRqGwDJ2GBOn6AAAABAPNp8y82DB6+pHDbww2JP3PYlfiP1b5+rqPdTUupcPeO7dPtKgXMJuSYQBbZDv6U5URXZVW5nH34nPjeqJe/hcrupRMQSfLv4KVoQW3z5EgaoXJmJiWHc4L8yNGU0nP9hNOg+RWgFRJyMxFH8nP7ffI7QSbp3dYSN66LolK9yoi"
       );
 
       const revealedMessages = messages.slice(0, 1);
@@ -78,10 +74,8 @@ describe("bbsSignature", () => {
       const request: BbsVerifyProofRequest = {
         proof,
         publicKey: bbsPublicKey,
-        messageCount: 3,
         messages: revealedMessages,
         nonce: "NoWZhtX+u1wWLtUfPMmku1FtU2I=",
-        revealed: [0],
       };
 
       expect(verifyProof(request).verified).toBeTruthy();
@@ -99,10 +93,8 @@ describe("bbsSignature", () => {
       const request: BbsVerifyProofRequest = {
         proof,
         publicKey: bbsPublicKey,
-        messageCount: 1,
         messages,
         nonce: "bad",
-        revealed: [0],
       };
 
       expect(verifyProof(request).verified).toBeFalsy();
@@ -121,10 +113,8 @@ describe("bbsSignature", () => {
       const request: BbsVerifyProofRequest = {
         proof,
         publicKey: bbsPublicKey,
-        messageCount: 4,
         messages,
         nonce: "0123456789",
-        revealed: [0],
       };
       expect(verifyProof(request).verified).toBeFalsy();
     });
@@ -180,16 +170,14 @@ describe("bbsSignature", () => {
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pb"
       );
       const proof = base64Decode(
-        "uLUIaKQlI5UDCclFeai7Yk1iR4a+zuabPwBOWkynevty/UnG8Yh44BGfYOz3SDp5l/V91GOGtPcKLm8WNZ5zqUfNIUogiA3xPVgNbA+XFicb8bFA50ds+x/epkzjg/rWoKSgEbVGYk2QkwhC6Sw5azfVszE+GeVYO1JCOzWLo3pd4HRaycTSQr343WxOGKrDAAAAdKFr7Bju9OOPr2mYqpBAN30kMeaXeRuBIWFjlgz0gM5vrXPiKKrQttWBofwodTj7WQAAAAI6aMOilYHommgDQRuOxKEKUV85fv8e/P2J2A1ux6i00zcng3C0YSZgm41KQo0xLi1wea2LK6AHvtpSlFtVo3d/mYqOoWfYPPvZi9lLTEGF6oB8aW1WmsUOULHuq+l+/3mCUAcaRrr0NiBdGSnVirdyAAAAAgggNDwzvJHeWdgNGCjV08gqkM1f9QF9IVM2kCMP2Wf5IrCXdQQLHeHaGyCJXabx7xmoz1fCirpmRZ0cgUzs9Gk="
+        "AAEBlxMcouHOZ6b8jB1yXFkF1sz8o0jlYfYvv4Vn8cqskc1fNn5fz0xdaolDVWLHnxN9tY7oYLy1M0/q6yvTqsQSYIZEu1lb2hGqlQ5iKg7J/rZxVZPIw13r7TN5gfURyVnRrZkOZXMVlmbgxhdROMeS0jVAThEjNd45lWtU9g66+dm++cfxsNH8S4Uvo7mMhW5eAAAAdLjPzHTAl3FDUhSRAYYD3Y9z5dEZ665A+VKEjYlo2FGWMnJQ8lUin6UmtEseOfgOQQAAAAJtzOCturB1W8AuPZi8EhmQUpS8D7+Eo8awBnz8ku7ismKM1DsKxdP11fXRpylhh6S0/Thrjt8Jz55Illt4vWq0shXQfTmIDa0JwXsvdVO2EBdw6uYa3EoAxGwzSox6XSus+ZbqFjTRDhHJoiS7eDcCAAAAAjH/+DldtUN8PaaWWRsJNcAtyCg7aQM12FLub3RfWMzzI8wHEti6hHliLym8zYc8tXpJJi+ySV/Xw5NeVzCgMaA="
       );
 
       const request: BbsVerifyProofRequest = {
         proof,
         publicKey: blsPublicKey,
-        messageCount: 1,
         messages,
         nonce: "4OS3nji2HNReo3QPHrdlxjOf8gc=",
-        revealed: [0],
       };
 
       expect(blsVerifyProof(request).verified).toBeTruthy();
@@ -201,16 +189,14 @@ describe("bbsSignature", () => {
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pb"
       );
       const proof = base64Decode(
-        "tWvkoPcKldhrYWyyrTOXZz7ss+ZBNmS74lZtIbmtBRwpV/vhGDOb1dxH2a4V0iV8gOwAP2d4VaLFkPdgKhqmzpzEMGGR/tWubkhc8QJe4nq5/QHTn+6U2/aAVYl83IegpaFciHD8YUQ4wrw7CsXy6I8ll32yGNEdbkOCGF87jOk2TdHNROh9UlCE+kLd5wObAAAAdLJE81paBSnXwlqZl/sLRxiVxP08x8oTbGrMU4qS2vY59dGsqsEGehBlOY0FEppLAAAAAAI61eqzpebd6zEJbyZXRUQTP08F4nSbYgMCmxvRwdJziBKM8241kOQ0dtiyG6tUIc70RGIa1r3SWUGmztADduLqtq9vNmCOGvnerzyrJTFDLv9+9pdkFoNe3BjaeDjBiYx8PpxXJntwHlFRBwNWRBZ7AAAAAlt9QML66pbXrdlzg0Y0df5SHSh8s2AyJ0EzF0xwI12wE6bBDRRxynZJa+qE9EZCQJVCAfsonUfy7IWSYFT70Gw="
+        "AAMHqjf96+kLYIsewyEX9d4fspX3bHKRjP1vrIEYBG75QN48Z2CrpYxCfhY5tdq21dwImZa0MkTKXQxJAvb6S/eECOTCXsEvc2P57OiUFsEGhSV3VUAFIX9d6bBOvCeKAwdRrUJycm/fU6cyw/NrJ3Ay1BTtCkLnOo9KbsktWUSSe6FsneTU4qtnn8c55vhLQjOgAAAAdLnn6KffV5sl//eRoYNt5MGBPdda/mgiovk8q3vsID7ZxlimMlQfHAgyimwcFUN1mwAAAAIQwtBPjUpLqDcyOJbpu0ELkh9/+MSeLIlBytwF4g1oIBnNI0r6PM5H+7gisAhDJZUOY4wSRzKWiitDU6QGU0cLgOH0klGdaE+U0Oh7urA3vUS+shOIrK0Q3XTZqpd+n3FlZWEOvLb/51ESohOjYC9PAAAAAhqFn9NbLK6xFMwdSL9SO4dSWhExnruoIJn602X/OSEOM8eU/bTWLbsnMENhGse4gDuP0QEMkhoCSF02SRor7Qo="
       );
 
       const request: BbsVerifyProofRequest = {
         proof,
         publicKey: blsPublicKey,
-        messageCount: 3,
         messages,
         nonce: "ujMevaaq2n7Cg3ZLzXktqT/WRgM=",
-        revealed: [0, 1, 2],
       };
 
       expect(blsVerifyProof(request).verified).toBeTruthy();
@@ -222,7 +208,7 @@ describe("bbsSignature", () => {
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pb"
       );
       const proof = base64Decode(
-        "iWXfi7djxnPI5mKEI4f9m2kZlxhY6gfLqfpr+J2pGtVqZ2hWOy6gG+LrrA48di/drKodNASanxuTsxEYJp6Myt0D3nkPFXRYvO/aVhbj9KxA5jLETllFkW4bsIIvfNm8rIzIADD86Eo5k26SxrMm443u1fjemXTisJcZGKlpUlMtdqiP+iq9OwMTpVzRIyQLAAAAdI2m23MeCc/9ScbWRCr3yKAtLWsl3eVfB8b6VgyHvYi2Y0cv5VVleCQOBbwd0OdELQAAAAIh6SOoJaWeIK/i1HTNyaUvf+w9VNr+rl9fTW09RzTBRyth9Wjhp1EHqo6ZNsQjp8YObDP392d9uvu4RD+whU4MjViO/uoCRgimJS3lfJRm+GnLhBtxoiqLjOghubaaq1N3RWNePdCINrXwyQFGXkpoAAAABEdAKgNfsnt30MBdD1GgF0OyTAOOMckW2700GQG28ke1CafTwADG/I7l068bYgDlhNsspBL3p4MGmw+Y5wq3HKtPhdvGTrOpvaWHWhze9ACIKY77C5kyjXndlexMcjak+xdDp7FXWU8QCTddXdQ8xl5mWmjOSlDKxVmgdNIvcpFS"
+        "AAMBjl1W6j/1y/M3V4OIluw3BSTvgKCYRh+2SSeNNfDSZzKqNJAlQMGfHvBzpFQN55MZscHwEmMM6yWK2dqKGVhecvkwUvOIogpMFTbf3ikMor375ddSB3MAuHvgmlZKdLz7iwbxoCrf4+zfDvYeeLF6QR1uMdUa7v50ix2ZeSllsmOk5NxrEVMZXJ/+SDfASgTZAAAAdJeaUx4qwv5W72EKCDSBIYfxwlj28IGx0TnDm0E1y10n3hE0SIKYzgqqE81SPV9jfwAAAAIdssV4x73UeqxXmgQJSMO4XKDiiyxprlrpyz+1tINi7QbUABSCe4T1pdYOS0miYLDwzy2/zS2uuJ12yfqj6S1hl0U/uNbr03t8xypruPQhYreQGanMpFCnZquOJ9CYTGSPwMl1Hlva5hW0Jcrwugn1AAAABDLHtpcxsutFpn2EiPTYZMEeNnVr2x5AggpCAuLfd0+JBKEEwHKANSeajnWKBZ0YkZ/MpXkpU3ThRYWijpb6EsE4QJzkzSzKt5ZQCXsRkFLg/gWZIAUzKEjk3G2ELrFHlR9AedW1eANiHF/4ZuQPAtlRYg+mxeiEp87/xoLdq+OA"
       );
 
       const revealedMessages = messages.slice(0, 1);
@@ -230,10 +216,8 @@ describe("bbsSignature", () => {
       const request: BbsVerifyProofRequest = {
         proof,
         publicKey: blsPublicKey,
-        messageCount: 3,
         messages: revealedMessages,
         nonce: "I03DvFXcpVdOPuOiyXgcBf4voAA=",
-        revealed: [0],
       };
 
       expect(blsVerifyProof(request).verified).toBeTruthy();
@@ -251,10 +235,8 @@ describe("bbsSignature", () => {
       const request: BbsVerifyProofRequest = {
         proof,
         publicKey: blsPublicKey,
-        messageCount: 1,
         messages,
         nonce: "bad",
-        revealed: [0],
       };
 
       expect(blsVerifyProof(request).verified).toBeFalsy();
