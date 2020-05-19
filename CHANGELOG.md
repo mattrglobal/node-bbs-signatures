@@ -1,3 +1,10 @@
+# [0.8.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.7.0...0.8.0) (2020-05-19)
+
+### Features
+
+- update to bbs 0.4.0 crate ([#109](https://github.com/mattrglobal/node-bbs-signatures/issues/109))
+  ([c5f3a9c](https://github.com/mattrglobal/node-bbs-signatures/commit/c5f3a9c961beeb3165dbfb1982b4f5bb20fd18f9))
+
 # [0.7.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.6.0...0.7.0) (2020-05-04)
 
 - add support for publishing Node 11 and Node 12 binaries
