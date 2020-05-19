@@ -16,8 +16,6 @@ import { Bls12381ToBbsRequest, BbsKeyPair } from "./types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bbs = require("../native/index.node");
 
-const BLS_TO_BBS_DOMAIN_SEPARATION_TAG = "BlsToBBSKeyGeneration";
-
 /**
  * Converts a BLS12-381 key to a BBS+ key
  * @param request Request for the key conversion
@@ -30,7 +28,6 @@ export const bls12381toBbs = (request: Bls12381ToBbsRequest): BbsKeyPair => {
       const result = bbs.bls_secret_key_to_bbs_key({
         secretKey: request.keyPair.secretKey.buffer,
         messageCount: request.messageCount,
-        dst: BLS_TO_BBS_DOMAIN_SEPARATION_TAG,
       });
       return {
         secretKey: request.keyPair.secretKey,
@@ -41,7 +38,6 @@ export const bls12381toBbs = (request: Bls12381ToBbsRequest): BbsKeyPair => {
       const result = bbs.bls_public_key_to_bbs_key({
         publicKey: request.keyPair.publicKey.buffer,
         messageCount: request.messageCount,
-        dst: BLS_TO_BBS_DOMAIN_SEPARATION_TAG,
       });
       return {
         publicKey: new Uint8Array(result),

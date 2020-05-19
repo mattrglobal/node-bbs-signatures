@@ -28,14 +28,6 @@ export interface BbsVerifyProofRequest {
    */
   readonly messages: readonly string[];
   /**
-   * Zero based indices of the revealed messages in original signature
-   */
-  readonly revealed: readonly number[];
-  /**
-   * Total count of the originally signed messages
-   */
-  readonly messageCount: number;
-  /**
    * Nonce included in the proof for the un-revealed attributes (OPTIONAL)
    */
   readonly nonce: string;

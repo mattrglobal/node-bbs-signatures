@@ -55,12 +55,6 @@ macro_rules! obj_field_to_fixed_array {
     }};
 }
 
-macro_rules! obj_field_to_string {
-    ($cx:expr, $obj:expr, $field:expr) => {{
-        cast_to_string!($cx, $obj.get($cx, $field)?)
-    }};
-}
-
 macro_rules! obj_field_to_opt_string {
     ($cx:expr, $obj:expr, $field:expr) => {{
         match $obj.get($cx, $field)?.downcast::<JsString>().or_throw($cx) {
@@ -113,7 +107,7 @@ macro_rules! handle_err {
 macro_rules! obj_field_to_field_elem {
     ($cx:expr, $d:expr) => {{
         let m = cast_to_string!($cx, $d);
-        SignatureMessage::from_msg_hash(m.as_bytes())
+        SignatureMessage::hash(m.as_bytes())
     }};
 }
 
