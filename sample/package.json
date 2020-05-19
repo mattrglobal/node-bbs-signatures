@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "repository": "https://github.com/mattrglobal/node-bbs-signatures",
   "author": "Mattr Limited",
-  "license": "Apache 2.0",
+  "license": "Apache-2",
   "private": false,
   "scripts": {
     "demo": "ts-node ./src/index.ts"
@@ -16,6 +16,6 @@
     "typescript": "3.7.5"
   },
   "dependencies": {
-    "@mattrglobal/node-bbs-signatures": "0.5.0"
+    "@mattrglobal/node-bbs-signatures": "0.8.0"
   }
 }

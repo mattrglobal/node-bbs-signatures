@@ -64,10 +64,8 @@ const main = (): void => {
   const isProofVerified = blsVerifyProof({
     proof,
     publicKey: keyPair.publicKey,
-    messageCount: messages.length,
     messages: messages.slice(0, 1),
     nonce: "nonce",
-    revealed: [0],
   });
 
   const isProofVerifiedString = JSON.stringify(isProofVerified);

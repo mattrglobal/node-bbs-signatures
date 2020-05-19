@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@mattrglobal/node-bbs-signatures@0.5.0":
-  version "0.5.0"
-  resolved "https://registry.npmjs.org/@mattrglobal/node-bbs-signatures/-/node-bbs-signatures-0.5.0.tgz#108ea921a2bf83f9d200fcce8a9e81a527b290ad"
-  integrity sha512-u37BZmd+cWl3SJf6UhpN1DShD9UsOL5GdGoe2vdoGfJfV4Csa0q0s55oHwwT95RoACCUN5AAmzeapQjZAx0T7A==
+"@mattrglobal/node-bbs-signatures@0.8.0":
+  version "0.8.0"
+  resolved "https://registry.npmjs.org/@mattrglobal/node-bbs-signatures/-/node-bbs-signatures-0.8.0.tgz#cc09b9da4db0b298e35f9313c4dcc9c69ab1f06f"
+  integrity sha512-jIPNlexenUXiqmISyo2+LV6hfGHFJAbex9BUcj+HZxdUPdmca30jG5x06TvIC/TuF1AiSIqJ5YsqTLBWA4X3Ig==
   dependencies:
     neon-cli "0.4.0"
     node-pre-gyp "0.14.0"
