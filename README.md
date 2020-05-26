@@ -2,6 +2,8 @@
 
 # Node BBS Signatures
 
+![npm-version](https://badgen.net/npm/v/@mattrglobal/node-bbs-signatures)
+![npm-unstable-version](https://badgen.net/npm/v/@mattrglobal/node-bbs-signatures/unstable)
 ![Master](https://github.com/mattrglobal/node-bbs-signatures/workflows/push-master/badge.svg)
 ![Release](https://github.com/mattrglobal/node-bbs-signatures/workflows/push-release/badge.svg)
 ![codecov](https://codecov.io/gh/mattrglobal/node-bbs-signatures/branch/master/graph/badge.svg)
