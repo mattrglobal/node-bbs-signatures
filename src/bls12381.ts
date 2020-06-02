@@ -13,6 +13,9 @@
 
 import { BlsKeyPair } from "./types";
 
+/**
+ * @ignore
+ */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bbs = require("../native/index.node");
 
