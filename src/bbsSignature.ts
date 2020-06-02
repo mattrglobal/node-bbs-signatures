@@ -26,11 +26,14 @@ import {
   BbsVerifyResult,
 } from "./types";
 
+/**
+ * @ignore
+ */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bbs = require("../native/index.node");
 
 /**
- * Default BLS 12-381 private key length
+ * Default BBS Signature Length
  */
 export const BBS_SIGNATURE_LENGTH = 112;
 

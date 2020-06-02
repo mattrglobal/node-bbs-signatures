@@ -46,7 +46,8 @@
     "publish:binary": "./scripts/publish_binary.sh",
     "publish:ts": "./scripts/publish_ts.sh",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
-    "version:release": "yarn version --minor --message \"chore(release): publish [skip ci]\""
+    "version:release": "yarn version --minor --message \"chore(release): publish [skip ci]\"",
+    "docs": "typedoc --out docs/api src"
   },
   "devDependencies": {
     "@commitlint/cli": "8.3.5",
@@ -74,7 +75,8 @@
     "rimraf": "3.0.2",
     "ts-jest": "24.0.2",
     "ts-node": "8.4.1",
-    "typescript": "3.7.5"
+    "typedoc": "0.17.7",
+    "typescript": "3.9.3"
   },
   "husky": {
     "hooks": {

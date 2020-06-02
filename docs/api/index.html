@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html class="default no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>@mattrglobal/node-bbs-signatures</title>
+    <meta name="description" content="Documentation for @mattrglobal/node-bbs-signatures" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+  </head>
+  <body>
+    <header>
+      <div class="tsd-page-toolbar">
+        <div class="container">
+          <div class="table-wrap">
+            <div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+              <div class="field">
+                <label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+                <input id="tsd-search-field" type="text" />
+              </div>
+              <ul class="results">
+                <li class="state loading">Preparing search index...</li>
+                <li class="state failure">The search index is not available</li>
+              </ul>
+              <a href="index.html" class="title">@mattrglobal/node-bbs-signatures</a>
+            </div>
+            <div class="table-cell" id="tsd-widgets">
+              <div id="tsd-filter">
+                <a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+                <div class="tsd-filter-group">
+                  <div class="tsd-select" id="tsd-filter-visibility">
+                    <span class="tsd-select-label">All</span>
+                    <ul class="tsd-select-list">
+                      <li data-value="public">Public</li>
+                      <li data-value="protected">Public/Protected</li>
+                      <li data-value="private" class="selected">All</li>
+                    </ul>
+                  </div>
+                  <input type="checkbox" id="tsd-filter-inherited" checked />
+                  <label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+                  <input type="checkbox" id="tsd-filter-externals" checked />
+                  <label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+                  <input type="checkbox" id="tsd-filter-only-exported" />
+                  <label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+                </div>
+              </div>
+              <a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tsd-page-title">
+        <div class="container">
+          <ul class="tsd-breadcrumb">
+            <li>
+              <a href="globals.html">Globals</a>
+            </li>
+          </ul>
+          <h1>@mattrglobal/node-bbs-signatures</h1>
+        </div>
+      </div>
+    </header>
+    <div class="container container-main">
+      <div class="row">
+        <div class="col-8 col-content">
+          <div class="tsd-panel tsd-typography">
+            <p><img src="./docs/assets/mattr-black.svg" alt="Mattr logo" /></p>
+            <a href="#node-bbs-signatures" id="node-bbs-signatures" style="color: inherit; text-decoration: none;">
+              <h1>Node BBS Signatures</h1>
+            </a>
+            <p>
+              <img src="https://badgen.net/npm/v/@mattrglobal/node-bbs-signatures" alt="npm-version" />
+              <img
+                src="https://badgen.net/npm/v/@mattrglobal/node-bbs-signatures/unstable"
+                alt="npm-unstable-version"
+              />
+              <img
+                src="https://github.com/mattrglobal/node-bbs-signatures/workflows/push-master/badge.svg"
+                alt="Master"
+              />
+              <img
+                src="https://github.com/mattrglobal/node-bbs-signatures/workflows/push-release/badge.svg"
+                alt="Release"
+              />
+              <img
+                src="https://codecov.io/gh/mattrglobal/node-bbs-signatures/branch/master/graph/badge.svg"
+                alt="codecov"
+              />
+            </p>
+
+            <p>
+              This repository is the home to a performant multi-message digital signature algorithm implementation which
+              supports deriving zero knowledge proofs that enable selective disclosure from the originally signed
+              message set.
+            </p>
+            <p>
+              BBS+ Signatures are a digital signature algorithm originally born from the work on
+              <a href="https://crypto.stanford.edu/~xb/crypto04a/groupsigs.pdf">Short group signatures</a> by Boneh,
+              Boyen, and Shachum which was later improved on in
+              <a href="http://web.cs.iastate.edu/~wzhang/teach-552/ReadingList/552-14.pdf"
+                >Constant-Size Dynamic k-TAA</a
+              >
+              as BBS+ and touched on again in section 4.3 in
+              <a
+                href="https://www.researchgate.net/publication/306347781_Anonymous_Attestation_Using_the_Strong_Diffie_Hellman_Assumption_Revisited"
+                >Anonymous Attestation Using the Strong Diffie Hellman Assumption Revisited </a
+              >.
+            </p>
+            <p>
+              BBS+ signatures require a
+              <a href="https://tools.ietf.org/html/draft-irtf-cfrg-pairing-friendly-curves-03">pairing-friendly curve</a
+              >, this library includes support for
+              <a href="https://tools.ietf.org/html/draft-irtf-cfrg-pairing-friendly-curves-03#section-2.4">BLS12-381</a
+              >.
+            </p>
+            <p>
+              BBS+ Signatures allow for multi-message signing whilst producing a single output signature. With a BBS
+              signature, a <a href="https://en.wikipedia.org/wiki/Proof_of_knowledge">proof of knowledge</a> based proof
+              can be produced where only some of the originally signed messages are revealed at the discretion of the
+              prover.
+            </p>
+            <p>For more details on the signature algorithm please refer to <a href="./docs/ALGORITHM.md">here</a></p>
+            <a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
+              <h2>Getting started</h2>
+            </a>
+            <p>To use this package within your project simply run</p>
+            <pre><code>npm install @mattrglobal/<span class="hljs-keyword">node</span><span class="hljs-title">-bbs-signatures</span></code></pre>
+            <p>Or with <a href="https://yarnpkg.com/">Yarn</a></p>
+            <pre><code>yarn add @mattrglobal/<span class="hljs-keyword">node</span><span class="hljs-title">-bbs-signatures</span></code></pre>
+            <a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+              <h2>Usage</h2>
+            </a>
+            <p>See the <a href="./sample">sample</a> directory for a runnable demo.</p>
+            <p>The following is a short sample on how to use the API</p>
+            <pre><code class="language-typescript"><span class="hljs-keyword">import</span> {
+  generateBls12381KeyPair,
+  blsSign,
+  blsVerify,
+  blsCreateProof,
+  blsVerifyProof,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">"@mattrglobal/node-bbs-signatures"</span>;
+
+<span class="hljs-comment">//Generate a new key pair</span>
+<span class="hljs-keyword">const</span> keyPair = generateBls12381KeyPair();
+
+<span class="hljs-comment">//Set of messages we wish to sign</span>
+<span class="hljs-keyword">const</span> messages = [<span class="hljs-string">"message1"</span>, <span class="hljs-string">"message2"</span>];
+
+<span class="hljs-comment">//Create the signature</span>
+<span class="hljs-keyword">const</span> signature = blsSign({
+  keyPair,
+  messages: messages,
+});
+
+<span class="hljs-comment">//Verify the signature</span>
+<span class="hljs-keyword">const</span> isVerified = blsVerify({
+  publicKey: keyPair.publicKey,
+  messages: messages,
+  signature,
+});
+
+<span class="hljs-comment">//Derive a proof from the signature revealing the first message</span>
+<span class="hljs-keyword">const</span> proof = blsCreateProof({
+  signature,
+  publicKey: keyPair.publicKey,
+  messages,
+  nonce: <span class="hljs-string">"nonce"</span>,
+  revealed: [<span class="hljs-number">0</span>],
+});
+
+<span class="hljs-comment">//Verify the created proof</span>
+<span class="hljs-keyword">const</span> isProofVerified = blsVerifyProof({
+  proof,
+  publicKey: keyPair.publicKey,
+  messages: messages.slice(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>),
+  nonce: <span class="hljs-string">"nonce"</span>,
+});</code></pre>
+            <a href="#element-size" id="element-size" style="color: inherit; text-decoration: none;">
+              <h2>Element Size</h2>
+            </a>
+            <p>
+              Within a digital signature there are several elements for which it is useful to know the size, the
+              following table outlines the general equation for calculating element sizes in relation to BBS+ signatures
+              as it is dependent on the pairing friendly curve used.
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Element</th>
+                  <th>Size Equation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Private Key</td>
+                  <td>F</td>
+                </tr>
+                <tr>
+                  <td>Public Key</td>
+                  <td>G2</td>
+                </tr>
+                <tr>
+                  <td>Signature</td>
+                  <td>G1 + 2*F</td>
+                </tr>
+                <tr>
+                  <td>Proof</td>
+                  <td>5<em>G1 + (4 + no_of_hidden_messages)</em>F</td>
+                </tr>
+              </tbody>
+            </table>
+            <ul>
+              <li><code>F</code> A field element</li>
+              <li><code>G1</code> A point in the field of G1</li>
+              <li><code>G2</code> A point in the field of G2</li>
+              <li><code>no_of_hidden_messages</code> The number of the hidden messages</li>
+            </ul>
+            <p>
+              This library includes specific support for BLS12-381 keys with BBS+ signatures and hence gives rise to the
+              following concrete sizes
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Element</th>
+                  <th>Size with BLS12-381</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Private Key</td>
+                  <td>32 Bytes</td>
+                </tr>
+                <tr>
+                  <td>Public Key</td>
+                  <td>96 Bytes</td>
+                </tr>
+                <tr>
+                  <td>Signature</td>
+                  <td>112 Bytes</td>
+                </tr>
+                <tr>
+                  <td>Proof</td>
+                  <td>368 + (no_of_hidden_messages)*32 Bytes</td>
+                </tr>
+              </tbody>
+            </table>
+            <a
+              href="#getting-started-as-a-contributor"
+              id="getting-started-as-a-contributor"
+              style="color: inherit; text-decoration: none;"
+            >
+              <h2>Getting started as a contributor</h2>
+            </a>
+            <p>The following describes how to get started as a contributor to this project</p>
+            <a href="#prerequisites" id="prerequisites" style="color: inherit; text-decoration: none;">
+              <h3>Prerequisites</h3>
+            </a>
+            <p>The following is a list of dependencies you must install to build and contribute to this project</p>
+            <ul>
+              <li><a href="https://yarnpkg.com/">Yarn</a></li>
+              <li><a href="https://www.rust-lang.org/">Rust</a></li>
+            </ul>
+            <p>For more details see our <a href="./docs/CONTRIBUTING.md">contribution guidelines</a></p>
+            <a href="#install" id="install" style="color: inherit; text-decoration: none;">
+              <h4>Install</h4>
+            </a>
+            <p>To install the package dependencies run:</p>
+            <pre><code>yarn <span class="hljs-keyword">install</span> <span class="hljs-comment">--frozen-lockfile</span></code></pre>
+            <a href="#build" id="build" style="color: inherit; text-decoration: none;">
+              <h4>Build</h4>
+            </a>
+            <p>To build the project run:</p>
+            <pre><code><span class="hljs-attribute">yarn build</span></code></pre>
+            <a href="#test" id="test" style="color: inherit; text-decoration: none;">
+              <h4>Test</h4>
+            </a>
+            <p>To run the test in the project run:</p>
+            <pre><code>yarn <span class="hljs-built_in">test</span></code></pre>
+            <a href="#benchmark" id="benchmark" style="color: inherit; text-decoration: none;">
+              <h4>Benchmark</h4>
+            </a>
+            <p>To benchmark the implementation locally run:</p>
+            <pre><code><span class="hljs-attribute">yarn benchmark</span></code></pre>
+            <a href="#dependencies" id="dependencies" style="color: inherit; text-decoration: none;">
+              <h2>Dependencies</h2>
+            </a>
+            <p>
+              This library uses the <a href="https://crates.io/crates/bbs">bbs</a> rust crate for the implementation of
+              BBS+ signatures and BLS12-381 which is then wrapped and exposed in javascript/typescript using
+              <a href="https://github.com/neon-bindings/neon">neon-bindings</a>.
+            </p>
+            <a href="#relevant-references" id="relevant-references" style="color: inherit; text-decoration: none;">
+              <h2>Relevant References</h2>
+            </a>
+            <p>For those interested in more details, you might find the following resources helpful</p>
+            <ul>
+              <li><a href="docs/ALGORITHM.md">Details on the algorithm</a></li>
+              <li><a href="https://hackmd.io/@benjaminion/bls12-381">BLS12-381 For The Rest Of Us</a></li>
+              <li><a href="https://en.wikipedia.org/wiki/Pairing-based_cryptography">Pairing-based cryptography</a></li>
+              <li>
+                <a href="https://vitalik.ca/general/2017/01/14/exploring_ecp.html">Exploring Elliptic Curve Pairings</a>
+              </li>
+              <li>
+                <a
+                  href="https://www.researchgate.net/publication/306347781_Anonymous_Attestation_Using_the_Strong_Diffie_Hellman_Assumption_Revisited"
+                  >Anonymous Attestation Using the Strong Diffie Hellman Assumption Revisited</a
+                >
+              </li>
+              <li>
+                <a href="https://tools.ietf.org/html/draft-irtf-cfrg-pairing-friendly-curves-01"
+                  >Pairing Friendly Curves</a
+                >
+              </li>
+              <li><a href="https://tools.ietf.org/html/draft-irtf-cfrg-bls-signature-02">BLS Signatures</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+          <nav class="tsd-navigation primary">
+            <ul>
+              <li class="globals">
+                <a href="globals.html"><em>Globals</em></a>
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_bbssignature_.html">&quot;bbs<wbr />Signature&quot;</a>
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_bls12381_.html">&quot;bls12381&quot;</a>
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_bls12381tobbs_.html">&quot;bls12381to<wbr />Bbs&quot;</a>
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_index_.html">&quot;index&quot;</a>
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_bbsblindsigncontext_.html"
+                  >&quot;types/<wbr />Bbs<wbr />Blind<wbr />Sign<wbr />Context&quot;</a
+                >
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_bbsblindsigncontextrequest_.html"
+                  >&quot;types/<wbr />Bbs<wbr />Blind<wbr />Sign<wbr />Context<wbr />Request&quot;</a
+                >
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_bbsblindsignrequest_.html"
+                  >&quot;types/<wbr />Bbs<wbr />Blind<wbr />Sign<wbr />Request&quot;</a
+                >
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_bbscreateproofrequest_.html"
+                  >&quot;types/<wbr />Bbs<wbr />Create<wbr />Proof<wbr />Request&quot;</a
+                >
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_bbskeypair_.html">&quot;types/<wbr />Bbs<wbr />Key<wbr />Pair&quot;</a>
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_bbssignrequest_.html">&quot;types/<wbr />Bbs<wbr />Sign<wbr />Request&quot;</a>
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_bbsverifyblindsigncontextrequest_.html"
+                  >&quot;types/<wbr />Bbs<wbr />Verify<wbr />Blind<wbr />Sign<wbr />Context<wbr />Request&quot;</a
+                >
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_bbsverifyproofrequest_.html"
+                  >&quot;types/<wbr />Bbs<wbr />Verify<wbr />Proof<wbr />Request&quot;</a
+                >
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_bbsverifyrequest_.html"
+                  >&quot;types/<wbr />Bbs<wbr />Verify<wbr />Request&quot;</a
+                >
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_bbsverifyresult_.html"
+                  >&quot;types/<wbr />Bbs<wbr />Verify<wbr />Result&quot;</a
+                >
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_bls12381tobbsrequest_.html"
+                  >&quot;types/<wbr />Bls12381<wbr />ToBbs<wbr />Request&quot;</a
+                >
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_blsbbssignrequest_.html"
+                  >&quot;types/<wbr />Bls<wbr />Bbs<wbr />Sign<wbr />Request&quot;</a
+                >
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_blsbbsverifyrequest_.html"
+                  >&quot;types/<wbr />Bls<wbr />Bbs<wbr />Verify<wbr />Request&quot;</a
+                >
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_blskeypair_.html">&quot;types/<wbr />Bls<wbr />Key<wbr />Pair&quot;</a>
+              </li>
+              <li class="tsd-kind-module">
+                <a href="modules/_types_index_.html">&quot;types/index&quot;</a>
+              </li>
+            </ul>
+          </nav>
+          <nav class="tsd-navigation secondary menu-sticky">
+            <ul class="before-current"></ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <footer class="with-border-bottom">
+      <div class="container">
+        <h2>Legend</h2>
+        <div class="tsd-legend-group">
+          <ul class="tsd-legend">
+            <li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+            <li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+          </ul>
+          <ul class="tsd-legend">
+            <li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+    <div class="container tsd-generator">
+      <p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+    </div>
+    <div class="overlay"></div>
+    <script src="assets/js/main.js"></script>
+    <script>
+      if (location.protocol == "file:") document.write('<script src="assets/js/search.js"><' + "/script>");
+    </script>
+  </body>
+</html>
