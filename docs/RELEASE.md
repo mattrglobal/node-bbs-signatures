@@ -14,7 +14,7 @@ To create a stable release follow the following steps
 9. Push the release branch including the newly created tags `git push origin release --tags`
 10. Open a pull request for the release, once approvals have been sought, merge the pull request using squash,
     preserving the commit message as `chore(release): publish [skip ci]`
-11. Observe the triggering of the `/.github/workflows/release-master.yaml`
+11. Observe the triggering of the `/.github/workflows/push-release.yaml`
 
 The resulting release will publish the new package to NPM and the resulting binaries to github packages.
 
