@@ -1,3 +1,12 @@
+# [0.9.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.8.0...0.9.0) (2020-06-18)
+
+### Features
+
+- support building for node 13 and 14 ([#118](https://github.com/mattrglobal/node-bbs-signatures/issues/118))
+  ([19be9e1](https://github.com/mattrglobal/node-bbs-signatures/commit/19be9e1d945c03fbd85830a969b370f222bf5203))
+- update sample ([#112](https://github.com/mattrglobal/node-bbs-signatures/issues/112))
+  ([3ff8c0f](https://github.com/mattrglobal/node-bbs-signatures/commit/3ff8c0f333e041a18c008799a064046535aebba5))
+
 # [0.8.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.7.0...0.8.0) (2020-05-19)
 
 ### Features
