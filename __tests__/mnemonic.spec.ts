@@ -1,5 +1,5 @@
 import { generateBls12381KeyPair } from "../src";
-import { randomBytes } from "tweetnacl";
+import crypto from "crypto";
 import * as mnemonic from "../src/mnemonic/mnemonic";
 
 describe("mnemonic", () => {
@@ -58,7 +58,7 @@ describe("mnemonic", () => {
   });
 
   it("should fail to verify mnemonic with invalid checksum word", () => {
-    const seed = randomBytes(32);
+    const seed = crypto.randomBytes(32);
     const mn = mnemonic.mnemonicFromSeed(seed);
     // Shuffle bits
     const shuffledMn = mn.slice(0, mn.length - 1) + "h";
