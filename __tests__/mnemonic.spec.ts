@@ -61,10 +61,10 @@ describe("mnemonic", () => {
     const seed = randomBytes(32);
     const mn = mnemonic.mnemonicFromSeed(seed);
     // Shuffle bits
-    let shuffledMn = mn.slice(0, mn.length - 1) + "h";
+    const shuffledMn = mn.slice(0, mn.length - 1) + "h";
 
     // https://jestjs.io/docs/en/expect.html#tothrowerror
-    function seedFromInvalidChecksumMnemonic() {
+    function seedFromInvalidChecksumMnemonic(): void {
       mnemonic.seedFromMnemonic(shuffledMn);
     }
 
@@ -75,7 +75,7 @@ describe("mnemonic", () => {
     const mn =
       "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon venue abandon abandon abandon abandon abandon abandon abandon abandon abandon invest";
 
-    function seedFromInvalidMnemonic() {
+    function seedFromInvalidMnemonic(): void {
       mnemonic.seedFromMnemonic(mn);
     }
 
@@ -86,7 +86,7 @@ describe("mnemonic", () => {
     const mn =
       "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon venues abandon abandon abandon abandon abandon abandon abandon abandon abandon invest";
 
-    function seedFromInvalidMnemonic() {
+    function seedFromInvalidMnemonic(): void {
       mnemonic.seedFromMnemonic(mn);
     }
 

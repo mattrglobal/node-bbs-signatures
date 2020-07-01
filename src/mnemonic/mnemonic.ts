@@ -5,6 +5,74 @@ const ERROR_FAILED_TO_DECODE_MNEMONIC = Error("Failed to decode mnemonic");
 const ERROR_WORD_NOT_IN_WORDSLIST = Error("Mnemonic contains a word not in the wordslist");
 
 const SEED_BYTES_LENGTH = 32;
+/* Helpers */
+
+// https://stackoverflow.com/a/51452614
+function UInt8ArrayToUInt11Array(uint8: Uint8Array): number[] {
+  const uint11: number[] = [];
+  let acc = 0;
+  let accBits = 0;
+
+  function add(octet: number): void {
+    acc = (octet << accBits) | acc;
+    accBits += 8;
+    if (accBits >= 11) {
+      uint11.push(acc & 0x7ff);
+      acc >>= 11;
+      accBits -= 11;
+    }
+  }
+
+  function flush(): void {
+    if (accBits) {
+      uint11.push(acc);
+    }
+  }
+
+  uint8.forEach(add);
+  flush();
+  return uint11;
+}
+
+// https://stackoverflow.com/a/51452614
+function UInt11ArrayToUInt8Array(uint11: number[]): Uint8Array {
+  const uint8: number[] = [];
+  let acc = 0;
+  let accBits = 0;
+
+  function add(ui11: number): void {
+    acc = (ui11 << accBits) | acc;
+    accBits += 11;
+    while (accBits >= 8) {
+      uint8.push(acc & 0xff);
+      acc >>= 8;
+      accBits -= 8;
+    }
+  }
+
+  function flush(): void {
+    if (accBits) {
+      uint8.push(acc);
+    }
+  }
+
+  uint11.forEach(add);
+  flush();
+  return new Uint8Array(uint8);
+}
+
+function applyWords(nums: number[]): string[] {
+  return nums.map((n) => english[n]);
+}
+
+function computeChecksum(seed: Uint8Array): string {
+  const hashBuffer = crypto.createHash("sha256").update(seed).digest();
+  const uint8HashBuffer = new Uint8Array(hashBuffer);
+  const uint11HashBuffer = UInt8ArrayToUInt11Array(uint8HashBuffer);
+  const words = applyWords(uint11HashBuffer);
+
+  return words[0];
+}
 
 function mnemonicFromSeed(seed: Uint8Array): string {
   if (seed.length !== SEED_BYTES_LENGTH) {
@@ -23,7 +91,7 @@ function seedFromMnemonic(mnemonic: string): Uint8Array {
   const key = words.slice(0, 24);
 
   // Check all words are present in the wordslist
-  for (let word of key) {
+  for (const word of key) {
     if (english.indexOf(word) === -1) throw ERROR_WORD_NOT_IN_WORDSLIST;
   }
 
@@ -53,75 +121,6 @@ function seedFromMnemonic(mnemonic: string): Uint8Array {
   if (checksumWord === computedChecksumWord) return uint8Array;
 
   throw ERROR_FAILED_TO_DECODE_MNEMONIC;
-}
-
-/* Helpers */
-
-// https://stackoverflow.com/a/51452614
-function UInt8ArrayToUInt11Array(uint8: Uint8Array): number[] {
-  let uint11: any[] = [];
-  let acc = 0;
-  let accBits = 0;
-
-  function add(octet: number) {
-    acc = (octet << accBits) | acc;
-    accBits += 8;
-    if (accBits >= 11) {
-      uint11.push(acc & 0x7ff);
-      acc >>= 11;
-      accBits -= 11;
-    }
-  }
-
-  function flush() {
-    if (accBits) {
-      uint11.push(acc);
-    }
-  }
-
-  uint8.forEach(add);
-  flush();
-  return uint11;
-}
-
-// https://stackoverflow.com/a/51452614
-function UInt11ArrayToUInt8Array(uint11: number[]): Uint8Array {
-  let uint8: any[] = [];
-  let acc = 0;
-  let accBits = 0;
-
-  function add(ui11: number) {
-    acc = (ui11 << accBits) | acc;
-    accBits += 11;
-    while (accBits >= 8) {
-      uint8.push(acc & 0xff);
-      acc >>= 8;
-      accBits -= 8;
-    }
-  }
-
-  function flush() {
-    if (accBits) {
-      uint8.push(acc);
-    }
-  }
-
-  uint11.forEach(add);
-  flush();
-  return new Uint8Array(uint8);
-}
-
-function applyWords(nums: number[]) {
-  return nums.map((n) => english[n]);
-}
-
-function computeChecksum(seed: Uint8Array): any {
-  const hashBuffer = crypto.createHash("sha256").update(seed).digest();
-  const uint8HashBuffer = new Uint8Array(hashBuffer);
-  const uint11HashBuffer = UInt8ArrayToUInt11Array(uint8HashBuffer);
-  const words = applyWords(uint11HashBuffer);
-
-  return words[0];
 }
 
 export { mnemonicFromSeed, seedFromMnemonic, ERROR_FAILED_TO_DECODE_MNEMONIC, ERROR_WORD_NOT_IN_WORDSLIST };
