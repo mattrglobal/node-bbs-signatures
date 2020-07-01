@@ -24,4 +24,5 @@ export {
   verifyProof,
   blsVerifyProof,
 } from "./bbsSignature";
+export * from "./mnemonic/mnemonic";
 export * from "./types";

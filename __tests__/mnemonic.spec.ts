@@ -1,6 +1,6 @@
 import { generateBls12381KeyPair } from "../src";
 import { randomBytes } from "tweetnacl";
-import mnemonic from "../src/mnemonic/mnemonic";
+import * as mnemonic from "../src/mnemonic/mnemonic";
 
 describe("mnemonic", () => {
   it("should return 25 words mnemonic from secret key seed", () => {

@@ -54,10 +54,14 @@ import {
   blsVerify,
   blsCreateProof,
   blsVerifyProof,
+  mnemonicFromSeed,
 } from "@mattrglobal/node-bbs-signatures";
 
 //Generate a new key pair
 const keyPair = generateBls12381KeyPair();
+
+// Convert secret key to mnemonic
+const mn = mnemonicFromSeed(keyPair.secretKey as UInt8Array);
 
 //Set of messages we wish to sign
 const messages = ["message1", "message2"];

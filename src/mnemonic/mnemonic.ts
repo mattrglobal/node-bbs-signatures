@@ -124,4 +124,4 @@ function computeChecksum(seed: Uint8Array): any {
   return words[0];
 }
 
-export default { mnemonicFromSeed, seedFromMnemonic, ERROR_FAILED_TO_DECODE_MNEMONIC, ERROR_WORD_NOT_IN_WORDSLIST };
+export { mnemonicFromSeed, seedFromMnemonic, ERROR_FAILED_TO_DECODE_MNEMONIC, ERROR_WORD_NOT_IN_WORDSLIST };
