@@ -123,9 +123,9 @@ fn bls_public_key_to_bbs_key(mut cx: FunctionContext) -> JsResult<JsArrayBuffer>
 /// `signature_context`: `Object` the context for the signature creation
 /// The context object model is as follows:
 /// {
-///     "secretKey": ArrayBuffer           // The private key of signer
-///     "publicKey": ArrayBuffer           // The public key of signer
-///     "messages": [String, String],      // The messages to be signed as strings. They will be hashed with SHAKE-256
+///     "secretKey": ArrayBuffer                // The private key of signer
+///     "publicKey": ArrayBuffer                // The public key of signer
+///     "messages": [ArrayBuffer, ArrayBuffer], // The messages to be signed as strings. They will be hashed with Blake2b
 /// }
 ///
 /// `return`: `ArrayBuffer` the signature
@@ -170,7 +170,7 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
 /// {
 ///     "publicKey": ArrayBuffer                // The public key
 ///     "signature": ArrayBuffer                // The signature
-///     "messages": [String, String],           // The messages that were signed as strings. They will be SHAKE-256 hashed
+///     "messages": [ArrayBuffer, ArrayBuffer], // The messages that were signed as strings. They will be Blake2b hashed
 /// }
 ///
 /// `return`: true if valid `signature` on `messages`
@@ -219,9 +219,9 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 /// The context object model is as follows:
 /// {
 ///     "publicKey": ArrayBuffer                // The public key of signer
-///     "messages": [String, String],           // The messages that will be blinded as strings. They will be SHAKE-256 hashed
+///     "messages": [ArrayBuffer, ArrayBuffer], // The messages that will be blinded as strings. They will be Blake2b hashed
 ///     "blinded": [Number, Number],            // The zero based indices to the generators in the public key for the messages.
-///     "nonce": String                         // This is an optional nonce from the signer and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
+///     "nonce": ArrayBuffer                    // This is an optional nonce from the signer and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
 /// }
 ///
 /// `return`: `Object` with the following fields
@@ -275,7 +275,7 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
     if public_key.validate().is_err() {
         panic!("Invalid key");
     }
-    let nonce_str = obj_field_to_opt_string!(cx, js_obj, "nonce");
+    let nonce = obj_field_to_opt_slice!(cx, js_obj, "nonce");
 
     let hidden = obj_field_to_vec!(cx, js_obj, "blinded");
     let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
@@ -305,9 +305,9 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
         messages.insert(index as usize, message);
     }
     let nonce = ProofNonce::hash(
-        &(nonce_str.map_or_else(
-            || "bbs+nodejswrapper".as_bytes().to_vec(),
-            |m| m.as_bytes().to_vec(),
+        &(nonce.map_or_else(
+            || b"bbs+nodejswrapper".to_vec(),
+            |m| m,
         )),
     );
 
@@ -335,7 +335,7 @@ struct BlindingContext {
 ///     "challengeHash": ArrayBuffer,           // Fiat-Shamir Challenge
 ///     "publicKey": ArrayBuffer                // The public key of signer
 ///     "blinded": [Number, Number],            // The zero based indices to the generators in the public key for the blinded messages.
-///     "nonce": String                         // This is an optional nonce from the signer and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
+///     "nonce": ArrayBuffer                    // This is an optional nonce from the signer and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
 /// }
 /// `return`: true if valid `signature` on `messages`
 fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoolean> {
@@ -345,11 +345,11 @@ fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoole
     if public_key.validate().is_err() {
         panic!("Invalid key");
     }
-    let nonce_str = obj_field_to_opt_string!(&mut cx, js_obj, "nonce");
+    let nonce_str = obj_field_to_opt_slice!(&mut cx, js_obj, "nonce");
     let nonce = ProofNonce::hash(
         &(nonce_str.map_or_else(
-            || "bbs+nodejswrapper".as_bytes().to_vec(),
-            |m| m.as_bytes().to_vec(),
+            || b"bbs+nodejswrapper".to_vec(),
+            |m| m,
         )),
     );
     let commitment = Commitment::from(obj_field_to_fixed_array!(
@@ -409,10 +409,10 @@ fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoole
 /// `blind_signature_context`: `Object` the context for the blind signature creation
 /// The context object model is as follows:
 /// {
-///     "commitment": ArrayBuffer                // The commitment received from the intended recipient
-///     "publicKey": ArrayBuffer                 // The public key of signer
-///     "secretKey": ArrayBuffer                 // The secret key used for generating the signature
-///     "messages": [String, String]             // The messages that will be signed as strings. They will be hashed with SHAKE-256
+///     "commitment": ArrayBuffer               // The commitment received from the intended recipient
+///     "publicKey": ArrayBuffer                // The public key of signer
+///     "secretKey": ArrayBuffer                // The secret key used for generating the signature
+///     "messages": [ArrayBuffer, ArrayBuffer]  // The messages that will be signed as strings. They will be hashed with Blake2b
 ///     "known": [Number, Number],              // The zero based indices to the generators in the public key for the known messages.
 /// }
 ///
@@ -529,9 +529,9 @@ fn bbs_get_unblinded_signature(mut cx: FunctionContext) -> JsResult<JsArrayBuffe
 /// {
 ///     "signature": ArrayBuffer,               // The signature to be proved
 ///     "publicKey": ArrayBuffer,               // The public key of the signer
-///     "messages": [String, String]            // All messages that were signed in the order they correspond to the generators in the public key. They will be SHAKE-256 hashed
+///     "messages": [ArrayBuffer, ArrayBuffer]  // All messages that were signed in the order they correspond to the generators in the public key. They will be Blake2b hashed
 ///     "revealed": [Number, Number]            // The zero based indices to the generators in the public key for the messages to be revealed. All other messages will be hidden from the verifier.
-///     "nonce": String                         // This is an optional nonce from the verifier and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
+///     "nonce": ArrayBuffer                    // This is an optional nonce from the verifier and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
 /// }
 ///
 /// `return`: `ArrayBuffer` the proof to send to the verifier
@@ -553,7 +553,7 @@ fn generate_proof(pcx: CreateProofContext) -> Result<PoKOfSignatureProof, Throw>
     ));
     let mut challenge_bytes = pok.to_bytes();
     if let Some(b) = pcx.nonce {
-        challenge_bytes.extend_from_slice(&ProofNonce::hash(b.as_bytes()).to_bytes_compressed_form());
+        challenge_bytes.extend_from_slice(&ProofNonce::hash(b.as_slice()).to_bytes_compressed_form());
     } else {
         challenge_bytes.extend_from_slice(&[0u8; FR_COMPRESSED_SIZE]);
     }
@@ -578,7 +578,7 @@ fn extract_create_proof_context(cx: &mut FunctionContext) -> Result<(Vec<u8>, Cr
         panic!("Invalid key");
     }
 
-    let nonce = obj_field_to_opt_string!(cx, js_obj, "nonce");
+    let nonce = obj_field_to_opt_slice!(cx, js_obj, "nonce");
 
     let revealed_indices = obj_field_to_vec!(cx, js_obj, "revealed");
     let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
@@ -621,7 +621,7 @@ struct CreateProofContext {
     signature: Signature,
     public_key: PublicKey,
     messages: Vec<ProofMessage>,
-    nonce: Option<String>,
+    nonce: Option<Vec<u8>>,
 }
 
 /// Verify a signature proof of knowledge. This includes checking some revealed messages.
@@ -632,8 +632,8 @@ struct CreateProofContext {
 /// {
 ///     "proof": ArrayBuffer,                   // The proof from `bbs_create_proof`
 ///     "publicKey": ArrayBuffer,               // The public key of the signer in BLS form
-///     "messages": [String, String]            // The revealed messages as strings. They will be Blake2b hashed.
-///     "nonce": String                         // This is an optional nonce from the verifier and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
+///     "messages": [ArrayBuffer, ArrayBuffer]  // The revealed messages as strings. They will be Blake2b hashed.
+///     "nonce": ArrayBuffer                    // This is an optional nonce from the verifier and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
 /// }
 ///
 /// `return`: true if valid
@@ -654,7 +654,7 @@ fn bls_verify_proof(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 /// {
 ///     "proof": ArrayBuffer,                   // The proof from `bbs_create_proof`
 ///     "publicKey": ArrayBuffer,               // The public key of the signer
-///     "messages": [String, String]            // The revealed messages as strings. They will be Blake2b hashed.
+///     "messages": [ArrayBuffer, ArrayBuffer]  // The revealed messages as strings. They will be Blake2b hashed.
 ///     "nonce": String                         // This is an optional nonce from the verifier and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
 /// }
 ///
@@ -670,7 +670,7 @@ fn bbs_verify_proof(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 
 fn verify_proof(vcx: VerifyProofContext) -> Result<Vec<SignatureMessage>, Throw> {
     let nonce = match vcx.nonce {
-        Some(ref s) => ProofNonce::hash(s.as_bytes()),
+        Some(ref s) => ProofNonce::hash(s.as_slice()),
         None => ProofNonce::from([0u8; FR_COMPRESSED_SIZE]),
     };
     let proof_request = ProofRequest {
@@ -707,7 +707,7 @@ fn extract_verify_proof_context(cx: &mut FunctionContext, is_bls: bool) -> Resul
 
     let proof = handle_err!(PoKOfSignatureProof::from_bytes_compressed_form(&proof[offset..]));
 
-    let nonce = obj_field_to_opt_string!(cx, js_obj, "nonce");
+    let nonce = obj_field_to_opt_slice!(cx, js_obj, "nonce");
     // let revealed_indices = obj_field_to_vec!(cx, js_obj, "revealed");
     let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
 
@@ -761,7 +761,7 @@ struct VerifyProofContext {
     proof: PoKOfSignatureProof,
     public_key: PublicKey,
     revealed: BTreeSet<usize>,
-    nonce: Option<String>,
+    nonce: Option<Vec<u8>>,
 }
 
 /// Expects `revealed` to be sorted
