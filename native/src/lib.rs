@@ -125,6 +125,9 @@ fn bls_public_key_to_bbs_key(mut cx: FunctionContext) -> JsResult<JsArrayBuffer>
 /// {
 ///     "secretKey": ArrayBuffer                // The private key of signer
 ///     "publicKey": ArrayBuffer                // The public key of signer
+///     "messages": [ArrayBuffer, ArrayBuffer], // The messages to be signed as strings. They will be hashed with Blake2b
+///     "secretKey": ArrayBuffer                // The private key of signer
+///     "publicKey": ArrayBuffer                // The public key of signer
 ///     "messages": [ArrayBuffer, ArrayBuffer], // The messages to be signed as ArrayBuffers. They will be hashed with Blake2b
 /// }
 ///
@@ -170,6 +173,7 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
 /// {
 ///     "publicKey": ArrayBuffer                // The public key
 ///     "signature": ArrayBuffer                // The signature
+///     "messages": [ArrayBuffer, ArrayBuffer], // The messages that were signed as strings. They will be Blake2b hashed
 ///     "messages": [ArrayBuffer, ArrayBuffer], // The messages that were signed as ArrayBuffers. They will be Blake2b hashed
 /// }
 ///
@@ -219,6 +223,7 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 /// The context object model is as follows:
 /// {
 ///     "publicKey": ArrayBuffer                // The public key of signer
+///     "messages": [ArrayBuffer, ArrayBuffer], // The messages that will be blinded as strings. They will be Blake2b hashed
 ///     "messages": [ArrayBuffer, ArrayBuffer], // The messages that will be blinded as ArrayBuffers. They will be Blake2b hashed
 ///     "blinded": [Number, Number],            // The zero based indices to the generators in the public key for the messages.
 ///     "nonce": ArrayBuffer                    // This is an optional nonce from the signer and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
