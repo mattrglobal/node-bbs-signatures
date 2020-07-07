@@ -45,6 +45,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = createProof(request);
+      expect(proof).toBeInstanceOf(Uint8Array);
       expect(proof.length).toEqual(383);
     });
 
@@ -67,6 +68,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = createProof(request);
+      expect(proof).toBeInstanceOf(Uint8Array);
       expect(proof.length).toEqual(383); //TODO add a reason for this and some constants?
     });
 
@@ -89,6 +91,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = createProof(request);
+      expect(proof).toBeInstanceOf(Uint8Array);
       expect(proof.length).toEqual(447); //TODO add a reason for this and some constants?
     });
 
@@ -111,6 +114,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = createProof(request);
+      expect(proof).toBeInstanceOf(Uint8Array);
       expect(proof.length).toEqual(415); //TODO evaluate this length properly add a reason for this and some constants?
     });
   });
@@ -134,6 +138,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = blsCreateProof(request);
+      expect(proof).toBeInstanceOf(Uint8Array);
       expect(proof.length).toEqual(383);
     });
 
@@ -156,6 +161,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = blsCreateProof(request);
+      expect(proof).toBeInstanceOf(Uint8Array);
       expect(proof.length).toEqual(383); //TODO add a reason for this and some constants?
     });
 
@@ -178,6 +184,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = blsCreateProof(request);
+      expect(proof).toBeInstanceOf(Uint8Array);
       expect(proof.length).toEqual(447); //TODO add a reason for this and some constants?
     });
 
@@ -200,6 +207,7 @@ describe("bbsSignature", () => {
       };
 
       const proof = blsCreateProof(request);
+      expect(proof).toBeInstanceOf(Uint8Array);
       expect(proof.length).toEqual(415); //TODO evaluate this length properly add a reason for this and some constants?
     });
   });
