@@ -55,15 +55,6 @@ macro_rules! obj_field_to_fixed_array {
     }};
 }
 
-// macro_rules! obj_field_to_opt_string {
-//     ($cx:expr, $obj:expr, $field:expr) => {{
-//         match $obj.get($cx, $field)?.downcast::<JsString>().or_throw($cx) {
-//             Err(_) => None,
-//             Ok(arg) => Some(arg.value()),
-//         }
-//     }};
-// }
-
 macro_rules! obj_field_to_opt_slice {
     ($cx:expr, $obj:expr, $field:expr) => {{
         match $obj.get($cx, $field)?.downcast::<JsArrayBuffer>().or_throw($cx) {
@@ -90,14 +81,6 @@ macro_rules! cast_to_slice {
         $cx.borrow(&arg, |d| d.as_slice::<u8>()).to_vec()
     }};
 }
-
-// macro_rules! cast_to_string {
-//     ($cx:expr, $obj:expr) => {{
-//         $obj.downcast::<JsString>()
-//             .unwrap_or($cx.string(""))
-//             .value()
-//     }};
-// }
 
 macro_rules! cast_to_number {
     ($cx:expr, $obj:expr) => {

@@ -655,7 +655,7 @@ fn bls_verify_proof(mut cx: FunctionContext) -> JsResult<JsBoolean> {
 ///     "proof": ArrayBuffer,                   // The proof from `bbs_create_proof`
 ///     "publicKey": ArrayBuffer,               // The public key of the signer
 ///     "messages": [ArrayBuffer, ArrayBuffer]  // The revealed messages as strings. They will be Blake2b hashed.
-///     "nonce": String                         // This is an optional nonce from the verifier and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
+///     "nonce": ArrayBuffer                    // This is an optional nonce from the verifier and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
 /// }
 ///
 /// `return`: true if valid
@@ -733,19 +733,6 @@ fn extract_verify_proof_context(cx: &mut FunctionContext, is_bls: bool) -> Resul
     if public_key.validate().is_err() {
         panic!("Invalid key");
     }
-
-    // let message_count = public_key.message_count() as f64;
-    // let mut revealed = BTreeSet::new();
-    // for i in 0..revealed_indices.len() {
-    //     let index = cast_to_number!(cx, revealed_indices[i]);
-    //     if index < 0f64 || index > message_count {
-    //         panic!(
-    //             "Index is out of bounds. Must be between 0 and {}: {}",
-    //             message_count, index
-    //         );
-    //     }
-    //     revealed.insert(index as usize);
-    // }
 
     Ok(VerifyProofContext {
         proof,

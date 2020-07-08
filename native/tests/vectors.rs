@@ -251,8 +251,6 @@ fn proof_with_8_messages() {
     let res = Verifier::verify_signature_pok(&pr, &sig_pok, &nonce);
 
     assert!(res.is_ok());
-    // let proved_messages = res.unwrap();
-    // assert_eq!(proved_messages, vec![SignatureMessage::from_msg_hash(b"Message9")])
 }
 
 #[test]
@@ -296,11 +294,6 @@ fn print() {
     let res = Verifier::verify_signature_pok(&proof_request, &proof, &nonce);
 
     assert!(res.is_ok());
-    // let proved_messages = res.unwrap();
-
-    // proof_request.revealed_messages = BTreeSet::new();
-    // proof_request.revealed_messages.insert(1);
-    // proof.revealed_messages = vec![SignatureMessage::from_msg_hash(b"Message2")];
 }
 
 fn get_public_key(key: &str) -> DeterministicPublicKey {
