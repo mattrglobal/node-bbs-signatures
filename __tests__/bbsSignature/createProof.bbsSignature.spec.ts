@@ -12,23 +12,13 @@
  */
 
 import { BbsCreateProofRequest, createProof, blsCreateProof } from "../../src";
-import { Coder } from "@stablelib/base64";
 import { randomBytes } from "@stablelib/random";
-
-const base64Encode = (bytes: Uint8Array): string => {
-  const coder = new Coder();
-  return coder.encode(bytes);
-};
-
-const base64Decode = (string: string): Uint8Array => {
-  const coder = new Coder();
-  return coder.decode(string);
-};
+import { base64Decode, stringToBytes } from "../utilities";
 
 describe("bbsSignature", () => {
   describe("createProof", () => {
     it("should create proof revealing single message from single message signature", () => {
-      const messages = ["RmtnDBJHso5iSg=="];
+      const messages = [stringToBytes("RmtnDBJHso5iSg==")];
       const bbsPublicKey = base64Decode(
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pboZyjM38YgjaUBcjftZi5gb58Qz13XeRJpiuUHH06I7/1Eb8oVtIW5SGMNfKaqKhBAAAAAYPPztgxfWWw01/0SSug1oLfVuI4XUqhgyZ3rS6eTkOLjnyR3ObXb0XCD2Mfcxiv6w=="
       );
@@ -40,7 +30,7 @@ describe("bbsSignature", () => {
         signature,
         publicKey: bbsPublicKey,
         messages,
-        nonce: "0123456789",
+        nonce: stringToBytes("0123456789"),
         revealed: [0],
       };
 
@@ -50,7 +40,11 @@ describe("bbsSignature", () => {
     });
 
     it("should create proof revealing all messages from multi-message signature", () => {
-      const messages = ["J42AxhciOVkE9w==", "PNMnARWIHP+s2g==", "ti9WYhhEej85jw=="];
+      const messages = [
+        stringToBytes("J42AxhciOVkE9w=="),
+        stringToBytes("PNMnARWIHP+s2g=="),
+        stringToBytes("ti9WYhhEej85jw=="),
+      ];
 
       const bbsPublicKey = base64Decode(
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pbiZ/pmArLDr3oSCqthKgSZw4VFzzJMFEuHP9AAnOnUJmqkOmvI1ctGLO6kCLFuwQVAAAAA4GrOHdyZEbTWRrTwIdz+KXWcEUHdIx41XSr/RK0TE5+qU7irAhQekOGFpGWQY4rYrDxoHToB4DblaJWUgkSZQLQ5sOfJg3qUJr9MpnDNJ8nNNitL65e6mqnpfsbbT3k94LBQI3/HijeRl29y5dGcLhOxldMtx2SvQg//kWOJ/Ug8e1aVo3V07XkR1Ltx76uzA=="
@@ -63,7 +57,7 @@ describe("bbsSignature", () => {
         signature,
         publicKey: bbsPublicKey,
         messages,
-        nonce: base64Encode(randomBytes(10)),
+        nonce: randomBytes(10),
         revealed: [0, 1, 2],
       };
 
@@ -73,7 +67,11 @@ describe("bbsSignature", () => {
     });
 
     it("should create proof revealing single message from multi-message signature", () => {
-      const messages = ["J42AxhciOVkE9w==", "PNMnARWIHP+s2g==", "ti9WYhhEej85jw=="];
+      const messages = [
+        stringToBytes("J42AxhciOVkE9w=="),
+        stringToBytes("PNMnARWIHP+s2g=="),
+        stringToBytes("ti9WYhhEej85jw=="),
+      ];
 
       const bbsPublicKey = base64Decode(
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pbiZ/pmArLDr3oSCqthKgSZw4VFzzJMFEuHP9AAnOnUJmqkOmvI1ctGLO6kCLFuwQVAAAAA4GrOHdyZEbTWRrTwIdz+KXWcEUHdIx41XSr/RK0TE5+qU7irAhQekOGFpGWQY4rYrDxoHToB4DblaJWUgkSZQLQ5sOfJg3qUJr9MpnDNJ8nNNitL65e6mqnpfsbbT3k94LBQI3/HijeRl29y5dGcLhOxldMtx2SvQg//kWOJ/Ug8e1aVo3V07XkR1Ltx76uzA=="
@@ -86,7 +84,7 @@ describe("bbsSignature", () => {
         signature,
         publicKey: bbsPublicKey,
         messages,
-        nonce: base64Encode(randomBytes(10)),
+        nonce: randomBytes(10),
         revealed: [0],
       };
 
@@ -96,7 +94,11 @@ describe("bbsSignature", () => {
     });
 
     it("should create proof revealing multiple messages from multi-message signature", () => {
-      const messages = ["J42AxhciOVkE9w==", "PNMnARWIHP+s2g==", "ti9WYhhEej85jw=="];
+      const messages = [
+        stringToBytes("J42AxhciOVkE9w=="),
+        stringToBytes("PNMnARWIHP+s2g=="),
+        stringToBytes("ti9WYhhEej85jw=="),
+      ];
 
       const bbsPublicKey = base64Decode(
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pbiZ/pmArLDr3oSCqthKgSZw4VFzzJMFEuHP9AAnOnUJmqkOmvI1ctGLO6kCLFuwQVAAAAA4GrOHdyZEbTWRrTwIdz+KXWcEUHdIx41XSr/RK0TE5+qU7irAhQekOGFpGWQY4rYrDxoHToB4DblaJWUgkSZQLQ5sOfJg3qUJr9MpnDNJ8nNNitL65e6mqnpfsbbT3k94LBQI3/HijeRl29y5dGcLhOxldMtx2SvQg//kWOJ/Ug8e1aVo3V07XkR1Ltx76uzA=="
@@ -109,7 +111,7 @@ describe("bbsSignature", () => {
         signature,
         publicKey: bbsPublicKey,
         messages,
-        nonce: base64Encode(randomBytes(10)),
+        nonce: randomBytes(10),
         revealed: [0, 2],
       };
 
@@ -121,7 +123,7 @@ describe("bbsSignature", () => {
 
   describe("blsCreateProof", () => {
     it("should create proof revealing single message from single message signature", () => {
-      const messages = ["uzAoQFqLgReidw=="];
+      const messages = [stringToBytes("uzAoQFqLgReidw==")];
       const blsPublicKey = base64Decode(
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pb"
       );
@@ -133,7 +135,7 @@ describe("bbsSignature", () => {
         signature,
         publicKey: blsPublicKey,
         messages,
-        nonce: "0123456789",
+        nonce: stringToBytes("0123456789"),
         revealed: [0],
       };
 
@@ -143,7 +145,11 @@ describe("bbsSignature", () => {
     });
 
     it("should create proof revealing all messages from multi-message signature", () => {
-      const messages = ["C+n1rPz1/tVzPg==", "h3x8cbySqC4rLA==", "MGf74ofGdRwNbw=="];
+      const messages = [
+        stringToBytes("C+n1rPz1/tVzPg=="),
+        stringToBytes("h3x8cbySqC4rLA=="),
+        stringToBytes("MGf74ofGdRwNbw=="),
+      ];
 
       const blsPublicKey = base64Decode(
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pb"
@@ -156,7 +162,7 @@ describe("bbsSignature", () => {
         signature,
         publicKey: blsPublicKey,
         messages,
-        nonce: base64Encode(randomBytes(10)),
+        nonce: randomBytes(10),
         revealed: [0, 1, 2],
       };
 
@@ -166,7 +172,11 @@ describe("bbsSignature", () => {
     });
 
     it("should create proof revealing single message from multi-message signature", () => {
-      const messages = ["uiSKIfNoO2rMrA==", "lMoHHrFx0LxwAw==", "wdwqLVm9chMMnA=="];
+      const messages = [
+        stringToBytes("uiSKIfNoO2rMrA=="),
+        stringToBytes("lMoHHrFx0LxwAw=="),
+        stringToBytes("wdwqLVm9chMMnA=="),
+      ];
 
       const blsPublicKey = base64Decode(
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pb"
@@ -179,7 +189,7 @@ describe("bbsSignature", () => {
         signature,
         publicKey: blsPublicKey,
         messages,
-        nonce: base64Encode(randomBytes(10)),
+        nonce: randomBytes(10),
         revealed: [0],
       };
 
@@ -189,7 +199,11 @@ describe("bbsSignature", () => {
     });
 
     it("should create proof revealing multiple messages from multi-message signature", () => {
-      const messages = ["uiSKIfNoO2rMrA==", "lMoHHrFx0LxwAw==", "wdwqLVm9chMMnA=="];
+      const messages = [
+        stringToBytes("uiSKIfNoO2rMrA=="),
+        stringToBytes("lMoHHrFx0LxwAw=="),
+        stringToBytes("wdwqLVm9chMMnA=="),
+      ];
 
       const blsPublicKey = base64Decode(
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pb"
@@ -202,7 +216,7 @@ describe("bbsSignature", () => {
         signature,
         publicKey: blsPublicKey,
         messages,
-        nonce: base64Encode(randomBytes(10)),
+        nonce: randomBytes(10),
         revealed: [0, 2],
       };
 

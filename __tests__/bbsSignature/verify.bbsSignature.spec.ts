@@ -23,12 +23,7 @@ import {
   blsSign,
   BlsBbsVerifyRequest,
 } from "../../src";
-import { Coder } from "@stablelib/base64";
-
-const base64Decode = (string: string): Uint8Array => {
-  const coder = new Coder();
-  return coder.decode(string);
-};
+import { base64Decode, stringToBytes } from "../utilities";
 
 describe("bbsSignature", () => {
   describe("verify", () => {
@@ -37,12 +32,12 @@ describe("bbsSignature", () => {
       const BbsPublicKey = bls12381toBbs({ keyPair: blsKeyPair, messageCount: 1 });
       const request: BbsSignRequest = {
         keyPair: BbsPublicKey,
-        messages: ["ExampleMessage"],
+        messages: [stringToBytes("ExampleMessage")],
       };
       const signature = sign(request);
       const verifyRequest: BbsVerifyRequest = {
         publicKey: BbsPublicKey.publicKey,
-        messages: ["ExampleMessage"],
+        messages: [stringToBytes("ExampleMessage")],
         signature,
       };
       const result = verify(verifyRequest);
@@ -53,19 +48,19 @@ describe("bbsSignature", () => {
       const BbsPublicKey = bls12381toBbs({ keyPair: blsKeyPair, messageCount: 3 });
       const request: BbsSignRequest = {
         keyPair: BbsPublicKey,
-        messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"],
+        messages: [stringToBytes("ExampleMessage"), stringToBytes("ExampleMessage2"), stringToBytes("ExampleMessage3")],
       };
       const signature = sign(request);
       const verifyRequest: BbsVerifyRequest = {
         publicKey: BbsPublicKey.publicKey,
-        messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"],
+        messages: [stringToBytes("ExampleMessage"), stringToBytes("ExampleMessage2"), stringToBytes("ExampleMessage3")],
         signature: signature,
       };
       expect(verify(verifyRequest).verified).toBeTruthy();
     });
 
     it("should not verify valid signature with wrong single message", () => {
-      const messages = ["BadMessage"];
+      const messages = [stringToBytes("BadMessage")];
       const BbsPublicKey = bls12381toBbs({ keyPair: blsKeyPair, messageCount: 1 });
       const verifyRequest: BbsVerifyRequest = {
         publicKey: BbsPublicKey.publicKey,
@@ -78,7 +73,7 @@ describe("bbsSignature", () => {
     });
 
     it("should not verify valid signature with wrong messages", () => {
-      const messages = ["BadMessage", "BadMessage", "BadMessage"];
+      const messages = [stringToBytes("BadMessage"), stringToBytes("BadMessage"), stringToBytes("BadMessage")];
       const BbsPublicKey = bls12381toBbs({ keyPair: blsKeyPair, messageCount: 3 });
       const verifyRequest: BbsVerifyRequest = {
         publicKey: BbsPublicKey.publicKey,
@@ -118,12 +113,12 @@ describe("bbsSignature", () => {
     it("should verify valid signature with a single message", () => {
       const request: BlsBbsSignRequest = {
         keyPair: blsKeyPair,
-        messages: ["ExampleMessage"],
+        messages: [stringToBytes("ExampleMessage")],
       };
       const signature = blsSign(request);
       const verifyRequest: BlsBbsVerifyRequest = {
         publicKey: blsKeyPair.publicKey,
-        messages: ["ExampleMessage"],
+        messages: [stringToBytes("ExampleMessage")],
         signature,
       };
       expect(blsVerify(verifyRequest).verified).toBeTruthy();
@@ -132,19 +127,19 @@ describe("bbsSignature", () => {
     it("should verify valid signature with multiple messages", () => {
       const request: BlsBbsSignRequest = {
         keyPair: blsKeyPair,
-        messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"],
+        messages: [stringToBytes("ExampleMessage"), stringToBytes("ExampleMessage2"), stringToBytes("ExampleMessage3")],
       };
       const signature = blsSign(request);
       const verifyRequest: BlsBbsVerifyRequest = {
         publicKey: blsKeyPair.publicKey,
-        messages: ["ExampleMessage", "ExampleMessage2", "ExampleMessage3"],
+        messages: [stringToBytes("ExampleMessage"), stringToBytes("ExampleMessage2"), stringToBytes("ExampleMessage3")],
         signature,
       };
       expect(blsVerify(verifyRequest).verified).toBeTruthy();
     });
 
     it("should not verify valid signature with wrong single message", () => {
-      const messages = ["BadMessage"];
+      const messages = [stringToBytes("BadMessage")];
       const verifyRequest: BlsBbsVerifyRequest = {
         publicKey: blsKeyPair.publicKey,
         messages,
@@ -156,7 +151,7 @@ describe("bbsSignature", () => {
     });
 
     it("should not verify valid signature with wrong messages", () => {
-      const messages = ["BadMessage", "BadMessage", "BadMessage"];
+      const messages = [stringToBytes("BadMessage"), stringToBytes("BadMessage"), stringToBytes("BadMessage")];
       const verifyRequest: BlsBbsVerifyRequest = {
         publicKey: blsKeyPair.publicKey,
         messages,

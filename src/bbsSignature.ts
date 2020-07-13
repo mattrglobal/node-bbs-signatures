@@ -45,12 +45,13 @@ export const BBS_SIGNATURE_LENGTH = 112;
  */
 export const sign = (request: BbsSignRequest): Uint8Array => {
   const { keyPair, messages } = request;
+  const messageBuffers = messages.map((_) => _.buffer);
   try {
     return new Uint8Array(
       bbs.bbs_sign({
         publicKey: keyPair.publicKey.buffer,
         secretKey: keyPair.secretKey?.buffer as ArrayBuffer,
-        messages,
+        messages: messageBuffers,
       })
     );
   } catch {
@@ -67,12 +68,13 @@ export const sign = (request: BbsSignRequest): Uint8Array => {
 export const blsSign = (request: BlsBbsSignRequest): Uint8Array => {
   const { keyPair, messages } = request;
   const bbsKeyPair = bls12381toBbs({ keyPair, messageCount: messages.length });
+  const messageBuffers = messages.map((_) => _.buffer);
   try {
     return new Uint8Array(
       bbs.bbs_sign({
         publicKey: bbsKeyPair.publicKey.buffer,
         secretKey: bbsKeyPair.secretKey?.buffer as ArrayBuffer,
-        messages,
+        messages: messageBuffers,
       })
     );
   } catch {
@@ -88,11 +90,12 @@ export const blsSign = (request: BlsBbsSignRequest): Uint8Array => {
  */
 export const verify = (request: BbsVerifyRequest): BbsVerifyResult => {
   const { publicKey, signature, messages } = request;
+  const messageBuffers = messages.map((_) => _.buffer);
   try {
     const result = bbs.bbs_verify({
       publicKey: publicKey.buffer,
       signature: signature.buffer,
-      messages,
+      messages: messageBuffers,
     });
     return { verified: result };
   } catch (ex) {
@@ -110,10 +113,11 @@ export const blsVerify = (request: BlsBbsVerifyRequest): BbsVerifyResult => {
   try {
     const { publicKey, signature, messages } = request;
     const bbsKeyPair = bls12381toBbs({ keyPair: { publicKey }, messageCount: messages.length });
+    const messageBuffers = messages.map((_) => _.buffer);
     const result = bbs.bbs_verify({
       publicKey: bbsKeyPair.publicKey.buffer,
       signature: signature.buffer,
-      messages,
+      messages: messageBuffers,
     });
     return { verified: result };
   } catch (ex) {
@@ -129,14 +133,15 @@ export const blsVerify = (request: BlsBbsVerifyRequest): BbsVerifyResult => {
  */
 export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
   const { publicKey, signature, messages, nonce, revealed } = request;
+  const messageBuffers = messages.map((_) => _.buffer);
   try {
     return new Uint8Array(
       bbs.bbs_create_proof({
-        nonce,
+        nonce: nonce.buffer,
         revealed,
         publicKey: publicKey.buffer,
         signature: signature.buffer,
-        messages,
+        messages: messageBuffers,
       })
     );
   } catch (ex) {
@@ -153,14 +158,15 @@ export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
 export const blsCreateProof = (request: BbsCreateProofRequest): Uint8Array => {
   const { publicKey, signature, messages, nonce, revealed } = request;
   const bbsKeyPair = bls12381toBbs({ keyPair: { publicKey }, messageCount: messages.length });
+  const messageBuffers = messages.map((_) => _.buffer);
   try {
     return new Uint8Array(
       bbs.bbs_create_proof({
-        nonce,
+        nonce: nonce.buffer,
         revealed,
         publicKey: bbsKeyPair.publicKey.buffer,
         signature: signature.buffer,
-        messages,
+        messages: messageBuffers,
       })
     );
   } catch (ex) {
@@ -176,12 +182,13 @@ export const blsCreateProof = (request: BbsCreateProofRequest): Uint8Array => {
  */
 export const verifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult => {
   const { publicKey, proof, messages, nonce } = request;
+  const messageBuffers = messages.map((_) => _.buffer);
   try {
     const result = bbs.bbs_verify_proof({
-      nonce,
+      nonce: nonce.buffer,
       publicKey: publicKey.buffer,
       proof: proof.buffer,
-      messages,
+      messages: messageBuffers,
     });
     return { verified: result };
   } catch (ex) {
@@ -198,11 +205,12 @@ export const verifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult => 
 export const blsVerifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult => {
   try {
     const { publicKey, proof, messages, nonce } = request;
+    const messageBuffers = messages.map((_) => _.buffer);
     const result = bbs.bls_verify_proof({
-      nonce,
+      nonce: nonce.buffer,
       publicKey: publicKey.buffer,
       proof: proof.buffer,
-      messages,
+      messages: messageBuffers,
     });
     return { verified: result };
   } catch (ex) {
@@ -218,10 +226,11 @@ export const blsVerifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult 
  */
 export const commitmentForBlindSignRequest = (request: BbsBlindSignContextRequest): BbsBlindSignContext => {
   const { publicKey, messages, hidden, nonce } = request;
+  const messageBuffers = messages.map((_) => _.buffer);
   try {
     return bbs.bbs_blind_signature_commitment({
       publicKey: publicKey.buffer,
-      messages,
+      messages: messageBuffers,
       hidden,
       nonce,
     });
@@ -256,12 +265,13 @@ export const verifyBlindSignContext = (request: BbsVerifyBlindSignContextRequest
  */
 export const blindSign = (request: BbsBlindSignRequest): Uint8Array => {
   const { commitment, secretKey, messages } = request;
+  const messageBuffers = messages.map((_) => _.buffer);
   try {
     return new Uint8Array(
       bbs.bbs_blind_sign({
         commitment: commitment.buffer,
         secretKey: secretKey.buffer,
-        messages,
+        messages: messageBuffers,
       })
     );
   } catch (ex) {
