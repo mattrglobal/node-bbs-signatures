@@ -171,3 +171,7 @@ yarn benchmark
 This library uses the [bbs](https://crates.io/crates/bbs) rust crate for the implementation of BBS+ signatures and
 BLS12-381 which is then wrapped and exposed in javascript/typescript using
 [neon-bindings](https://github.com/neon-bindings/neon).
+
+## Security Policy
+
+Please see our [security policy](./SECURITY.md) for additional details about responsible disclosure of security related issues.
