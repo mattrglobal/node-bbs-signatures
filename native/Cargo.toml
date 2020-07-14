@@ -10,12 +10,12 @@ name = "node_bbs_signatures"
 crate-type = ["cdylib"]
 
 [build-dependencies]
-neon-build = "0.4.0"
+neon-build = "0.4"
 
 [dependencies]
-arrayref = "0.3.6"
-bbs = "0.4.0"
-neon = "0.4.0"
+arrayref = "0.3"
+bbs = "0.4"
+neon = "0.4"
 
 [dev-dependencies]
 base64 = "0.12"

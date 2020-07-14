@@ -251,29 +251,23 @@ fn proof_with_8_messages() {
     let res = Verifier::verify_signature_pok(&pr, &sig_pok, &nonce);
 
     assert!(res.is_ok());
-    // let proved_messages = res.unwrap();
-    // assert_eq!(proved_messages, vec![SignatureMessage::from_msg_hash(b"Message9")])
 }
 
 #[test]
 fn print() {
-    let (dpk, sk) = DeterministicPublicKey::new(Some(KeyGenOption::UseSeed(base64::decode("H297BpoOgkfpXcxr1fJyQRiNx1+ZekeQ+OU/AYV/lVxaPXXhFBIbxeIU8kIAAX68cwQ=").unwrap())));
-    println!("sk  = {}", base64::encode(sk.to_bytes_compressed_form().as_ref()));
-    println!("dpk = {}", base64::encode(dpk.to_bytes_compressed_form().as_ref()));
-    let messages: Vec<SignatureMessage> = ["KNK0ITRAF+NrGg=="].iter().map(|m| SignatureMessage::hash(m.as_bytes())).collect();
+    let sk = SecretKey::try_from(base64::decode(SECRET_KEY).unwrap()).unwrap();
+    let dpk = DeterministicPublicKey::try_from(base64::decode(PUBLIC_KEY).unwrap()).unwrap();
+    let messages: Vec<SignatureMessage> = ["KnYAbm0fw3mlUA=="].iter().map(|m| SignatureMessage::hash(m.as_bytes())).collect();
     let pk = dpk.to_public_key(messages.len()).unwrap();
     let sig = Signature::new(messages.as_slice(), &sk, &pk).unwrap();
     println!("pk  = {}", base64::encode(pk.to_bytes_compressed_form()));
     println!("sig = {}", base64::encode(sig.to_bytes_compressed_form().as_ref()));
-    let nonce = ProofNonce::hash(b"v3bb/Mz+JajUdiM2URfZYcPuqxw=");
+    let nonce = ProofNonce::hash(b"I03DvFXcpVdOPuOiyXgcBf4voAA=");
     let proof_request = Verifier::new_proof_request(&[0], &pk).unwrap();
 
     // Sends `proof_request` and `nonce` to the prover
     let proof_messages = vec![
         pm_revealed_raw!(messages[0]),
-        // pm_revealed_raw!(messages[1]),
-        // pm_revealed_raw!(messages[2]),
-    //     pm_hidden!(b"Message4"),
     ];
 
     let pok =
@@ -300,11 +294,6 @@ fn print() {
     let res = Verifier::verify_signature_pok(&proof_request, &proof, &nonce);
 
     assert!(res.is_ok());
-    // let proved_messages = res.unwrap();
-
-    // proof_request.revealed_messages = BTreeSet::new();
-    // proof_request.revealed_messages.insert(1);
-    // proof.revealed_messages = vec![SignatureMessage::from_msg_hash(b"Message2")];
 }
 
 fn get_public_key(key: &str) -> DeterministicPublicKey {
