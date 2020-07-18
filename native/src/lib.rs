@@ -22,32 +22,72 @@ use bbs::prelude::*;
 use neon::prelude::*;
 use neon::register_module;
 use neon::result::Throw;
+use pairing_plus::{bls12_381::{Fr, G1, G2, Bls12}, serdes::SerDes, hash_to_field::BaseFromRO, CurveProjective};
+use rand::{thread_rng, RngCore};
 use std::collections::{BTreeMap, BTreeSet};
 
 /// Generate a BLS key pair where secret key `x` in Fp
 /// and public key `w` = `g2` ^ `x`
 /// `seed`: `ArrayBuffer` [opt]
 /// `return`: Object { publicKey: `ArrayBuffer`, secretKey: `ArrayBuffer` }
-fn bls_generate_key(mut cx: FunctionContext) -> JsResult<JsObject> {
+fn bls_generate_g2_key(cx: FunctionContext) -> JsResult<JsObject> {
+    bls_generate_keypair::<G2>(cx)
+}
+
+/// Generate a BLS key pair where secret key `x` in Fp
+/// and public key `w` = `g1` ^ `x`
+/// `seed`: `ArrayBuffer` [opt]
+/// `return`: Object { publicKey: `ArrayBuffer`, secretKey: `ArrayBuffer` }
+fn bls_generate_g1_key(cx: FunctionContext) -> JsResult<JsObject> {
+    bls_generate_keypair::<G1>(cx)
+}
+
+fn bls_generate_keypair<G: CurveProjective<Engine = Bls12, Scalar = Fr> + SerDes>(mut cx: FunctionContext) -> JsResult<JsObject> {
     let seed = match cx.argument_opt(0) {
         Some(arg) => {
             let arg: Handle<JsArrayBuffer> = arg.downcast::<JsArrayBuffer>().or_throw(&mut cx)?;
             let seed_data = cx.borrow(&arg, |data| data.as_slice::<u8>());
-            Some(KeyGenOption::UseSeed(seed_data.to_vec()))
+            seed_data.to_vec()
+        },
+        None => {
+            let mut rng = thread_rng();
+            let mut seed_data = vec![0u8, 32];
+            rng.fill_bytes(seed_data.as_mut_slice());
+            seed_data
         }
-        None => None,
     };
 
-    let (pk, sk) = DeterministicPublicKey::new(seed);
+    let sk = gen_sk(seed.as_slice());
+    let mut pk = G::one();
+    pk.mul_assign(sk);
 
-    let pk_array = slice_to_js_array_buffer!(&pk.to_bytes_compressed_form()[..], cx);
-    let sk_array = slice_to_js_array_buffer!(&sk.to_bytes_compressed_form()[..], cx);
+    let mut sk_bytes = Vec::new();
+    let mut pk_bytes = Vec::new();
+    sk.serialize(&mut sk_bytes, true).unwrap();
+    pk.serialize(&mut pk_bytes, true).unwrap();
+    let pk_array = slice_to_js_array_buffer!(&pk_bytes[..], cx);
+    let sk_array = slice_to_js_array_buffer!(&sk_bytes[..], cx);
 
     let result = JsObject::new(&mut cx);
     result.set(&mut cx, "publicKey", pk_array)?;
     result.set(&mut cx, "secretKey", sk_array)?;
 
     Ok(result)
+}
+
+fn gen_sk(msg: &[u8]) -> Fr {
+    use sha2::digest::generic_array::{GenericArray, typenum::U48};
+    const SALT: &[u8] = b"BLS-SIG-KEYGEN-SALT-";
+    // copy of `msg` with appended zero byte
+    let mut msg_prime = Vec::<u8>::with_capacity(msg.as_ref().len() + 1);
+    msg_prime.extend_from_slice(msg.as_ref());
+    msg_prime.extend_from_slice(&[0]);
+    // `result` has enough length to hold the output from HKDF expansion
+    let mut result = GenericArray::<u8, U48>::default();
+    assert!(hkdf::Hkdf::<sha2::Sha256>::new(Some(SALT), &msg_prime[..])
+        .expand(&[0, 48], &mut result)
+        .is_ok());
+    Fr::from_okm(&result)
 }
 
 /// Get the BBS public key associated with the private key
@@ -794,7 +834,8 @@ fn bitvector_to_revealed(data: &[u8]) -> BTreeSet<usize> {
 }
 
 register_module!(mut m, {
-    m.export_function("bls_generate_key", bls_generate_key)?;
+    m.export_function("bls_generate_g2_key", bls_generate_g2_key)?;
+    m.export_function("bls_generate_g1_key", bls_generate_g1_key)?;
     m.export_function("bls_secret_key_to_bbs_key", bls_secret_key_to_bbs_key)?;
     m.export_function("bls_public_key_to_bbs_key", bls_public_key_to_bbs_key)?;
     m.export_function("bbs_sign", bbs_sign)?;

@@ -15,7 +15,13 @@ neon-build = "0.4"
 [dependencies]
 arrayref = "0.3"
 bbs = "0.4"
+bls_sigs_ref = "0.3"
+ff-zeroize = "0.6"
+hkdf = "0.8"
 neon = "0.4"
+pairing-plus = "0.19"
+rand = "0.7"
+sha2 = "0.8"
 
 [dev-dependencies]
 base64 = "0.12"
