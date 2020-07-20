@@ -18,7 +18,7 @@ import {
   blsVerify,
   BbsSignRequest,
   sign,
-  generateBls12381KeyPair,
+  generateBls12381G2KeyPair,
   BlsBbsSignRequest,
   blsSign,
   BlsBbsVerifyRequest,
@@ -27,7 +27,7 @@ import { base64Decode, stringToBytes } from "../utilities";
 
 describe("bbsSignature", () => {
   describe("verify", () => {
-    const blsKeyPair = generateBls12381KeyPair();
+    const blsKeyPair = generateBls12381G2KeyPair();
     it("should verify valid signature with a single message", () => {
       const BbsPublicKey = bls12381toBbs({ keyPair: blsKeyPair, messageCount: 1 });
       const request: BbsSignRequest = {
@@ -109,7 +109,7 @@ describe("bbsSignature", () => {
     });
   });
   describe("blsVerify", () => {
-    const blsKeyPair = generateBls12381KeyPair();
+    const blsKeyPair = generateBls12381G2KeyPair();
     it("should verify valid signature with a single message", () => {
       const request: BlsBbsSignRequest = {
         keyPair: blsKeyPair,

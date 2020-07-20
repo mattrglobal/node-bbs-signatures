@@ -17,9 +17,14 @@
 export const DEFAULT_BLS12381_PRIVATE_KEY_LENGTH = 32;
 
 /**
- * Default BLS 12-381 public key length
+ * Default BLS 12-381 public key length in G2 field
  */
-export const DEFAULT_BLS12381_PUBLIC_KEY_LENGTH = 96;
+export const DEFAULT_BLS12381_G1_PUBLIC_KEY_LENGTH = 48;
+
+/**
+ * Default BLS 12-381 public key length in G2 field
+ */
+export const DEFAULT_BLS12381_G2_PUBLIC_KEY_LENGTH = 96;
 
 /**
  * A BLS 12-381 key pair

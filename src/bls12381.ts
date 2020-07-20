@@ -20,13 +20,27 @@ import { BlsKeyPair } from "./types";
 const bbs = require("../native/index.node");
 
 /**
- * Generates a BLS12-381 key pair
+ * Generates a BLS12-381 key pair where the public key is a commitment in G1
  * @param seed [Optional] To derive the key pair from
  *
  * @returns A BlsKeyPair
  */
-export const generateBls12381KeyPair = (seed?: Uint8Array): BlsKeyPair => {
-  const result = seed ? bbs.bls_generate_key(seed?.buffer) : bbs.bls_generate_key();
+export const generateBls12381G1KeyPair = (seed?: Uint8Array): BlsKeyPair => {
+  const result = seed ? bbs.bls_generate_g1_key(seed?.buffer) : bbs.bls_generate_g1_key();
+  return {
+    publicKey: new Uint8Array(result.publicKey),
+    secretKey: new Uint8Array(result.secretKey),
+  };
+};
+
+/**
+ * Generates a BLS12-381 key pair where the public key is a commitment in G2
+ * @param seed [Optional] To derive the key pair from
+ *
+ * @returns A BlsKeyPair
+ */
+export const generateBls12381G2KeyPair = (seed?: Uint8Array): BlsKeyPair => {
+  const result = seed ? bbs.bls_generate_g2_key(seed?.buffer) : bbs.bls_generate_g2_key();
   return {
     publicKey: new Uint8Array(result.publicKey),
     secretKey: new Uint8Array(result.secretKey),
