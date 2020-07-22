@@ -12,7 +12,7 @@
  */
 
 import {
-  generateBls12381KeyPair,
+  generateBls12381G2KeyPair,
   BbsSignRequest,
   BlsBbsSignRequest,
   sign,
@@ -25,7 +25,7 @@ import {
 import { stringToBytes } from "../utilities";
 
 describe("bbsSignature", () => {
-  const blsKeyPair = generateBls12381KeyPair();
+  const blsKeyPair = generateBls12381G2KeyPair();
   describe("sign", () => {
     const bbsKeyPair = bls12381toBbs({ keyPair: blsKeyPair, messageCount: 3 });
 
