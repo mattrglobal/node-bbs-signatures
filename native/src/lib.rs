@@ -125,7 +125,12 @@ fn bls_public_key_to_bbs_key(mut cx: FunctionContext) -> JsResult<JsArrayBuffer>
 /// {
 ///     "secretKey": ArrayBuffer                // The private key of signer
 ///     "publicKey": ArrayBuffer                // The public key of signer
+<<<<<<< Updated upstream
 ///     "messages": [ArrayBuffer, ArrayBuffer], // The messages to be signed as ArrayBuffers. They will be hashed with Blake2b
+=======
+///     "messages": [ArrayBuffer, ArrayBuffer], // The messages to be signed as strings. They will be hashed with Blake2b
+///     "subjectPublicKey": ArrayBuffer         // [Optional] The public key of the subject of the signature 
+>>>>>>> Stashed changes
 /// }
 ///
 /// `return`: `ArrayBuffer` the signature
@@ -170,7 +175,12 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
 /// {
 ///     "publicKey": ArrayBuffer                // The public key
 ///     "signature": ArrayBuffer                // The signature
+<<<<<<< Updated upstream
 ///     "messages": [ArrayBuffer, ArrayBuffer], // The messages that were signed as ArrayBuffers. They will be Blake2b hashed
+=======
+///     "messages": [ArrayBuffer, ArrayBuffer], // The messages that were signed as strings. They will be Blake2b hashed
+///     "subjectPublicKey": ArrayBuffer         // [Optional] The public key of the subject of the signature 
+>>>>>>> Stashed changes
 /// }
 ///
 /// `return`: true if valid `signature` on `messages`
@@ -529,6 +539,7 @@ fn bbs_get_unblinded_signature(mut cx: FunctionContext) -> JsResult<JsArrayBuffe
 /// {
 ///     "signature": ArrayBuffer,               // The signature to be proved
 ///     "publicKey": ArrayBuffer,               // The public key of the signer
+///     "subjectPrivateKey" ArrayBuffer         // [Optional] The private key of the subject 
 ///     "messages": [ArrayBuffer, ArrayBuffer]  // All messages that were signed in the order they correspond to the generators in the public key. They will be Blake2b hashed
 ///     "revealed": [Number, Number]            // The zero based indices to the generators in the public key for the messages to be revealed. All other messages will be hidden from the verifier.
 ///     "nonce": ArrayBuffer                    // This is an optional nonce from the verifier and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
@@ -630,7 +641,7 @@ struct CreateProofContext {
 /// `verify_proof_context`: `Object` the context for verifying a proof
 /// The context object model is as follows:
 /// {
-///     "proof": ArrayBuffer,                   // The proof from `bbs_create_proof`
+///     "proof": ArrayBuffer,                   // The proof from `bbs_create_proof` this proof value needs to indicate the presence of a public key or not being included as a commitment
 ///     "publicKey": ArrayBuffer,               // The public key of the signer in BLS form
 ///     "messages": [ArrayBuffer, ArrayBuffer]  // The revealed messages as ArrayBuffers. They will be Blake2b hashed.
 ///     "nonce": ArrayBuffer                    // This is an optional nonce from the verifier and will be used in the proof of committed messages if present. It is strongly recommend that this be used.
