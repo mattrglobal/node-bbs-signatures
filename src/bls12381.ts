@@ -11,7 +11,7 @@
  * limitations under the License.
  */
 
-import { BlsKeyPair } from "./types";
+import { BlsKeyPair, BlindedBlsKeyPair } from "./types";
 
 /**
  * @ignore
@@ -34,6 +34,22 @@ export const generateBls12381G1KeyPair = (seed?: Uint8Array): BlsKeyPair => {
 };
 
 /**
+ * Generates a blinded BLS12-381 key pair where the public key is a commitment in G1 to the private key
+ * along with a further commitment of a blinding factor to the blinding factor generator point in G1
+ * @param seed [Optional] To derive the key pair from
+ *
+ * @returns A BlindedBlsKeyPair
+ */
+export const generateBlindedBls12381G1KeyPair = (seed?: Uint8Array): BlindedBlsKeyPair => {
+  const result = seed ? bbs.bls_generate_blinded_g1_key(seed?.buffer) : bbs.bls_generate_blinded_g1_key();
+  return {
+    publicKey: new Uint8Array(result.publicKey),
+    secretKey: new Uint8Array(result.secretKey),
+    blindingFactor: new Uint8Array(result.blindingFactor),
+  };
+};
+
+/**
  * Generates a BLS12-381 key pair where the public key is a commitment in G2
  * @param seed [Optional] To derive the key pair from
  *
@@ -44,5 +60,21 @@ export const generateBls12381G2KeyPair = (seed?: Uint8Array): BlsKeyPair => {
   return {
     publicKey: new Uint8Array(result.publicKey),
     secretKey: new Uint8Array(result.secretKey),
+  };
+};
+
+/**
+ * Generates a blinded BLS12-381 key pair where the public key is a commitment in G2 to the private key
+ * along with a further commitment of a blinding factor to the blinding factor generator point in G2
+ * @param seed [Optional] To derive the key pair from
+ *
+ * @returns A BlindedBlsKeyPair
+ */
+export const generateBlindedBls12381G2KeyPair = (seed?: Uint8Array): BlindedBlsKeyPair => {
+  const result = seed ? bbs.bls_generate_blinded_g2_key(seed?.buffer) : bbs.bls_generate_blinded_g2_key();
+  return {
+    publicKey: new Uint8Array(result.publicKey),
+    secretKey: new Uint8Array(result.secretKey),
+    blindingFactor: new Uint8Array(result.blindingFactor),
   };
 };
