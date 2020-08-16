@@ -27,6 +27,11 @@ export const DEFAULT_BLS12381_G1_PUBLIC_KEY_LENGTH = 48;
 export const DEFAULT_BLS12381_G2_PUBLIC_KEY_LENGTH = 96;
 
 /**
+ * Length of the blinding factor for BLS 12-381 keys
+ */
+export const BLS12381_BLINDING_FACTOR_LENGTH = 32;
+
+/**
  * A BLS 12-381 key pair
  */
 export interface BlsKeyPair {
@@ -38,4 +43,21 @@ export interface BlsKeyPair {
    * Raw secret/private key value for the key pair
    */
   readonly secretKey?: Uint8Array;
+}
+/**
+ * A Blinded BLS 12-381 key pair
+ */
+export interface BlindedBlsKeyPair {
+  /**
+   * Raw public key value for the key pair
+   */
+  readonly publicKey: Uint8Array;
+  /**
+   * Raw secret/private key value for the key pair
+   */
+  readonly secretKey?: Uint8Array;
+  /**
+   * Blinding factor
+   */
+  readonly blindingFactor: Uint8Array;
 }

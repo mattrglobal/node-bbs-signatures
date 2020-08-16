@@ -22,9 +22,11 @@ export { BbsVerifyProofRequest } from "./BbsVerifyProofRequest";
 export { BbsVerifyRequest } from "./BbsVerifyRequest";
 export {
   BlsKeyPair,
+  BlindedBlsKeyPair,
   DEFAULT_BLS12381_PRIVATE_KEY_LENGTH,
   DEFAULT_BLS12381_G2_PUBLIC_KEY_LENGTH,
   DEFAULT_BLS12381_G1_PUBLIC_KEY_LENGTH,
+  BLS12381_BLINDING_FACTOR_LENGTH,
 } from "./BlsKeyPair";
 export { Bls12381ToBbsRequest } from "./Bls12381ToBbsRequest";
 export { BlsBbsSignRequest } from "./BlsBbsSignRequest";

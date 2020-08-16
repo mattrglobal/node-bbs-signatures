@@ -11,7 +11,12 @@
  * limitations under the License.
  */
 
-export { generateBls12381G1KeyPair, generateBls12381G2KeyPair } from "./bls12381";
+export {
+  generateBls12381G1KeyPair,
+  generateBls12381G2KeyPair,
+  generateBlindedBls12381G1KeyPair,
+  generateBlindedBls12381G2KeyPair,
+} from "./bls12381";
 export { bls12381toBbs } from "./bls12381toBbs";
 export {
   BBS_SIGNATURE_LENGTH,

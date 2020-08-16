@@ -26,12 +26,86 @@ use pairing_plus::{bls12_381::{Fr, G1, G2, Bls12}, serdes::SerDes, hash_to_field
 use rand::{thread_rng, RngCore};
 use std::collections::{BTreeMap, BTreeSet};
 
+// This shows how the generators are created with nothing up my sleeve values
+// const PREHASH: &'static [u8] = b"To be, or not to be- that is the question:
+// Whether 'tis nobler in the mind to suffer
+// The slings and arrows of outrageous fortune
+// Or to take arms against a sea of troubles,
+// And by opposing end them. To die- to sleep-
+// No more; and by a sleep to say we end
+// The heartache, and the thousand natural shocks
+// That flesh is heir to. 'Tis a consummation
+// Devoutly to be wish'd. To die- to sleep.
+// To sleep- perchance to dream: ay, there's the rub!
+// For in that sleep of death what dreams may come
+// When we have shuffled off this mortal coil,
+// Must give us pause. There's the respect
+// That makes calamity of so long life.
+// For who would bear the whips and scorns of time,
+// Th' oppressor's wrong, the proud man's contumely,
+// The pangs of despis'd love, the law's delay,
+// The insolence of office, and the spurns
+// That patient merit of th' unworthy takes,
+// When he himself might his quietus make
+// With a bare bodkin? Who would these fardels bear,
+// To grunt and sweat under a weary life,
+// But that the dread of something after death-
+// The undiscover'd country, from whose bourn
+// No traveller returns- puzzles the will,
+// And makes us rather bear those ills we have
+// Than fly to others that we know not of?
+// Thus conscience does make cowards of us all,
+// And thus the native hue of resolution
+// Is sicklied o'er with the pale cast of thought,
+// And enterprises of great pith and moment
+// With this regard their currents turn awry
+// And lose the name of action.- Soft you now!
+// The fair Ophelia!- Nymph, in thy orisons
+// Be all my sins rememb'red.";
+// const DST_G1: &'static [u8] = b"BLS12381G1_XMD:BLAKE2B_SSWU_RO_BLS_SIGNATURES:1_0_0";
+// const DST_G2: &'static [u8] = b"BLS12381G2_XMD:BLAKE2B_SSWU_RO_BLS_SIGNATURES:1_0_0";
+//
+// fn main() {
+//     let g1 = <G1 as HashToCurve<ExpandMsgXmd<blake2::Blake2b>>>::hash_to_curve(PREHASH, DST_G1);
+//     let g2 = <G2 as HashToCurve<ExpandMsgXmd<blake2::Blake2b>>>::hash_to_curve(PREHASH, DST_G2);
+//
+//     let mut g1_bytes = Vec::new();
+//     let mut g2_bytes = Vec::new();
+//
+//     g1.serialize(&mut g1_bytes, true).unwrap();
+//     g2.serialize(&mut g2_bytes, true).unwrap();
+//
+//     println!("g1 = {}", hex::encode(g1_bytes.as_slice()));
+//     println!("g2 = {}", hex::encode(g2_bytes.as_slice()));
+// }
+// g1 = b9c9058e8a44b87014f98be4e1818db718f8b2d5101fc89e6983625f321f14b84d7cf6e155004987a215ee426df173c9
+// g2 = a963de2adfb1163cf4bed24d708ce47432742d2080b2573ebe2e19a8698f60c541cec000fcb19783e9be73341356df5f1191cddec7c476d7742bcc421afc5d505e63373c627ea01fda04f0e40159d25bdd12f45a010d8580a78f6a7d262272f3
+
+const BLINDING_G1: &'static [u8] = &[185, 201, 5, 142, 138, 68, 184, 112, 20, 249, 139, 228, 225, 129, 141, 183, 24, 248, 178, 213, 16, 31, 200, 158, 105, 131, 98, 95, 50, 31, 20, 184, 77, 124, 246, 225, 85, 0, 73, 135, 162, 21, 238, 66, 109, 241, 115, 201];
+const BLINDING_G2: &'static [u8] = &[169, 99, 222, 42, 223, 177, 22, 60, 244, 190, 210, 77, 112, 140, 228, 116, 50, 116, 45, 32, 128, 178, 87, 62, 190, 46, 25, 168, 105, 143, 96, 197, 65, 206, 192, 0, 252, 177, 151, 131, 233, 190, 115, 52, 19, 86, 223, 95, 17, 145, 205, 222, 199, 196, 118, 215, 116, 43, 204, 66, 26, 252, 93, 80, 94, 99, 55, 60, 98, 126, 160, 31, 218, 4, 240, 228, 1, 89, 210, 91, 221, 18, 244, 90, 1, 13, 133, 128, 167, 143, 106, 125, 38, 34, 114, 243];
+
+/// Generate a blinded BLS key pair where secret key `x` and blinding factor `r` in Fp
+/// and public key `w` = `g2` ^ `x` * `blinding_g2` ^ `r`
+/// `seed`: `ArrayBuffer` [opt]
+/// `return` Object { publicKey: `ArrayBuffer`, secretKey: `ArrayBuffer`, blindingFactor: `ArrayBuffer` }
+fn bls_generate_blinded_g2_key(cx: FunctionContext) -> JsResult<JsObject> {
+    bls_generate_keypair::<G2>(cx, Some(BLINDING_G2))
+}
+
+/// Generate a blinded BLS key pair where secret key `x` and blinding factor `r` in Fp
+/// and public key `w` = `g1` ^ `x` * `blinding_g1` ^ `r`
+/// `seed`: `ArrayBuffer` [opt]
+/// `return` Object { publicKey: `ArrayBuffer`, secretKey: `ArrayBuffer`, blindingFactor: `ArrayBuffer` }
+fn bls_generate_blinded_g1_key(cx: FunctionContext) -> JsResult<JsObject> {
+    bls_generate_keypair::<G1>(cx, Some(BLINDING_G1))
+}
+
 /// Generate a BLS key pair where secret key `x` in Fp
 /// and public key `w` = `g2` ^ `x`
 /// `seed`: `ArrayBuffer` [opt]
 /// `return`: Object { publicKey: `ArrayBuffer`, secretKey: `ArrayBuffer` }
 fn bls_generate_g2_key(cx: FunctionContext) -> JsResult<JsObject> {
-    bls_generate_keypair::<G2>(cx)
+    bls_generate_keypair::<G2>(cx, None)
 }
 
 /// Generate a BLS key pair where secret key `x` in Fp
@@ -39,14 +113,16 @@ fn bls_generate_g2_key(cx: FunctionContext) -> JsResult<JsObject> {
 /// `seed`: `ArrayBuffer` [opt]
 /// `return`: Object { publicKey: `ArrayBuffer`, secretKey: `ArrayBuffer` }
 fn bls_generate_g1_key(cx: FunctionContext) -> JsResult<JsObject> {
-    bls_generate_keypair::<G1>(cx)
+    bls_generate_keypair::<G1>(cx, None)
 }
 
-fn bls_generate_keypair<G: CurveProjective<Engine = Bls12, Scalar = Fr> + SerDes>(mut cx: FunctionContext) -> JsResult<JsObject> {
+fn bls_generate_keypair<'a, 'b, G: CurveProjective<Engine = Bls12, Scalar = Fr> + SerDes>(mut cx: FunctionContext<'a>, blinded: Option<&'b [u8]>) -> JsResult<'a, JsObject> {
+    let mut passed_seed = false;
     let seed = match cx.argument_opt(0) {
         Some(arg) => {
             let arg: Handle<JsArrayBuffer> = arg.downcast::<JsArrayBuffer>().or_throw(&mut cx)?;
             let seed_data = cx.borrow(&arg, |data| data.as_slice::<u8>());
+            passed_seed = true;
             seed_data.to_vec()
         },
         None => {
@@ -61,6 +137,28 @@ fn bls_generate_keypair<G: CurveProjective<Engine = Bls12, Scalar = Fr> + SerDes
     let mut pk = G::one();
     pk.mul_assign(sk);
 
+    let r =
+        match blinded {
+            Some(g) => {
+                let mut data = g.to_vec();
+                let mut gg = g.clone();
+                if passed_seed {
+                    data.extend_from_slice(seed.as_slice());
+                } else {
+                    let mut rng = thread_rng();
+                    let mut blinding_factor = vec![0u8, 32];
+                    rng.fill_bytes(blinding_factor.as_mut_slice());
+                    data.extend_from_slice(blinding_factor.as_slice());
+                }
+                let mut blinding_g = G::deserialize(&mut gg, true).unwrap();
+                let r = gen_sk(data.as_slice());
+                blinding_g.mul_assign(r);
+                pk.add_assign(&blinding_g);
+                Some(r)
+            },
+            None => None
+        };
+
     let mut sk_bytes = Vec::new();
     let mut pk_bytes = Vec::new();
     sk.serialize(&mut sk_bytes, true).unwrap();
@@ -71,6 +169,12 @@ fn bls_generate_keypair<G: CurveProjective<Engine = Bls12, Scalar = Fr> + SerDes
     let result = JsObject::new(&mut cx);
     result.set(&mut cx, "publicKey", pk_array)?;
     result.set(&mut cx, "secretKey", sk_array)?;
+    if let Some(rr) = r {
+        let mut r_bytes = Vec::new();
+        rr.serialize(&mut r_bytes, true).unwrap();
+        let r_array  = slice_to_js_array_buffer!(&r_bytes[..], cx);
+        result.set(&mut cx, "blindingFactor", r_array)?;
+    }
 
     Ok(result)
 }
@@ -834,6 +938,8 @@ fn bitvector_to_revealed(data: &[u8]) -> BTreeSet<usize> {
 }
 
 register_module!(mut m, {
+    m.export_function("bls_generate_blinded_g2_key", bls_generate_blinded_g2_key)?;
+    m.export_function("bls_generate_blinded_g1_key", bls_generate_blinded_g1_key)?;
     m.export_function("bls_generate_g2_key", bls_generate_g2_key)?;
     m.export_function("bls_generate_g1_key", bls_generate_g1_key)?;
     m.export_function("bls_secret_key_to_bbs_key", bls_secret_key_to_bbs_key)?;
