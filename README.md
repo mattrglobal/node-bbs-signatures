@@ -174,4 +174,5 @@ BLS12-381 which is then wrapped and exposed in javascript/typescript using
 
 ## Security Policy
 
-Please see our [security policy](./SECURITY.md) for additional details about responsible disclosure of security related issues.
+Please see our [security policy](./SECURITY.md) for additional details about responsible disclosure of security related
+issues.

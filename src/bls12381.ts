@@ -17,7 +17,9 @@ import { BlsKeyPair, BlindedBlsKeyPair } from "./types";
  * @ignore
  */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const bbs = require("../native/index.node");
+const path = require("path");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const bbs = require(path.resolve(path.join(__dirname, "../native/index.node")));
 
 /**
  * Generates a BLS12-381 key pair where the public key is a commitment in G1
