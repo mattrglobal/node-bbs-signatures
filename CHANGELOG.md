@@ -1,3 +1,22 @@
+# [0.10.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.9.0...0.10.0) (2020-08-27)
+
+### Bug Fixes
+
+- native node module resolution ([#131](https://github.com/mattrglobal/node-bbs-signatures/issues/131))
+  ([4cb57b7](https://github.com/mattrglobal/node-bbs-signatures/commit/4cb57b72b22243eb74394b74d1362ec06f509875))
+
+### Features
+
+- add blinded bls12-381 key generation ([#130](https://github.com/mattrglobal/node-bbs-signatures/issues/130))
+  ([9b2646e](https://github.com/mattrglobal/node-bbs-signatures/commit/9b2646e3eb41b0fb4a46448c137b715e319dcc30))
+- add bls12-381 g1 key generation support ([#127](https://github.com/mattrglobal/node-bbs-signatures/issues/127))
+  ([85e89a0](https://github.com/mattrglobal/node-bbs-signatures/commit/85e89a02e6649d4c31b1c07d252267d48f9b9c73))
+
+### BREAKING CHANGES
+
+- generateBls12381KeyPair has been changed to generateBls12381G2KeyPair
+- All operations involving messages and nonces are now in terms of Uint8Array's rather than strings
+
 # [0.9.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.8.0...0.9.0) (2020-06-18)
 
 ### Features
