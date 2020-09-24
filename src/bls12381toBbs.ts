@@ -27,28 +27,17 @@ const bbs = require(path.resolve(path.join(__dirname, "../native/index.node")));
  *
  * @returns A BbsKeyPair
  */
-export const bls12381toBbs = (request: Bls12381ToBbsRequest): BbsKeyPair => {
+export const bls12381toBbs = async (request: Bls12381ToBbsRequest): Promise<BbsKeyPair> => {
   try {
-    if (request.keyPair.secretKey) {
-      const result = bbs.bls_secret_key_to_bbs_key({
-        secretKey: request.keyPair.secretKey.buffer,
-        messageCount: request.messageCount,
-      });
-      return {
-        secretKey: request.keyPair.secretKey,
-        publicKey: new Uint8Array(result),
-        messageCount: request.messageCount,
-      };
-    } else {
-      const result = bbs.bls_public_key_to_bbs_key({
-        publicKey: request.keyPair.publicKey.buffer,
-        messageCount: request.messageCount,
-      });
-      return {
-        publicKey: new Uint8Array(result),
-        messageCount: request.messageCount,
-      };
-    }
+    const result = bbs.bls_public_key_to_bbs_key({
+      publicKey: request.keyPair.publicKey.buffer,
+      messageCount: request.messageCount,
+    });
+    return {
+      publicKey: new Uint8Array(result),
+      secretKey: request.keyPair.secretKey,
+      messageCount: request.messageCount,
+    };
   } catch {
     throw new Error("Failed to convert key");
   }
