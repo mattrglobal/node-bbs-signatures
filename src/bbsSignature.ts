@@ -45,7 +45,7 @@ export const BBS_SIGNATURE_LENGTH = 112;
  *
  * @returns The raw signature value
  */
-export const sign = (request: BbsSignRequest): Uint8Array => {
+export const sign = async (request: BbsSignRequest): Promise<Uint8Array> => {
   const { keyPair, messages } = request;
   const messageBuffers = messages.map((_) => _.buffer);
   try {
@@ -67,9 +67,9 @@ export const sign = (request: BbsSignRequest): Uint8Array => {
  *
  * @returns The raw signature value
  */
-export const blsSign = (request: BlsBbsSignRequest): Uint8Array => {
+export const blsSign = async (request: BlsBbsSignRequest): Promise<Uint8Array> => {
   const { keyPair, messages } = request;
-  const bbsKeyPair = bls12381toBbs({ keyPair, messageCount: messages.length });
+  const bbsKeyPair = await bls12381toBbs({ keyPair, messageCount: messages.length });
   const messageBuffers = messages.map((_) => _.buffer);
   try {
     return new Uint8Array(
@@ -90,7 +90,7 @@ export const blsSign = (request: BlsBbsSignRequest): Uint8Array => {
  *
  * @returns A result indicating if the signature was verified
  */
-export const verify = (request: BbsVerifyRequest): BbsVerifyResult => {
+export const verify = async (request: BbsVerifyRequest): Promise<BbsVerifyResult> => {
   const { publicKey, signature, messages } = request;
   const messageBuffers = messages.map((_) => _.buffer);
   try {
@@ -111,10 +111,10 @@ export const verify = (request: BbsVerifyRequest): BbsVerifyResult => {
  *
  * @returns A result indicating if the signature was verified
  */
-export const blsVerify = (request: BlsBbsVerifyRequest): BbsVerifyResult => {
+export const blsVerify = async (request: BlsBbsVerifyRequest): Promise<BbsVerifyResult> => {
   try {
     const { publicKey, signature, messages } = request;
-    const bbsKeyPair = bls12381toBbs({ keyPair: { publicKey }, messageCount: messages.length });
+    const bbsKeyPair = await bls12381toBbs({ keyPair: { publicKey }, messageCount: messages.length });
     const messageBuffers = messages.map((_) => _.buffer);
     const result = bbs.bbs_verify({
       publicKey: bbsKeyPair.publicKey.buffer,
@@ -133,7 +133,7 @@ export const blsVerify = (request: BlsBbsVerifyRequest): BbsVerifyResult => {
  *
  * @returns The raw proof value
  */
-export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
+export const createProof = async (request: BbsCreateProofRequest): Promise<Uint8Array> => {
   const { publicKey, signature, messages, nonce, revealed } = request;
   const messageBuffers = messages.map((_) => _.buffer);
   try {
@@ -157,9 +157,9 @@ export const createProof = (request: BbsCreateProofRequest): Uint8Array => {
  *
  * @returns The raw proof value
  */
-export const blsCreateProof = (request: BbsCreateProofRequest): Uint8Array => {
+export const blsCreateProof = async (request: BbsCreateProofRequest): Promise<Uint8Array> => {
   const { publicKey, signature, messages, nonce, revealed } = request;
-  const bbsKeyPair = bls12381toBbs({ keyPair: { publicKey }, messageCount: messages.length });
+  const bbsKeyPair = await bls12381toBbs({ keyPair: { publicKey }, messageCount: messages.length });
   const messageBuffers = messages.map((_) => _.buffer);
   try {
     return new Uint8Array(
@@ -182,7 +182,7 @@ export const blsCreateProof = (request: BbsCreateProofRequest): Uint8Array => {
  *
  * @returns A result indicating if the proof was verified
  */
-export const verifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult => {
+export const verifyProof = async (request: BbsVerifyProofRequest): Promise<BbsVerifyResult> => {
   const { publicKey, proof, messages, nonce } = request;
   const messageBuffers = messages.map((_) => _.buffer);
   try {
@@ -204,7 +204,7 @@ export const verifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult => 
  *
  * @returns A result indicating if the proof was verified
  */
-export const blsVerifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult => {
+export const blsVerifyProof = async (request: BbsVerifyProofRequest): Promise<BbsVerifyResult> => {
   try {
     const { publicKey, proof, messages, nonce } = request;
     const messageBuffers = messages.map((_) => _.buffer);
@@ -226,7 +226,9 @@ export const blsVerifyProof = (request: BbsVerifyProofRequest): BbsVerifyResult 
  *
  * @returns A commitment context
  */
-export const commitmentForBlindSignRequest = (request: BbsBlindSignContextRequest): BbsBlindSignContext => {
+export const commitmentForBlindSignRequest = async (
+  request: BbsBlindSignContextRequest
+): Promise<BbsBlindSignContext> => {
   const { publicKey, messages, hidden, nonce } = request;
   const messageBuffers = messages.map((_) => _.buffer);
   try {
@@ -247,7 +249,7 @@ export const commitmentForBlindSignRequest = (request: BbsBlindSignContextReques
  *
  * @returns A boolean indicating if the context was verified
  */
-export const verifyBlindSignContext = (request: BbsVerifyBlindSignContextRequest): boolean => {
+export const verifyBlindSignContext = async (request: BbsVerifyBlindSignContextRequest): Promise<boolean> => {
   const { commitment, proofOfHiddenMessages, challengeHash, publicKey, blinded, nonce } = request;
   return bbs.bbs_verify_blind_signature_proof({
     commitment: commitment.buffer,
@@ -265,7 +267,7 @@ export const verifyBlindSignContext = (request: BbsVerifyBlindSignContextRequest
  *
  * @returns The raw signature value
  */
-export const blindSign = (request: BbsBlindSignRequest): Uint8Array => {
+export const blindSign = async (request: BbsBlindSignRequest): Promise<Uint8Array> => {
   const { commitment, secretKey, messages } = request;
   const messageBuffers = messages.map((_) => _.buffer);
   try {
