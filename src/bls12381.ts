@@ -27,7 +27,7 @@ const bbs = require(path.resolve(path.join(__dirname, "../native/index.node")));
  *
  * @returns A BlsKeyPair
  */
-export const generateBls12381G1KeyPair = (seed?: Uint8Array): BlsKeyPair => {
+export const generateBls12381G1KeyPair = async (seed?: Uint8Array): Promise<Required<BlsKeyPair>> => {
   const result = seed ? bbs.bls_generate_g1_key(seed?.buffer) : bbs.bls_generate_g1_key();
   return {
     publicKey: new Uint8Array(result.publicKey),
@@ -42,7 +42,7 @@ export const generateBls12381G1KeyPair = (seed?: Uint8Array): BlsKeyPair => {
  *
  * @returns A BlindedBlsKeyPair
  */
-export const generateBlindedBls12381G1KeyPair = (seed?: Uint8Array): BlindedBlsKeyPair => {
+export const generateBlindedBls12381G1KeyPair = async (seed?: Uint8Array): Promise<Required<BlindedBlsKeyPair>> => {
   const result = seed ? bbs.bls_generate_blinded_g1_key(seed?.buffer) : bbs.bls_generate_blinded_g1_key();
   return {
     publicKey: new Uint8Array(result.publicKey),
@@ -57,7 +57,7 @@ export const generateBlindedBls12381G1KeyPair = (seed?: Uint8Array): BlindedBlsK
  *
  * @returns A BlsKeyPair
  */
-export const generateBls12381G2KeyPair = (seed?: Uint8Array): BlsKeyPair => {
+export const generateBls12381G2KeyPair = async (seed?: Uint8Array): Promise<Required<BlsKeyPair>> => {
   const result = seed ? bbs.bls_generate_g2_key(seed?.buffer) : bbs.bls_generate_g2_key();
   return {
     publicKey: new Uint8Array(result.publicKey),
@@ -72,7 +72,7 @@ export const generateBls12381G2KeyPair = (seed?: Uint8Array): BlsKeyPair => {
  *
  * @returns A BlindedBlsKeyPair
  */
-export const generateBlindedBls12381G2KeyPair = (seed?: Uint8Array): BlindedBlsKeyPair => {
+export const generateBlindedBls12381G2KeyPair = async (seed?: Uint8Array): Promise<Required<BlindedBlsKeyPair>> => {
   const result = seed ? bbs.bls_generate_blinded_g2_key(seed?.buffer) : bbs.bls_generate_blinded_g2_key();
   return {
     publicKey: new Uint8Array(result.publicKey),
