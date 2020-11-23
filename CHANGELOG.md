@@ -1,3 +1,14 @@
+# [0.11.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.10.0...0.11.0) (2020-11-23)
+
+### Features
+
+- change to async based api ([#136](https://github.com/mattrglobal/node-bbs-signatures/issues/136))
+  ([92450c3](https://github.com/mattrglobal/node-bbs-signatures/commit/92450c34714f8039d222feb2106cc63701b4d42a))
+
+### BREAKING CHANGES
+
+- All API's now return a promise instead of the raw result
+
 # [0.10.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.9.0...0.10.0) (2020-08-27)
 
 ### Bug Fixes
