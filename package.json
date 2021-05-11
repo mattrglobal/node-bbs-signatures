@@ -5,7 +5,7 @@
   "homepage": "https://github.com/mattrglobal/node-bbs-signatures",
   "main": "lib/index.js",
   "engines": {
-    "node": ">=10",
+    "node": ">=12",
     "yarn": "1.x"
   },
   "directories": {
@@ -95,7 +95,7 @@
     }
   },
   "dependencies": {
-    "neon-cli": "0.4.0",
+    "neon-cli": "0.8.1",
     "node-pre-gyp": "0.14.0"
   }
 }

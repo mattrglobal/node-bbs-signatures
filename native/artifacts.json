@@ -2,7 +2,8 @@
   "active": "release",
   "targets": {
     "release": {
-      "rustc": "",
+      "rustc": "rustc 1.54.0-nightly (79e50bf77 2021-05-10)",
+      "nodeVersion": "v12.22.1",
       "env": {
         "npm_config_target": null,
         "npm_config_arch": null,
@@ -10,7 +11,11 @@
         "npm_config_disturl": null,
         "npm_config_runtime": null,
         "npm_config_build_from_source": null,
-        "npm_config_devdir": null
+        "npm_config_devdir": null,
+        "npm_config_node_engine": null,
+        "npm_config_nodedir": null,
+        "npm_config_node_gyp": null,
+        "npm_config_platform": null
       }
     }
   }
