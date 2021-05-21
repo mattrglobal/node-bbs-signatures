@@ -95,7 +95,7 @@
     }
   },
   "dependencies": {
-    "neon-cli": "0.4.0",
-    "node-pre-gyp": "0.14.0"
+    "neon-cli": "0.8.2",
+    "node-pre-gyp": "0.17.0"
   }
 }

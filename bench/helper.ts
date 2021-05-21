@@ -11,15 +11,15 @@
  * limitations under the License.
  */
 
-import { BbsSignRequest, BbsKeyPair, BlsKeyPair, BlsBbsSignRequest } from "../src";
+import { BbsSignRequest, BbsKeyPair, BlsKeyPair, BlsBbsSignRequest } from "../lib";
 import { randomBytes } from "crypto";
 import { Coder } from "@stablelib/base64";
 
-export const generateMessages = (numberOfMessages: number, messageSizeInBytes: number): string[] => {
+export const generateMessages = (numberOfMessages: number, messageSizeInBytes: number): Uint8Array[] => {
   const coder = new Coder();
-  const messages: string[] = [];
+  const messages: Uint8Array[] = [];
   for (let i = 0; i < numberOfMessages; i++) {
-    messages[i] = coder.encode(randomBytes(messageSizeInBytes));
+    messages[i] = randomBytes(messageSizeInBytes);
   }
   return messages;
 };
