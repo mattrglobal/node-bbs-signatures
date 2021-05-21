@@ -55,7 +55,7 @@ jobs:
       - run: yarn lint
       - run: yarn build
       - run: yarn test
-      - run: echo "//registry.npmjs.org/:_authToken=$NPMJS_PUBLIC_TOKEN" > .npmrc 2> /dev/null
+      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc 2> /dev/null
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPMJS_PUBLIC_TOKEN }}
