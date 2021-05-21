@@ -9,6 +9,7 @@ jobs:
   build_pub_binaries:
     name: Publish binaries for supported environments for release
     if: "contains(github.event.head_commit.message, 'chore(release): publish')"
+    timeout-minutes: 30
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
@@ -18,6 +19,12 @@ jobs:
           # exclude windows node 11 due to neon-sys bug
           - os: windows-latest
             node-version: 11.x
+          # exclude windows node 15 due to another node-gyp bug
+          - os: windows-latest
+            node-version: 15.x
+          # exclude windows node 16 due to another node-gyp bug
+          - os: windows-latest
+            node-version: 16.x
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1

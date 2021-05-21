@@ -46,7 +46,7 @@
     "publish:binary": "./scripts/publish_binary.sh",
     "publish:ts": "./scripts/publish_ts.sh",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
-    "version:release": "yarn version --minor --message \"chore(release): publish [skip ci]\"",
+    "version:release": "yarn version --minor --message \"chore(release): publish\"",
     "docs": "typedoc --out docs/api src"
   },
   "devDependencies": {
