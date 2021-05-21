@@ -1,3 +1,12 @@
+# [0.12.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.11.0...0.12.0) (2021-05-21)
+
+Added support for NodeJS versions 15 and 16 on macos and ubuntu
+
+### Bug Fixes
+
+- benchmarks and add to gh action
+  ([e1650e7](https://github.com/mattrglobal/node-bbs-signatures/commit/e1650e7e4cbfd6b2ad2a1894939548f08b1a4812))
+
 # [0.11.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.10.0...0.11.0) (2020-11-23)
 
 ### Features
