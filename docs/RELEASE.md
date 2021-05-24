@@ -13,7 +13,7 @@ To create a stable release follow the following steps
    newly created commit
 9. Push the release branch including the newly created tags `git push origin release --tags`
 10. Open a pull request for the release, once approvals have been sought, merge the pull request using squash,
-    preserving the commit message as `chore(release): publish [skip ci]`
+    preserving the commit message as `chore(release): publish`
 11. Observe the triggering of the `/.github/workflows/push-release.yaml`
 
 The resulting release will publish the new package to NPM and the resulting binaries to github packages.
@@ -27,7 +27,4 @@ The releases have the following version syntax
 
 **Note** Unstable releases include the un-compiled rust required to build the project and hence require rust to install.
 
-**Note** The `/.github/workflows/push-master.yaml` will skip if the commit message includes `[skip ci]`
-
-**Note** To skip the automatic release of a new unstable version append `[skip ci]` to the end of the commit message
-that is merged into master.
+**Note** The `/.github/workflows/push-master.yaml` will skip if the commit message includes `chore(release): publish`

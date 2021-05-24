@@ -8,11 +8,11 @@ on:
 jobs:
   build_test_publish:
     name: Build, test, and publish unstable release
-    if: "! contains(github.event.head_commit.message, '[skip ci]')"
+    if: "contains(github.event.head_commit.message, 'chore(release): publish')"
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [10.x, 11.x, 12.x, 13.x, 14.x]
+        node-version: [10.x, 11.x, 12.x, 13.x, 14.x, 15.x, 16.x]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1

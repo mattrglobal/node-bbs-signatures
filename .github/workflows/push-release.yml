@@ -9,15 +9,22 @@ jobs:
   build_pub_binaries:
     name: Publish binaries for supported environments for release
     if: "contains(github.event.head_commit.message, 'chore(release): publish')"
+    timeout-minutes: 30
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        node-version: [10.x, 11.x, 12.x, 13.x, 14.x]
+        node-version: [10.x, 11.x, 12.x, 13.x, 14.x, 15.x, 16.x]
         os: [windows-latest, macos-latest, ubuntu-latest]
         exclude:
           # exclude windows node 11 due to neon-sys bug
           - os: windows-latest
             node-version: 11.x
+          # exclude windows node 15 due to another node-gyp bug
+          - os: windows-latest
+            node-version: 15.x
+          # exclude windows node 16 due to another node-gyp bug
+          - os: windows-latest
+            node-version: 16.x
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -48,7 +55,7 @@ jobs:
       - run: yarn lint
       - run: yarn build
       - run: yarn test
-      - run: echo "//registry.npmjs.org/:_authToken=$NPMJS_PUBLIC_TOKEN" > .npmrc 2> /dev/null
+      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc 2> /dev/null
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPMJS_PUBLIC_TOKEN }}
