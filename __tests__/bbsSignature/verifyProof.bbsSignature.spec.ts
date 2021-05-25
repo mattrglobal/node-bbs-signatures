@@ -133,6 +133,29 @@ describe("bbsSignature", () => {
     });
   });
 
+  it("should not verify with malformed proof", async () => {
+    const messages = [
+      stringToBytes("Message1"),
+      stringToBytes("Message2"),
+      stringToBytes("Message3"),
+      stringToBytes("Message4"),
+    ];
+    const bbsPublicKey = base64Decode(
+      "S+bRoSJJOet/8hKDpXFV+8TXzg0gPcD64lMFtIUzhYtMJAnNqfJRJnFIS0Vs2VC8AK6MBa6TYgILMqVv4RTSEl3H66mOF6jrEOHelKGlkJCNY8u3bI2aXrmqTkhnjxck"
+    );
+    const proof = base64Decode(
+      "badNRdmxY/v6kFMJ49Y4tNtCmQK1ycU/GFqEsJSydeu3z0icyRnR7Up7kG/YBjJrgUUnDOBc4Bm8gBoOFfzu1rY1jwDWI5flVl3K+s7v5h+VSlQdWeHZPA8q7Y1mpCJLksmiigW6+ZAl/I9pol6xpNMq4oecqJmz3ZbXk4MX6WSj1oIDEQ+RgjE6gHB24ogAAAAAdI2rgDj2S93z0TLxPO3mpFR76H7srVmoncs4uH1Bl3INTK4aPdbS1GRoq9R9YgX2kgAAAAJhmY6QEDMqtDVKI90Ks6P3GLZG245Puvo5USUHumMxFw+hL4SERE3m6qtwdBBDD4H+gfVll3ha/1va6CuKOxtvC8HuSAyXmhGFPq8z91iPr5BdWSCSvIcz65bbN9R8KOSPdkJpJSePtiGNem6drQ8zAAAABSM+WfXNVDIK+HURPfFeM8ZHWrdxR//0u/NCuodBvSFfcFXEluMXXwfwKBHzPiC+dhKHLQ3pGgASk5xYVXfOAIkxB4kGGxSOfdJ+BaBM96TkEw2hrFBrXnjEKP/uMbUPzFEfJusTUINaNkMjLkqDftQKEAXCsUI0HPzGunMhvCvfJ+QzNfKEfernU12Hg+bblW8ZFIrWVyveQCn3MagxaEg="
+    );
+
+    const request: BbsVerifyProofRequest = {
+      proof,
+      publicKey: bbsPublicKey,
+      messages,
+      nonce: stringToBytes("0123456789"),
+    };
+    expect((await verifyProof(request)).verified).toBeFalsy();
+  });
+
   it("should not verify with revealed message that was supposed to be hidden", async () => {
     const messages = [
       stringToBytes("Message1"),
@@ -276,6 +299,30 @@ describe("bbsSignature", () => {
       };
       const result = await blsVerifyProof(request);
       expect(result.verified).toBeTruthy();
+    });
+
+    it("should not verify with malformed proof", async () => {
+      const messages = [
+        stringToBytes("Message1"),
+        stringToBytes("Message2"),
+        stringToBytes("Message3"),
+        stringToBytes("Message4"),
+      ];
+      const blsPublicKey = base64Decode(
+        "x45gpyN9ryZHcdlbJCKrM6WAPI6BggO97nmTcimnXwFA7AeMf54x7atqH0BvxV4UA3f7DcWHpq0HEytVwin7pd/AZXjexfTynNgUgVdd/xkcRdwKCgBMnEx5R7csAGVm"
+      );
+      const proof = base64Decode(
+        "badNRdmxY/v6kFMJ49Y4tNtCmQK1ycU/GFqEsJSydeu3z0icyRnR7Up7kG/YBjJrgUUnDOBc4Bm8gBoOFfzu1rY1jwDWI5flVl3K+s7v5h+VSlQdWeHZPA8q7Y1mpCJLksmiigW6+ZAl/I9pol6xpNMq4oecqJmz3ZbXk4MX6WSj1oIDEQ+RgjE6gHB24ogAAAAAdI2rgDj2S93z0TLxPO3mpFR76H7srVmoncs4uH1Bl3INTK4aPdbS1GRoq9R9YgX2kgAAAAJhmY6QEDMqtDVKI90Ks6P3GLZG245Puvo5USUHumMxFw+hL4SERE3m6qtwdBBDD4H+gfVll3ha/1va6CuKOxtvC8HuSAyXmhGFPq8z91iPr5BdWSCSvIcz65bbN9R8KOSPdkJpJSePtiGNem6drQ8zAAAABSM+WfXNVDIK+HURPfFeM8ZHWrdxR//0u/NCuodBvSFfcFXEluMXXwfwKBHzPiC+dhKHLQ3pGgASk5xYVXfOAIkxB4kGGxSOfdJ+BaBM96TkEw2hrFBrXnjEKP/uMbUPzFEfJusTUINaNkMjLkqDftQKEAXCsUI0HPzGunMhvCvfJ+QzNfKEfernU12Hg+bblW8ZFIrWVyveQCn3MagxaEg="
+      );
+
+      const request: BbsVerifyProofRequest = {
+        proof,
+        publicKey: blsPublicKey,
+        messages,
+        nonce: stringToBytes("0123456789"),
+      };
+      const result = await blsVerifyProof(request);
+      expect(result.verified).toBeFalsy();
     });
 
     it("should not verify with bad nonce", async () => {
