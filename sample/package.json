@@ -16,6 +16,6 @@
     "typescript": "3.7.5"
   },
   "dependencies": {
-    "@mattrglobal/node-bbs-signatures": "0.10.0"
+    "@mattrglobal/node-bbs-signatures": "0.12.0"
   }
 }
