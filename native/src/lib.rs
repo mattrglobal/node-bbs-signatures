@@ -860,6 +860,11 @@ fn extract_verify_proof_context(cx: &mut FunctionContext, is_bls: bool) -> Resul
     // let revealed_indices = obj_field_to_vec!(cx, js_obj, "revealed");
     let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
 
+    if message_bytes.len() != revealed.len() {
+        panic!("Given messages count ({}) is different from revealed messages count ({}) for this proof",
+            message_bytes.len(), revealed.len());
+    }
+
     let mut messages = Vec::new();
     for i in 0..message_bytes.len() {
         let message = obj_field_to_field_elem!(cx, message_bytes[i]);
