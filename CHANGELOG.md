@@ -1,3 +1,11 @@
+# [0.13.0](https://github.com/mattrglobal/node-bbs-signatures/compare/v0.12.0...v0.13.0) (2021-11-30)
+
+### Bug Fixes
+
+- strict check for given messages count and originally revealed
+  ([#175](https://github.com/mattrglobal/node-bbs-signatures/issues/175))
+  ([b9679d4](https://github.com/mattrglobal/node-bbs-signatures/commit/b9679d448d7250c13468b9441e99a4010a6958f3))
+
 # [0.12.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.11.0...0.12.0) (2021-05-21)
 
 Add NodeJS version 15 and 16 support
