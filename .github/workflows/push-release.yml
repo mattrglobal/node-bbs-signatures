@@ -1,9 +1,6 @@
 name: push-release
 
-on:
-  push:
-    branches:
-      - master
+on: [workflow_dispatch]
 
 jobs:
   build_pub_binaries:
@@ -39,7 +36,7 @@ jobs:
           NODE_PRE_GYP_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build_test_publish:
     name: Build, test, and publish release
-    if: "contains(github.event.head_commit.message, 'chore(release): publish')"
+    if: false
     needs: build_pub_binaries
     runs-on: ubuntu-latest
     strategy:
