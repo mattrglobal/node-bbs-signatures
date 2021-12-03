@@ -1,20 +1,17 @@
 name: push-release
 
-on:
-  push:
-    branches:
-      - master
+on: [workflow_dispatch]
 
 jobs:
   build_pub_binaries:
     name: Publish binaries for supported environments for release
-    if: "contains(github.event.head_commit.message, 'chore(release): publish')"
+    if: true
     timeout-minutes: 30
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
         node-version: [10.x, 11.x, 12.x, 13.x, 14.x, 15.x, 16.x]
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-latest]
         exclude:
           # exclude windows node 11 due to neon-sys bug
           - os: windows-latest
@@ -40,7 +37,7 @@ jobs:
           NODE_PRE_GYP_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build_test_publish:
     name: Build, test, and publish release
-    if: "contains(github.event.head_commit.message, 'chore(release): publish')"
+    if: false
     needs: build_pub_binaries
     runs-on: ubuntu-latest
     strategy:
