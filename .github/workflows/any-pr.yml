@@ -5,11 +5,11 @@ on: [pull_request]
 jobs:
   build_test:
     name: Build test
-    runs-on: ${{matrix.os}}
+    runs-on: ${{matrix.runners}}
     strategy:
       matrix:
         node-version: [16.x]
-        os: [[self-hosted, macOS, X64, general, M1, runner01]]
+        runners: [[self-hosted, macos, X64, general, runner01]]
         exclude:
           # exclude windows node 11 due to neon-sys bug
           - os: windows-latest
