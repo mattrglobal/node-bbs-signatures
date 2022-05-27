@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-        os: [[self-hosted, M1]]
+        os: [[self-hosted]]
         exclude:
           # exclude windows node 11 due to neon-sys bug
           - os: windows-latest
