@@ -8,16 +8,9 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        node-version: [10.x, 11.x, 12.x, 13.x, 14.x, 15.x, 16.x]
+        node-version: [14.x, 16.x]
         os: [windows-latest, macos-latest, ubuntu-latest]
         exclude:
-          # exclude windows node 11 due to neon-sys bug
-          - os: windows-latest
-            node-version: 11.x
-          # exclude windows node 15 due to another node-gyp bug
-          - os: windows-latest
-            node-version: 15.x
-          # exclude windows node 16 due to another node-gyp bug
           - os: windows-latest
             node-version: 16.x
     steps:
