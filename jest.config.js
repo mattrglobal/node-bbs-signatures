@@ -8,6 +8,5 @@ module.exports = {
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   coveragePathIgnorePatterns: ["<rootDir>/__tests__", "<rootDir>/lib"],
   verbose: true,
-  name: pack.name,
   displayName: pack.name,
 };
