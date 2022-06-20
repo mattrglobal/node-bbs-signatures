@@ -60,8 +60,8 @@
     "@types/node": "12.7.2",
     "@typescript-eslint/eslint-plugin": "2.28.0",
     "@typescript-eslint/parser": "2.28.0",
-    "conventional-changelog": "3.1.18",
-    "conventional-changelog-cli": "2.0.31",
+    "conventional-changelog": "3.1.25",
+    "conventional-changelog-cli": "2.2.2",
     "copyfiles": "2.2.0",
     "eslint": "6.8.0",
     "eslint-config-prettier": "^6.10.1",
@@ -74,8 +74,11 @@
     "rimraf": "3.0.2",
     "ts-jest": "28.0.5",
     "ts-node": "8.4.1",
-    "typedoc": "0.17.7",
+    "typedoc": "0.22.17",
     "typescript": "4.3.3"
+  },
+  "resolutions": {
+    "neon-cli/**/handlebars": "4.7.7"
   },
   "husky": {
     "hooks": {
@@ -89,7 +92,7 @@
     ]
   },
   "dependencies": {
-    "neon-cli": "0.8.2",
-    "node-pre-gyp": "0.17.0"
+    "@mapbox/node-pre-gyp": "1.0.9",
+    "neon-cli": "0.10.1"
   }
 }
