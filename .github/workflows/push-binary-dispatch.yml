@@ -19,35 +19,6 @@ on:
         type: boolean
 
 jobs:
-  build_win_pub_binaries:
-    name: Publish Windows binaries for supported environments for release
-    if: ${{ github.event.inputs.windows == 'true' }}
-    timeout-minutes: 30
-    runs-on: ${{matrix.os}}
-    strategy:
-      matrix:
-        node-version: [14.x, 16.x]
-        os: [windows-latest]
-        exclude:
-          # exclude windows node 14 due to another node-gyp bug
-          - os: windows-latest
-            node-version: 14.x
-          # exclude windows node 16 due to another node-gyp bug
-          - os: windows-latest
-            node-version: 16.x
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: yarn
-      - run: yarn install --frozen-lockfile
-      - run: yarn build
-      - run: yarn test # Or shall the test step be skipped?
-      - run: yarn publish:binary
-        shell: bash
-        env:
-          NODE_PRE_GYP_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build_macos_pub_binaries:
     name: Publish MacOS binaries for supported environments for release
     if: ${{ github.event.inputs.macos == 'true' }}
