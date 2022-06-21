@@ -9,14 +9,7 @@ jobs:
     strategy:
       matrix:
         node-version: [14.x, 16.x]
-        os: [windows-latest, macos-latest, ubuntu-latest]
-        exclude:
-          # exclude windows node 16 due to node-gyp bug
-          - os: windows-latest
-            node-version: 14.x
-          # exclude windows node 16 due to another node-gyp bug
-          - os: windows-latest
-            node-version: 16.x
+        os: [macos-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v1
       - name: Use Node.js ${{ matrix.node-version }}
