@@ -9,10 +9,6 @@ on:
         description: "MacOS Binaries"
         required: true
         type: boolean
-      windows:
-        description: "Windows Binaries"
-        required: true
-        type: boolean
       linux:
         description: "Linux Binaries"
         required: true
