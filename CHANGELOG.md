@@ -1,3 +1,11 @@
+# [0.14.0](https://github.com/mattrglobal/node-bbs-signatures/compare/v0.13.0...v0.14.0) (2022-06-23)
+
+### Features
+
+- adding github actions to backup repository to s3
+  ([#188](https://github.com/mattrglobal/node-bbs-signatures/issues/188))
+  ([93f5f41](https://github.com/mattrglobal/node-bbs-signatures/commit/93f5f41aa3921c3cf78ef001272d7eaad1b3c6fc))
+
 # [0.13.0](https://github.com/mattrglobal/node-bbs-signatures/compare/v0.12.0...v0.13.0) (2021-11-30)
 
 ### Bug Fixes
