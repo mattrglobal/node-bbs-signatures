@@ -2,6 +2,7 @@
 
 ### Features
 
+- upgrade dependencies
 - adding github actions to backup repository to s3
   ([#188](https://github.com/mattrglobal/node-bbs-signatures/issues/188))
   ([93f5f41](https://github.com/mattrglobal/node-bbs-signatures/commit/93f5f41aa3921c3cf78ef001272d7eaad1b3c6fc))
