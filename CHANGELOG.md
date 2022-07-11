@@ -1,3 +1,10 @@
+# [0.15.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.14.0...0.15.0) (2022-07-11)
+
+### Bug Fixes
+
+- update bbs to 0.4.1 and run cargo update
+  ([3ac291a](https://github.com/mattrglobal/node-bbs-signatures/commit/3ac291a557443c93ff061a188fdbdf267ef98d98))
+
 # [0.14.0](https://github.com/mattrglobal/node-bbs-signatures/compare/v0.13.0...v0.14.0) (2022-06-23)
 
 ### Features
