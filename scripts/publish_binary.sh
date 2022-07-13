@@ -27,8 +27,9 @@ copyfiles index.node native
 # Package the binary
 yarn package
 
-# Publish the binary to github packages
-node-pre-gyp-github publish --release
+# Publish the binary to github packages using strict
+# so that this script can catch failures (network, auth, etc.)
+node --unhandled-rejections=strict ./node_modules/.bin/node-pre-gyp-github publish --release
 
 # Reset changes to the package.json
 git checkout -- package.json
