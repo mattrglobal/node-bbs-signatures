@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# fail if any command in script fails
+set -e 
+
 # This script handling the publishing of the current 
 # commits generated binaries as an unstable package
 
