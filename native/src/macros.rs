@@ -41,33 +41,35 @@ macro_rules! arg_to_fixed_array {
 
 macro_rules! obj_field_to_slice {
     ($cx:expr, $obj:expr, $field:expr) => {{
-        cast_to_slice!($cx, $obj.get($cx, $field)?)
+        let a = $obj.get::<JsArrayBuffer, _, _>($cx, $field)?.deref();
+        a.borrow(&$cx.lock()).deref().as_slice()
     }};
 }
 
 macro_rules! obj_field_to_fixed_array {
     ($cx:expr, $obj:expr, $field:expr, $start:expr, $end:expr) => {{
-        let a = cast_to_slice!($cx, $obj.get($cx, $field)?);
-        if a.len() != $end {
+        let a: &JsArrayBuffer = $obj.get::<JsArrayBuffer, _, _>($cx, $field)?.deref();
+        let b =  a.borrow(&$cx.lock()).deref().as_slice();
+        if b.len() != $end {
             panic!("Invalid length");
         }
-        *array_ref![a, $start, $end]
+        *array_ref![b, $start, $end]
     }};
 }
 
 macro_rules! obj_field_to_opt_slice {
     ($cx:expr, $obj:expr, $field:expr) => {{
-        match $obj.get($cx, $field)?.downcast::<JsArrayBuffer>().or_throw($cx) {
+        match $obj.get::<JsArrayBuffer, _, _>($cx, $field) {
             Err(_) => None,
-            Ok(arg) => Some($cx.borrow(&arg, |d| d.as_slice::<u8>()).to_vec())
+            Ok(arg) => Some(arg.borrow(&$cx.lock()).deref().as_slice().to_vec())
         }
     }};
 }
 
 macro_rules! obj_field_to_vec {
     ($cx:expr, $obj:expr, $field: expr) => {{
-        let v: Vec<Handle<JsValue>> = $obj
-            .get($cx, $field)?
+        let v = $obj
+            .get::<JsValue, _, _>($cx, $field)?
             .downcast::<JsArray>()
             .or_throw($cx)?
             .to_vec($cx)?;
@@ -75,12 +77,15 @@ macro_rules! obj_field_to_vec {
     }};
 }
 
-macro_rules! cast_to_slice {
+/*macro_rules! cast_to_slice {
     ($cx:expr, $obj:expr) => {{
-        let arg = $obj.downcast::<JsArrayBuffer>().or_throw($cx)?;
-        $cx.borrow(&arg, |d| d.as_slice::<u8>()).to_vec()
+        //let arg = $obj.downcast::<JsArrayBuffer>().or_throw($cx)?;
+        //$cx.borrow(&arg, |d: JsArrayBuffer| d.as_slice::<u8>()).to_vec()
+        //let guard = $cx.lock()
+        //let data = $expr.borrow(
+        $obj.as_slice(&$cx)
     }};
-}
+}*/
 
 macro_rules! cast_to_number {
     ($cx:expr, $obj:expr) => {
@@ -98,17 +103,23 @@ macro_rules! handle_err {
 
 macro_rules! obj_field_to_field_elem {
     ($cx:expr, $d:expr) => {{
-        let m = cast_to_slice!($cx, $d);
+        //let m = $d.as_slice(&$cx);
+        let m = $d.downcast::<JsObject>()
+            .or_throw($cx)?
+            .get::<JsArrayBuffer, _, _>($cx, $d)?
+            .borrow(&$cx.lock())
+            .deref()
+            .as_slice();//cast_to_slice!($cx, $d);
         SignatureMessage::hash(m)
     }};
 }
 
 macro_rules! get_message_count {
     ($cx:expr, $obj:expr, $field:expr) => {{
-        let message_count = $obj
-            .get($cx, $field)?
-            .downcast::<JsNumber>()
-            .unwrap_or($cx.number(-1))
+        let message_count: f64 = $obj
+            .get::<JsNumber, _, _>($cx, $field)?
+            //.downcast::<JsNumber>()
+            //.unwrap_or($cx.number(-1))
             .value();
 
         if message_count < 0f64 {
