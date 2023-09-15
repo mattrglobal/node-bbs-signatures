@@ -77,16 +77,6 @@ macro_rules! obj_field_to_vec {
     }};
 }
 
-/*macro_rules! cast_to_slice {
-    ($cx:expr, $obj:expr) => {{
-        //let arg = $obj.downcast::<JsArrayBuffer>().or_throw($cx)?;
-        //$cx.borrow(&arg, |d: JsArrayBuffer| d.as_slice::<u8>()).to_vec()
-        //let guard = $cx.lock()
-        //let data = $expr.borrow(
-        $obj.as_slice(&$cx)
-    }};
-}*/
-
 macro_rules! cast_to_number {
     ($cx:expr, $obj:expr) => {
         $obj.downcast::<JsNumber>()
