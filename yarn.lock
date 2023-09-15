@@ -721,10 +721,10 @@
     semver "^7.3.5"
     tar "^6.1.11"
 
-"@mathquis/node-pre-gyp-github@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@mathquis/node-pre-gyp-github/-/node-pre-gyp-github-1.0.1.tgz#57429d98f8c1169cb6fe138939233c7cb34a6498"
-  integrity sha512-zdUnMiurUPOgV3F1ROcSsVDIshqzdBDEdHg+obVwlV5noswCUeCjg6j966OPO76RrDB0kwFo7yfYLeeHpWeN5w==
+"@mathquis/node-pre-gyp-github@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@mathquis/node-pre-gyp-github/-/node-pre-gyp-github-1.0.2.tgz#de777222705312c2b806645cbbe5bcb1af92c00d"
+  integrity sha512-N2Yb1pTR5hEJjnfDD97UJXLGnG7B+9DMBiHiEXQ4B49P33YJcnvyNnA8xHUvhGu9XaAOw9pMUvweWoFrPVKY8g==
   dependencies:
     "@octokit/rest" "^18.1.1"
     commander "^7.1.0"
