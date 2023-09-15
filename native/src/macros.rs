@@ -42,14 +42,24 @@ macro_rules! arg_to_fixed_array {
 macro_rules! obj_field_to_slice {
     ($cx:expr, $obj:expr, $field:expr) => {{
         let a = $obj.get::<JsArrayBuffer, _, _>($cx, $field)?.deref();
-        a.borrow(&$cx.lock()).deref().as_slice()
+        a.borrow(&$cx.lock()).deref().as_slice().to_vec()
+    }};
+}
+
+macro_rules! obj_field_to_slice {
+    ($cx:expr, $obj:expr, $field:expr) => {{
+        let maybe_buffer = $obj.get::<JsArrayBuffer, _, _>($cx, $field)?;
+        let a = maybe_buffer.deref();
+        let b = a.borrow(&$cx.lock()).deref().as_slice();
+        b.to_vec()
     }};
 }
 
 macro_rules! obj_field_to_fixed_array {
     ($cx:expr, $obj:expr, $field:expr, $start:expr, $end:expr) => {{
-        let a: &JsArrayBuffer = $obj.get::<JsArrayBuffer, _, _>($cx, $field)?.deref();
-        let b =  a.borrow(&$cx.lock()).deref().as_slice();
+        let maybe_buffer = $obj.get::<JsArrayBuffer, _, _>($cx, $field)?;
+        let a: &JsArrayBuffer = maybe_buffer.deref();
+        let b = a.borrow(&$cx.lock()).deref().as_slice();
         if b.len() != $end {
             panic!("Invalid length");
         }
@@ -99,7 +109,8 @@ macro_rules! obj_field_to_field_elem {
             .get::<JsArrayBuffer, _, _>($cx, $d)?
             .borrow(&$cx.lock())
             .deref()
-            .as_slice();//cast_to_slice!($cx, $d);
+            .as_slice()
+            .to_vec();//cast_to_slice!($cx, $d);
         SignatureMessage::hash(m)
     }};
 }
