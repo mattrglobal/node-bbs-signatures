@@ -103,9 +103,8 @@ macro_rules! handle_err {
 
 macro_rules! obj_field_to_field_elem {
     ($cx:expr, $d:expr) => {{
-        let m = $d.downcast::<JsObject>()
+        let m = $d.downcast::<JsArrayBuffer>()
             .or_throw($cx)?
-            .get::<JsArrayBuffer, _, _>($cx, $d)?
             .borrow(&$cx.lock())
             .deref()
             .as_slice()
