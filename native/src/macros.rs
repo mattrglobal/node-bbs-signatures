@@ -42,16 +42,16 @@ macro_rules! arg_to_fixed_array {
 macro_rules! obj_field_to_slice {
     ($cx:expr, $obj:expr, $field:expr) => {{
         $obj.get::<JsArrayBuffer, _, _>($cx, $field)?
-            .deref()
             .borrow(&$cx.lock())
-            .as_slice().to_vec()
+            .as_slice()
+            .to_vec()
     }};
 }
 
 macro_rules! obj_field_to_fixed_array {
     ($cx:expr, $obj:expr, $field:expr, $start:expr, $end:expr) => {{
-        let handle  = $obj.get::<JsArrayBuffer, _, _>($cx, $field)?;
-        let array = handle.deref().borrow(&$cx.lock()).as_slice();
+        let handle = $obj.get::<JsArrayBuffer, _, _>($cx, $field)?;
+        let array = handle.borrow(&$cx.lock()).as_slice();
         if array.len() != $end {
             panic!("Invalid length");
         }
@@ -63,7 +63,7 @@ macro_rules! obj_field_to_opt_slice {
     ($cx:expr, $obj:expr, $field:expr) => {{
         match $obj.get::<JsArrayBuffer, _, _>($cx, $field) {
             Err(_) => None,
-            Ok(arg) => Some(arg.borrow(&$cx.lock()).deref().as_slice().to_vec())
+            Ok(arg) => Some(arg.borrow(&$cx.lock()).as_slice().to_vec()),
         }
     }};
 }
@@ -95,10 +95,10 @@ macro_rules! handle_err {
 
 macro_rules! obj_field_to_field_elem {
     ($cx:expr, $d:expr) => {{
-        let m = $d.downcast::<JsArrayBuffer>()
+        let m = $d
+            .downcast::<JsArrayBuffer>()
             .or_throw($cx)?
             .borrow(&$cx.lock())
-            .deref()
             .as_slice()
             .to_vec();
         SignatureMessage::hash(m)
@@ -107,9 +107,7 @@ macro_rules! obj_field_to_field_elem {
 
 macro_rules! get_message_count {
     ($cx:expr, $obj:expr, $field:expr) => {{
-        let message_count: f64 = $obj
-            .get::<JsNumber, _, _>($cx, $field)?
-            .value();
+        let message_count: f64 = $obj.get::<JsNumber, _, _>($cx, $field)?.value();
 
         if message_count < 0f64 {
             panic!("Message count cannot be negative: {}", message_count);
