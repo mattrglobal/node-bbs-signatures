@@ -103,14 +103,13 @@ macro_rules! handle_err {
 
 macro_rules! obj_field_to_field_elem {
     ($cx:expr, $d:expr) => {{
-        //let m = $d.as_slice(&$cx);
         let m = $d.downcast::<JsObject>()
             .or_throw($cx)?
             .get::<JsArrayBuffer, _, _>($cx, $d)?
             .borrow(&$cx.lock())
             .deref()
             .as_slice()
-            .to_vec();//cast_to_slice!($cx, $d);
+            .to_vec();
         SignatureMessage::hash(m)
     }};
 }
@@ -119,8 +118,6 @@ macro_rules! get_message_count {
     ($cx:expr, $obj:expr, $field:expr) => {{
         let message_count: f64 = $obj
             .get::<JsNumber, _, _>($cx, $field)?
-            //.downcast::<JsNumber>()
-            //.unwrap_or($cx.number(-1))
             .value();
 
         if message_count < 0f64 {
