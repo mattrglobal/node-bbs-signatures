@@ -95,13 +95,14 @@ macro_rules! handle_err {
 
 macro_rules! obj_field_to_field_elem {
     ($cx:expr, $d:expr) => {{
-        let m = $d
+        let handle  = $d
             .downcast::<JsArrayBuffer>()
-            .or_throw($cx)?
-            .borrow(&$cx.lock())
-            .as_slice()
-            .to_vec();
-        SignatureMessage::hash(m)
+            .or_throw($cx)?;
+
+        $cx.borrow(&handle, |data| {
+            let slice = data.as_slice();
+            SignatureMessage::hash(slice)
+        })
     }};
 }
 
