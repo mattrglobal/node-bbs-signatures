@@ -25,7 +25,6 @@ use neon::result::Throw;
 use pairing_plus::{bls12_381::{Fr, G1, G2, Bls12}, serdes::SerDes, hash_to_field::BaseFromRO, CurveProjective};
 use rand::{thread_rng, RngCore};
 use std::collections::{BTreeMap, BTreeSet};
-use std::ops::Deref;
 
 // This shows how the generators are created with nothing up my sleeve values
 // const PREHASH: &'static [u8] = b"To be, or not to be- that is the question:
