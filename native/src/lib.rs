@@ -288,7 +288,7 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     ));
 
     let pk_bytes = obj_field_to_slice!(&mut cx, js_obj, "publicKey");
-    let pk = PublicKey::from_bytes_compressed_form(pk_bytes.as_slice()).unwrap();
+    let pk = PublicKey::from_bytes_compressed_form(pk_bytes).unwrap();
 
     if pk.validate().is_err() {
         panic!("Invalid key");
@@ -334,7 +334,7 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
     ));
 
     let pk_bytes = obj_field_to_slice!(&mut cx, js_obj, "publicKey");
-    let pk = PublicKey::from_bytes_compressed_form(pk_bytes.as_slice()).unwrap();
+    let pk = PublicKey::from_bytes_compressed_form(pk_bytes).unwrap();
 
     if pk.validate().is_err() {
         panic!("Invalid key");
@@ -419,7 +419,7 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
     let js_obj = cx.argument::<JsObject>(0)?;
 
     let pk_bytes = obj_field_to_slice!(cx, js_obj, "publicKey");
-    let public_key = PublicKey::from_bytes_compressed_form(pk_bytes.as_slice()).unwrap();
+    let public_key = PublicKey::from_bytes_compressed_form(pk_bytes).unwrap();
 
     if public_key.validate().is_err() {
         panic!("Invalid key");
@@ -490,7 +490,7 @@ struct BlindingContext {
 fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoolean> {
     let js_obj = cx.argument::<JsObject>(0)?;
     let pk_bytes = obj_field_to_slice!(&mut cx, js_obj, "publicKey");
-    let public_key = PublicKey::from_bytes_compressed_form(pk_bytes.as_slice()).unwrap();
+    let public_key = PublicKey::from_bytes_compressed_form(pk_bytes).unwrap();
     if public_key.validate().is_err() {
         panic!("Invalid key");
     }
@@ -590,7 +590,7 @@ fn extract_blind_signature_context(cx: &mut FunctionContext) -> Result<BlindSign
     ));
 
     let pk_bytes = obj_field_to_slice!(cx, js_obj, "publicKey");
-    let public_key = PublicKey::from_bytes_compressed_form(pk_bytes.as_slice()).unwrap();
+    let public_key = PublicKey::from_bytes_compressed_form(pk_bytes).unwrap();
     if public_key.validate().is_err() {
         panic!("Invalid key");
     }
@@ -722,7 +722,7 @@ fn extract_create_proof_context(cx: &mut FunctionContext) -> Result<(Vec<u8>, Cr
         SIGNATURE_COMPRESSED_SIZE
     ));
     let pk_bytes = obj_field_to_slice!(cx, js_obj, "publicKey");
-    let public_key = PublicKey::from_bytes_compressed_form(pk_bytes.as_slice()).unwrap();
+    let public_key = PublicKey::from_bytes_compressed_form(pk_bytes).unwrap();
     if public_key.validate().is_err() {
         panic!("Invalid key");
     }
@@ -882,7 +882,7 @@ fn extract_verify_proof_context(cx: &mut FunctionContext, is_bls: bool) -> Resul
         dpk.to_public_key(message_count).unwrap()
     } else {
         let pk_bytes = obj_field_to_slice!(cx, js_obj, "publicKey");
-        PublicKey::from_bytes_compressed_form(pk_bytes.as_slice()).unwrap()
+        PublicKey::from_bytes_compressed_form(pk_bytes).unwrap()
     };
     if public_key.validate().is_err() {
         panic!("Invalid key");
