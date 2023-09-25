@@ -18,6 +18,7 @@ extern crate bbs;
 
 use bbs::prelude::*;
 use std::collections::BTreeSet;
+use std::convert::TryFrom;
 
 /// Computed by calling
 ///

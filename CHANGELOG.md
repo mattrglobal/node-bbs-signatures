@@ -1,3 +1,17 @@
+# [0.17.0](https://github.com/mattrglobal/node-bbs-signatures/compare/v0.16.0...v0.17.0) (2023-09-18)
+
+### Bug Fixes
+
+- publish unstable with node 18.x only
+  ([81f7dca](https://github.com/mattrglobal/node-bbs-signatures/commit/81f7dcad22d5c5c1cf479aeb45b73e4dd12ab7a5))
+
+# [0.16.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.15.0...0.16.0) (2023-09-17)
+
+### Features
+
+- add node 18 support
+  ([6140f72](https://github.com/mattrglobal/node-bbs-signatures/commit/6140f72ba29034af82eb8395ccd8aac884450628))
+
 # [0.15.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.14.0...0.15.0) (2022-07-11)
 
 ### Bug Fixes
