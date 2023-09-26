@@ -306,11 +306,6 @@ fn get_public_key(key: &str) -> DeterministicPublicKey {
     ])
 }
 
-fn get_secret_key(key: &str) -> SecretKey {
-    let sk_bytes = base64::decode(key).unwrap();
-    SecretKey::from(array_ref![sk_bytes, 0, FR_COMPRESSED_SIZE])
-}
-
 fn get_signature(sig: &str) -> Signature {
     let sig_bytes = base64::decode(sig).unwrap();
     Signature::from(*array_ref![sig_bytes, 0, SIGNATURE_COMPRESSED_SIZE])
@@ -329,26 +324,4 @@ fn revealed_to_bitvector(total: usize, revealed: &BTreeSet<usize>) -> Vec<u8> {
     // Convert to big endian
     bytes.reverse();
     bytes
-}
-
-/// Convert big-endian vector to u32
-fn bitvector_to_revealed(data: &[u8]) -> BTreeSet<usize> {
-    let mut revealed_messages = BTreeSet::new();
-    let mut scalar = 0;
-
-    for b in data.iter().rev() {
-        let mut v = *b;
-        let mut remaining = 8;
-        while v > 0 {
-            let revealed = v & 1u8;
-            if revealed == 1 {
-                revealed_messages.insert(scalar);
-            }
-            v >>= 1;
-            scalar += 1;
-            remaining -= 1;
-        }
-        scalar += remaining;
-    }
-    revealed_messages
 }
