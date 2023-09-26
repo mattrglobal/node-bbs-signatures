@@ -1,3 +1,10 @@
+# [0.18.0](https://github.com/mattrglobal/node-bbs-signatures/compare/v0.17.0...v0.18.0) (2023-09-26)
+
+### Bug Fixes
+
+- removes rayon feature from bbs crate
+  ([7ab7ad4](https://github.com/mattrglobal/node-bbs-signatures/commit/7ab7ad474b5c0b996571a75af65850ea4cadaeab))
+
 # [0.17.0](https://github.com/mattrglobal/node-bbs-signatures/compare/v0.16.0...v0.17.0) (2023-09-18)
 
 ### Bug Fixes
