@@ -14,7 +14,7 @@ neon-build = "0.10.1"
 
 [dependencies]
 arrayref = "0.3"
-bbs = "0.4.1"
+bbs = { version = "0.4.1", default-features = false }
 bls_sigs_ref = "0.3"
 ff-zeroize = "0.6"
 hkdf = "0.8"
