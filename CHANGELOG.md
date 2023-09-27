@@ -1,9 +1,3 @@
-## [0.18.1](https://github.com/mattrglobal/node-bbs-signatures/compare/0.18.0...0.18.1) (2023-09-27)
-
-### Bug Fixes
-
-- adds missing build files for arm
-
 # [0.18.0](https://github.com/mattrglobal/node-bbs-signatures/compare/v0.17.0...v0.18.0) (2023-09-26)
 
 ### Bug Fixes
