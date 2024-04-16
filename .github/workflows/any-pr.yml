@@ -11,7 +11,7 @@ jobs:
       matrix:
         node-version: [14.x, 16.x, 18.x]
         os: [macos-latest, ubuntu-latest] # not include windows due to node-gyp bug
-        # toolchain: [aarch64-apple-darwin] # not include windows due to node-gyp bug
+    #  toolchain: [aarch64-apple-darwin, ] # not include windows due to node-gyp bug
     steps:
       - uses: actions/checkout@v1
       - name: Use Node.js ${{ matrix.node-version }}
@@ -19,10 +19,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      # - uses: actions-rs/cargo@v1
-      #   with:
-      #     toolchain: stable
-      #     target: aarch64-apple-darwin
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
 
       - run: yarn install --frozen-lockfile
       - run: yarn lint
