@@ -19,14 +19,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      # - uses: actions-rs/toolchain@v1
-      #   with:
-      #     toolchain: stable
-
-      - run: yarn global add node-gyp
-      - run: node-gyp -v
-
       - run: python -V
+
+      # Setup up python tools
+      # Needed since since node-gyp depends on distutils package which has now been removed in python version 3.12
+      - run: pip install setuptools
 
       - run: yarn install --frozen-lockfile
       - run: yarn lint
