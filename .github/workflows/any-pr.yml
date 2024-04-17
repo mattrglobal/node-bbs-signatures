@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         node-version: [14.x, 16.x, 18.x]
-        os: [macos-latest, ubuntu-latest] # not include windows due to node-gyp bug
+        os: [macos-14, ubuntu-22.04] # not include windows due to node-gyp bug
     steps:
       - uses: actions/checkout@v1
       - name: Use Node.js ${{ matrix.node-version }}
@@ -20,10 +20,9 @@ jobs:
 
       - run: python -V
 
-      # Setup up python tools
-      # Needed since since node-gyp depends on distutils package which has now been removed in python version 3.12
-      # Only required for macos
-      # - run: pip install setuptools
+      # Required as macos-14 defaults to use python 3.12, this causes issues with node-gyp currently
+      # 1. node-gyp depends on distutils package which has now been removed in python version 3.12 can use 'pip install setuptools' to fix this
+      # 2. Node@14 will error with -> Node gyp ERR - invalid mode: 'rU' while trying to load binding.gyp Where 'U' option is now deprecated
       - uses: actions/setup-python@v4
         with:
           python-version: "3.10.8"
