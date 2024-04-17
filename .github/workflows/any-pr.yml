@@ -23,6 +23,8 @@ jobs:
         with:
           toolchain: stable
 
+      - run: node-gyp -v
+
       - run: yarn install --frozen-lockfile
       - run: yarn lint
       - run: yarn build
