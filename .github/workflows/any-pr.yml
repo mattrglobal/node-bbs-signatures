@@ -19,12 +19,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+      # - uses: actions-rs/toolchain@v1
+      #   with:
+      #     toolchain: stable
 
       - run: yarn global add node-gyp
       - run: node-gyp -v
+
+      - run: python -V
 
       - run: yarn install --frozen-lockfile
       - run: yarn lint
