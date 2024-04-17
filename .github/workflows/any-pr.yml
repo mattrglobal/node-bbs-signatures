@@ -25,6 +25,9 @@ jobs:
       # Needed since since node-gyp depends on distutils package which has now been removed in python version 3.12
       - run: pip install setuptools
 
+      - run: yarn global add node-gyp@8.0.0
+      - run: node-gyp -v
+
       - run: yarn install --frozen-lockfile
       - run: yarn lint
       - run: yarn build
