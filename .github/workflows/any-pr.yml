@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [14.x, 16.x, 18.x]
         os: [macos-latest, ubuntu-latest] # not include windows due to node-gyp bug
     steps:
       - uses: actions/checkout@v1
@@ -23,7 +23,10 @@ jobs:
       # Setup up python tools
       # Needed since since node-gyp depends on distutils package which has now been removed in python version 3.12
       # Only required for macos
-      - run: pip install setuptools
+      # - run: pip install setuptools
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10.8"
 
       - run: yarn install --frozen-lockfile
       - run: yarn lint
