@@ -23,6 +23,7 @@ jobs:
         with:
           toolchain: stable
 
+      - run: yarn global add node-gyp
       - run: node-gyp -v
 
       - run: yarn install --frozen-lockfile
