@@ -17,6 +17,17 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+
+      # Logging python version for future debugging
+      - run: python -V
+
+      # Required as macos-14 defaults to use python 3.12, this causes issues with node-gyp currently
+      # 1. node-gyp depends on distutils package which has now been removed in python version 3.12 can use 'pip install setuptools' to fix this
+      # 2. Node@14 will error with -> Node gyp ERR - invalid mode: 'rU' while trying to load binding.gyp Where 'U' option is now deprecated
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10.8"
+
       - run: yarn install --frozen-lockfile
       - run: yarn lint
       - run: yarn build
