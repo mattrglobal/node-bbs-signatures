@@ -5,7 +5,7 @@
   "homepage": "https://github.com/mattrglobal/node-bbs-signatures",
   "main": "lib/index.js",
   "engines": {
-    "node": ">=14",
+    "node": ">=16",
     "yarn": "1.x"
   },
   "directories": {
