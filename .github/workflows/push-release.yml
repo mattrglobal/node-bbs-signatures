@@ -7,8 +7,7 @@ on:
 
 jobs:
   build_pub_binaries:
-    name: Publish binaries for supported environments for release
-    if: "contains(github.event.head_commit.message, 'chore(release): publish')"
+    name: Compile binaries for supported environments and publish if master
     timeout-minutes: 30
     runs-on: ${{matrix.os}}
     strategy:
@@ -24,13 +23,14 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: yarn test
-      - run: yarn publish:binary
+      - name: "Publish binaries"
+        if: "contains(github.event.head_commit.message, 'chore(release): publish')"
+        run: yarn publish:binary
         shell: bash
         env:
           NODE_PRE_GYP_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build_test_publish:
-    name: Build, test, and publish release
-    if: "contains(github.event.head_commit.message, 'chore(release): publish')"
+    name: Build, test, and publish if master
     needs: build_pub_binaries
     runs-on: ubuntu-latest
     strategy:
@@ -52,4 +52,6 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPMJS_TOKEN }}
       - run: git config user.name "Mattr CI"
       - run: git config user.email "npmjs_ci_mattr_public@mattr.global"
-      - run: yarn publish:ts
+      - name: "Publish package"
+        if: "contains(github.event.head_commit.message, 'chore(release): publish')"
+        run: yarn publish:ts
