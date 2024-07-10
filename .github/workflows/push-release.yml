@@ -41,6 +41,10 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+      - run: pip install setuptools
       - run: yarn
       - run: yarn install --frozen-lockfile
       - run: yarn lint
