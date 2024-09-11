@@ -208,10 +208,7 @@ fn proof_with_10_messages() {
 
     assert!(res.is_ok());
     let proved_messages = res.unwrap();
-    assert_eq!(
-        proved_messages,
-        vec![SignatureMessage::hash(b"Message9")]
-    )
+    assert_eq!(proved_messages, vec![SignatureMessage::hash(b"Message9")])
 }
 
 #[test]
@@ -258,18 +255,22 @@ fn proof_with_8_messages() {
 fn print() {
     let sk = SecretKey::try_from(base64::decode(SECRET_KEY).unwrap()).unwrap();
     let dpk = DeterministicPublicKey::try_from(base64::decode(PUBLIC_KEY).unwrap()).unwrap();
-    let messages: Vec<SignatureMessage> = ["KnYAbm0fw3mlUA=="].iter().map(|m| SignatureMessage::hash(m.as_bytes())).collect();
+    let messages: Vec<SignatureMessage> = ["KnYAbm0fw3mlUA=="]
+        .iter()
+        .map(|m| SignatureMessage::hash(m.as_bytes()))
+        .collect();
     let pk = dpk.to_public_key(messages.len()).unwrap();
     let sig = Signature::new(messages.as_slice(), &sk, &pk).unwrap();
     println!("pk  = {}", base64::encode(pk.to_bytes_compressed_form()));
-    println!("sig = {}", base64::encode(sig.to_bytes_compressed_form().as_ref()));
+    println!(
+        "sig = {}",
+        base64::encode(sig.to_bytes_compressed_form().as_ref())
+    );
     let nonce = ProofNonce::hash(b"I03DvFXcpVdOPuOiyXgcBf4voAA=");
     let proof_request = Verifier::new_proof_request(&[0], &pk).unwrap();
 
     // Sends `proof_request` and `nonce` to the prover
-    let proof_messages = vec![
-        pm_revealed_raw!(messages[0]),
-    ];
+    let proof_messages = vec![pm_revealed_raw!(messages[0])];
 
     let pok =
         Prover::commit_signature_pok(&proof_request, proof_messages.as_slice(), &sig).unwrap();
@@ -285,12 +286,12 @@ fn print() {
 
     let proof = Prover::generate_signature_pok(pok, &challenge).unwrap();
     let mut prefix = (messages.len() as u16).to_be_bytes().to_vec();
-    prefix.append(&mut revealed_to_bitvector(messages.len(), &proof_request.revealed_messages));
+    prefix.append(&mut revealed_to_bitvector(
+        messages.len(),
+        &proof_request.revealed_messages,
+    ));
     prefix.extend_from_slice(proof.proof.to_bytes_compressed_form().as_ref());
-    println!(
-        "proof = {}",
-        base64::encode(&prefix)
-    );
+    println!("proof = {}", base64::encode(&prefix));
 
     let res = Verifier::verify_signature_pok(&proof_request, &proof, &nonce);
 
