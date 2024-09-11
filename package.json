@@ -35,9 +35,9 @@
     "benchmark:stress": "ts-node ./bench/stress.ts",
     "build": "yarn build:neon && yarn build:ts",
     "build:ts": "tsc --pretty",
-    "build:neon": "neon build --release",
+    "build:neon": "cargo-cp-artifact -nc ./native/index.node -- cargo build --manifest-path ./native/Cargo.toml --message-format=json-render-diagnostics --release",
     "package": "node-pre-gyp package",
-    "clean": "rimraf lib/ && rimraf native/index.node && rimraf native/target && neon clean",
+    "clean": "rimraf lib/ && rimraf native/index.node && rimraf native/target && cargo clean --manifest-path ./native/Cargo.toml",
     "format": "prettier --write \"**/*.ts\" \"**/*.md\"  \"!**/lib/**\"",
     "lint": "eslint . --ext .ts --color --format=table",
     "lint:fix": "yarn lint --fix",
@@ -61,6 +61,7 @@
     "@types/node": "12.7.2",
     "@typescript-eslint/eslint-plugin": "2.28.0",
     "@typescript-eslint/parser": "2.28.0",
+    "cargo-cp-artifact": "0.1.9",
     "conventional-changelog": "3.1.25",
     "conventional-changelog-cli": "2.2.2",
     "copyfiles": "2.2.0",
@@ -79,13 +80,10 @@
     "typescript": "4.3.3"
   },
   "dependencies": {
-    "@mapbox/node-pre-gyp": "1.0.11",
-    "neon-cli": "0.10.1"
+    "@mapbox/node-pre-gyp": "1.0.11"
   },
   "resolutions": {
-    "neon-cli/**/handlebars": "4.7.7",
     "conventional-changelog-cli/**/minimist": "1.2.6",
-    "conventional-changelog/**/minimist": "1.2.6",
-    "neon-cli/**/minimist": "1.2.6"
+    "conventional-changelog/**/minimist": "1.2.6"
   }
 }

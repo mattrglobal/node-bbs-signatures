@@ -1,7 +1,6 @@
 [package]
 name = "node-bbs-signatures"
 description = "A node wrapper for bbs-signatures"
-build = "build.rs"
 edition = "2018"
 version = "0.1.0"
 
@@ -9,16 +8,13 @@ version = "0.1.0"
 name = "node_bbs_signatures"
 crate-type = ["cdylib"]
 
-[build-dependencies]
-neon-build = "0.10.1"
-
 [dependencies]
 arrayref = "0.3"
 bbs = { version = "0.4.1", default-features = false }
 bls_sigs_ref = "0.3"
 ff-zeroize = "0.6"
 hkdf = "0.8"
-neon = "0.10.1"
+neon = "1.0.0"
 pairing-plus = "0.19"
 rand = "0.7"
 sha2 = "0.8"

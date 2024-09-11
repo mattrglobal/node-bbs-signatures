@@ -20,9 +20,14 @@ mod macros;
 
 use bbs::prelude::*;
 use neon::prelude::*;
-use neon::register_module;
 use neon::result::Throw;
-use pairing_plus::{bls12_381::{Fr, G1, G2, Bls12}, serdes::SerDes, hash_to_field::BaseFromRO, CurveProjective};
+use neon::types::buffer::TypedArray;
+use pairing_plus::{
+    bls12_381::{Bls12, Fr, G1, G2},
+    hash_to_field::BaseFromRO,
+    serdes::SerDes,
+    CurveProjective,
+};
 use rand::{thread_rng, RngCore};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -81,8 +86,18 @@ use std::collections::{BTreeMap, BTreeSet};
 // g1 = b9c9058e8a44b87014f98be4e1818db718f8b2d5101fc89e6983625f321f14b84d7cf6e155004987a215ee426df173c9
 // g2 = a963de2adfb1163cf4bed24d708ce47432742d2080b2573ebe2e19a8698f60c541cec000fcb19783e9be73341356df5f1191cddec7c476d7742bcc421afc5d505e63373c627ea01fda04f0e40159d25bdd12f45a010d8580a78f6a7d262272f3
 
-const BLINDING_G1: &'static [u8] = &[185, 201, 5, 142, 138, 68, 184, 112, 20, 249, 139, 228, 225, 129, 141, 183, 24, 248, 178, 213, 16, 31, 200, 158, 105, 131, 98, 95, 50, 31, 20, 184, 77, 124, 246, 225, 85, 0, 73, 135, 162, 21, 238, 66, 109, 241, 115, 201];
-const BLINDING_G2: &'static [u8] = &[169, 99, 222, 42, 223, 177, 22, 60, 244, 190, 210, 77, 112, 140, 228, 116, 50, 116, 45, 32, 128, 178, 87, 62, 190, 46, 25, 168, 105, 143, 96, 197, 65, 206, 192, 0, 252, 177, 151, 131, 233, 190, 115, 52, 19, 86, 223, 95, 17, 145, 205, 222, 199, 196, 118, 215, 116, 43, 204, 66, 26, 252, 93, 80, 94, 99, 55, 60, 98, 126, 160, 31, 218, 4, 240, 228, 1, 89, 210, 91, 221, 18, 244, 90, 1, 13, 133, 128, 167, 143, 106, 125, 38, 34, 114, 243];
+const BLINDING_G1: &'static [u8] = &[
+    185, 201, 5, 142, 138, 68, 184, 112, 20, 249, 139, 228, 225, 129, 141, 183, 24, 248, 178, 213,
+    16, 31, 200, 158, 105, 131, 98, 95, 50, 31, 20, 184, 77, 124, 246, 225, 85, 0, 73, 135, 162,
+    21, 238, 66, 109, 241, 115, 201,
+];
+const BLINDING_G2: &'static [u8] = &[
+    169, 99, 222, 42, 223, 177, 22, 60, 244, 190, 210, 77, 112, 140, 228, 116, 50, 116, 45, 32,
+    128, 178, 87, 62, 190, 46, 25, 168, 105, 143, 96, 197, 65, 206, 192, 0, 252, 177, 151, 131,
+    233, 190, 115, 52, 19, 86, 223, 95, 17, 145, 205, 222, 199, 196, 118, 215, 116, 43, 204, 66,
+    26, 252, 93, 80, 94, 99, 55, 60, 98, 126, 160, 31, 218, 4, 240, 228, 1, 89, 210, 91, 221, 18,
+    244, 90, 1, 13, 133, 128, 167, 143, 106, 125, 38, 34, 114, 243,
+];
 
 /// Generate a blinded BLS key pair where secret key `x` and blinding factor `r` in Fp
 /// and public key `w` = `g2` ^ `x` * `blinding_g2` ^ `r`
@@ -116,15 +131,18 @@ fn bls_generate_g1_key(cx: FunctionContext) -> JsResult<JsObject> {
     bls_generate_keypair::<G1>(cx, None)
 }
 
-fn bls_generate_keypair<'a, 'b, G: CurveProjective<Engine = Bls12, Scalar = Fr> + SerDes>(mut cx: FunctionContext<'a>, blinded: Option<&'b [u8]>) -> JsResult<'a, JsObject> {
+fn bls_generate_keypair<'a, 'b, G: CurveProjective<Engine = Bls12, Scalar = Fr> + SerDes>(
+    mut cx: FunctionContext<'a>,
+    blinded: Option<&'b [u8]>,
+) -> JsResult<'a, JsObject> {
     let mut passed_seed = false;
     let seed = match cx.argument_opt(0) {
         Some(arg) => {
-            let arg: Handle<JsArrayBuffer> = arg.downcast::<JsArrayBuffer>().or_throw(&mut cx)?;
-            let seed_data = cx.borrow(&arg, |data| data.as_slice::<u8>());
+            let arg: Handle<JsArrayBuffer> = arg.downcast_or_throw(&mut cx)?;
+            let seed_data = arg.as_slice(&cx);
             passed_seed = true;
             seed_data.to_vec()
-        },
+        }
         None => {
             let mut rng = thread_rng();
             let mut seed_data = vec![0u8, 32];
@@ -137,27 +155,26 @@ fn bls_generate_keypair<'a, 'b, G: CurveProjective<Engine = Bls12, Scalar = Fr> 
     let mut pk = G::one();
     pk.mul_assign(sk);
 
-    let r =
-        match blinded {
-            Some(g) => {
-                let mut data = g.to_vec();
-                let mut gg = g.clone();
-                if passed_seed {
-                    data.extend_from_slice(seed.as_slice());
-                } else {
-                    let mut rng = thread_rng();
-                    let mut blinding_factor = vec![0u8, 32];
-                    rng.fill_bytes(blinding_factor.as_mut_slice());
-                    data.extend_from_slice(blinding_factor.as_slice());
-                }
-                let mut blinding_g = G::deserialize(&mut gg, true).unwrap();
-                let r = gen_sk(data.as_slice());
-                blinding_g.mul_assign(r);
-                pk.add_assign(&blinding_g);
-                Some(r)
-            },
-            None => None
-        };
+    let r = match blinded {
+        Some(g) => {
+            let mut data = g.to_vec();
+            let mut gg = g;
+            if passed_seed {
+                data.extend_from_slice(seed.as_slice());
+            } else {
+                let mut rng = thread_rng();
+                let mut blinding_factor = vec![0u8, 32];
+                rng.fill_bytes(blinding_factor.as_mut_slice());
+                data.extend_from_slice(blinding_factor.as_slice());
+            }
+            let mut blinding_g = G::deserialize(&mut gg, true).unwrap();
+            let r = gen_sk(data.as_slice());
+            blinding_g.mul_assign(r);
+            pk.add_assign(&blinding_g);
+            Some(r)
+        }
+        None => None,
+    };
 
     let mut sk_bytes = Vec::new();
     let mut pk_bytes = Vec::new();
@@ -172,7 +189,7 @@ fn bls_generate_keypair<'a, 'b, G: CurveProjective<Engine = Bls12, Scalar = Fr> 
     if let Some(rr) = r {
         let mut r_bytes = Vec::new();
         rr.serialize(&mut r_bytes, true).unwrap();
-        let r_array  = slice_to_js_array_buffer!(&r_bytes[..], cx);
+        let r_array = slice_to_js_array_buffer!(&r_bytes[..], cx);
         result.set(&mut cx, "blindingFactor", r_array)?;
     }
 
@@ -180,7 +197,7 @@ fn bls_generate_keypair<'a, 'b, G: CurveProjective<Engine = Bls12, Scalar = Fr> 
 }
 
 fn gen_sk(msg: &[u8]) -> Fr {
-    use sha2::digest::generic_array::{GenericArray, typenum::U48};
+    use sha2::digest::generic_array::{typenum::U48, GenericArray};
     const SALT: &[u8] = b"BLS-SIG-KEYGEN-SALT-";
     // copy of `msg` with appended zero byte
     let mut msg_prime = Vec::<u8>::with_capacity(msg.as_ref().len() + 1);
@@ -453,12 +470,7 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
         let message = obj_field_to_field_elem!(cx, message_bytes[i]);
         messages.insert(index as usize, message);
     }
-    let nonce = ProofNonce::hash(
-        &(nonce.map_or_else(
-            || b"bbs+nodejswrapper".to_vec(),
-            |m| m,
-        )),
-    );
+    let nonce = ProofNonce::hash(&(nonce.map_or_else(|| b"bbs+nodejswrapper".to_vec(), |m| m)));
 
     Ok(BlindingContext {
         public_key,
@@ -495,12 +507,7 @@ fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoole
         panic!("Invalid key");
     }
     let nonce_str = obj_field_to_opt_slice!(&mut cx, js_obj, "nonce");
-    let nonce = ProofNonce::hash(
-        &(nonce_str.map_or_else(
-            || b"bbs+nodejswrapper".to_vec(),
-            |m| m,
-        )),
-    );
+    let nonce = ProofNonce::hash(&(nonce_str.map_or_else(|| b"bbs+nodejswrapper".to_vec(), |m| m)));
     let commitment = Commitment::from(obj_field_to_fixed_array!(
         &mut cx,
         js_obj,
@@ -525,7 +532,7 @@ fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoole
     let message_count = public_key.message_count() as f64;
 
     for i in 0..hidden.len() {
-        let index = cast_to_number!(cx, hidden[i]);
+        let index = cast_to_number!(&mut cx, hidden[i]);
         if index < 0f64 || index > message_count {
             panic!(
                 "Index is out of bounds. Must be between {} and {}: found {}",
@@ -656,12 +663,7 @@ struct BlindSignContext {
 /// `return`: `ArrayBuffer` the unblinded signature
 fn bbs_get_unblinded_signature(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     let sig = BlindSignature::from(arg_to_fixed_array!(cx, 0, 0, SIGNATURE_COMPRESSED_SIZE));
-    let bf = SignatureBlinding::from(arg_to_fixed_array!(
-        cx,
-        1,
-        0,
-        FR_COMPRESSED_SIZE
-    ));
+    let bf = SignatureBlinding::from(arg_to_fixed_array!(cx, 1, 0, FR_COMPRESSED_SIZE));
 
     let sig = sig.to_unblinded(&bf);
 
@@ -688,10 +690,7 @@ fn bbs_create_proof(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     let (mut bitvector, pcx) = extract_create_proof_context(&mut cx)?;
     let proof = generate_proof(pcx)?;
     bitvector.extend_from_slice(proof.to_bytes_compressed_form().as_slice());
-    Ok(slice_to_js_array_buffer!(
-        bitvector.as_slice(),
-        cx
-    ))
+    Ok(slice_to_js_array_buffer!(bitvector.as_slice(), cx))
 }
 
 fn generate_proof(pcx: CreateProofContext) -> Result<PoKOfSignatureProof, Throw> {
@@ -702,7 +701,8 @@ fn generate_proof(pcx: CreateProofContext) -> Result<PoKOfSignatureProof, Throw>
     ));
     let mut challenge_bytes = pok.to_bytes();
     if let Some(b) = pcx.nonce {
-        challenge_bytes.extend_from_slice(&ProofNonce::hash(b.as_slice()).to_bytes_compressed_form());
+        challenge_bytes
+            .extend_from_slice(&ProofNonce::hash(b.as_slice()).to_bytes_compressed_form());
     } else {
         challenge_bytes.extend_from_slice(&[0u8; FR_COMPRESSED_SIZE]);
     }
@@ -711,7 +711,9 @@ fn generate_proof(pcx: CreateProofContext) -> Result<PoKOfSignatureProof, Throw>
     Ok(handle_err!(pok.gen_proof(&challenge_hash)))
 }
 
-fn extract_create_proof_context(cx: &mut FunctionContext) -> Result<(Vec<u8>, CreateProofContext), Throw> {
+fn extract_create_proof_context(
+    cx: &mut FunctionContext,
+) -> Result<(Vec<u8>, CreateProofContext), Throw> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
     let signature = Signature::from(obj_field_to_fixed_array!(
@@ -758,12 +760,15 @@ fn extract_create_proof_context(cx: &mut FunctionContext) -> Result<(Vec<u8>, Cr
     let mut bitvector = (messages.len() as u16).to_be_bytes().to_vec();
     bitvector.append(&mut revealed_to_bitvector(messages.len(), &revealed));
 
-    Ok((bitvector, CreateProofContext {
-        signature,
-        public_key,
-        messages,
-        nonce,
-    }))
+    Ok((
+        bitvector,
+        CreateProofContext {
+            signature,
+            public_key,
+            messages,
+            nonce,
+        },
+    ))
 }
 
 struct CreateProofContext {
@@ -845,7 +850,10 @@ fn verify_proof(vcx: VerifyProofContext) -> Result<Vec<SignatureMessage>, Throw>
     )))
 }
 
-fn extract_verify_proof_context(cx: &mut FunctionContext, is_bls: bool) -> Result<VerifyProofContext, Throw> {
+fn extract_verify_proof_context(
+    cx: &mut FunctionContext,
+    is_bls: bool,
+) -> Result<VerifyProofContext, Throw> {
     let js_obj = cx.argument::<JsObject>(0)?;
 
     let proof = obj_field_to_slice!(cx, js_obj, "proof");
@@ -854,7 +862,9 @@ fn extract_verify_proof_context(cx: &mut FunctionContext, is_bls: bool) -> Resul
     let offset = 2 + bitvector_length;
     let revealed = bitvector_to_revealed(&proof[2..offset]);
 
-    let proof = handle_err!(PoKOfSignatureProof::from_bytes_compressed_form(&proof[offset..]));
+    let proof = handle_err!(PoKOfSignatureProof::from_bytes_compressed_form(
+        &proof[offset..]
+    ));
 
     let nonce = obj_field_to_opt_slice!(cx, js_obj, "nonce");
     // let revealed_indices = obj_field_to_vec!(cx, js_obj, "revealed");
@@ -942,7 +952,8 @@ fn bitvector_to_revealed(data: &[u8]) -> BTreeSet<usize> {
     revealed_messages
 }
 
-register_module!(mut m, {
+#[neon::main]
+fn main(mut m: ModuleContext) -> NeonResult<()> {
     m.export_function("bls_generate_blinded_g2_key", bls_generate_blinded_g2_key)?;
     m.export_function("bls_generate_blinded_g1_key", bls_generate_blinded_g1_key)?;
     m.export_function("bls_generate_g2_key", bls_generate_g2_key)?;
@@ -965,4 +976,4 @@ register_module!(mut m, {
     m.export_function("bbs_verify_proof", bbs_verify_proof)?;
     m.export_function("bls_verify_proof", bls_verify_proof)?;
     Ok(())
-});
+}
