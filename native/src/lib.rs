@@ -314,8 +314,8 @@ fn bbs_sign(mut cx: FunctionContext) -> JsResult<JsArrayBuffer> {
     let message_bytes = obj_field_to_vec!(&mut cx, js_obj, "messages");
 
     let mut messages = Vec::new();
-    for i in 0..message_bytes.len() {
-        let message = obj_field_to_field_elem!(&mut cx, message_bytes[i]);
+    for message_byte in message_bytes {
+        let message = obj_field_to_field_elem!(&mut cx, message_byte);
         messages.push(message);
     }
 
@@ -360,8 +360,8 @@ fn bbs_verify(mut cx: FunctionContext) -> JsResult<JsBoolean> {
     let message_bytes = obj_field_to_vec!(&mut cx, js_obj, "messages");
 
     let mut messages = Vec::new();
-    for i in 0..message_bytes.len() {
-        let message = obj_field_to_field_elem!(&mut cx, message_bytes[i]);
+    for message_byte in message_bytes {
+        let message = obj_field_to_field_elem!(&mut cx, message_byte);
         messages.push(message);
     }
 
@@ -470,7 +470,7 @@ fn extract_blinding_context(cx: &mut FunctionContext) -> Result<BlindingContext,
         let message = obj_field_to_field_elem!(cx, message_bytes[i]);
         messages.insert(index as usize, message);
     }
-    let nonce = ProofNonce::hash((nonce.map_or_else(|| b"bbs+nodejswrapper".to_vec(), |m| m)));
+    let nonce = ProofNonce::hash(nonce.map_or_else(|| b"bbs+nodejswrapper".to_vec(), |m| m));
 
     Ok(BlindingContext {
         public_key,
@@ -507,7 +507,7 @@ fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoole
         panic!("Invalid key");
     }
     let nonce_str = obj_field_to_opt_slice!(&mut cx, js_obj, "nonce");
-    let nonce = ProofNonce::hash((nonce_str.map_or_else(|| b"bbs+nodejswrapper".to_vec(), |m| m)));
+    let nonce = ProofNonce::hash(nonce_str.map_or_else(|| b"bbs+nodejswrapper".to_vec(), |m| m));
     let commitment = Commitment::from(obj_field_to_fixed_array!(
         &mut cx,
         js_obj,
@@ -531,8 +531,8 @@ fn bbs_verify_blind_signature_proof(mut cx: FunctionContext) -> JsResult<JsBoole
     let mut messages: BTreeSet<usize> = (0..public_key.message_count()).collect();
     let message_count = public_key.message_count() as f64;
 
-    for i in 0..hidden.len() {
-        let index = cast_to_number!(&mut cx, hidden[i]);
+    for hidden_value in hidden {
+        let index = cast_to_number!(&mut cx, hidden_value);
         if index < 0f64 || index > message_count {
             panic!(
                 "Index is out of bounds. Must be between {} and {}: found {}",
@@ -735,8 +735,8 @@ fn extract_create_proof_context(
     let message_bytes = obj_field_to_vec!(cx, js_obj, "messages");
 
     let mut revealed = BTreeSet::new();
-    for i in 0..revealed_indices.len() {
-        let index = cast_to_number!(cx, revealed_indices[i]);
+    for revealed_indice in revealed_indices {
+        let index = cast_to_number!(cx, revealed_indice);
         if index < 0f64 || index as usize > message_bytes.len() {
             panic!(
                 "Index is out of bounds. Must be between 0 and {}: {}",
@@ -748,8 +748,8 @@ fn extract_create_proof_context(
     }
 
     let mut messages = Vec::new();
-    for i in 0..message_bytes.len() {
-        let message = obj_field_to_field_elem!(cx, message_bytes[i]);
+    for (i, message_byte) in message_bytes.iter().enumerate() {
+        let message = obj_field_to_field_elem!(cx, *message_byte);
         if revealed.contains(&i) {
             messages.push(pm_revealed_raw!(message));
         } else {
@@ -834,8 +834,13 @@ fn verify_proof(vcx: VerifyProofContext) -> Result<Vec<SignatureMessage>, Throw>
 
     let revealed = vcx.revealed.iter().collect::<Vec<&usize>>();
     let mut revealed_messages = BTreeMap::new();
-    for i in 0..vcx.revealed.len() {
-        revealed_messages.insert(*revealed[i], vcx.messages[i]);
+    for (i, revealed_index) in revealed
+        .iter()
+        .copied()
+        .enumerate()
+        .take(vcx.revealed.len())
+    {
+        revealed_messages.insert(*revealed_index, vcx.messages[i]);
     }
 
     let signature_proof = SignatureProof {
@@ -876,8 +881,8 @@ fn extract_verify_proof_context(
     }
 
     let mut messages = Vec::new();
-    for i in 0..message_bytes.len() {
-        let message = obj_field_to_field_elem!(cx, message_bytes[i]);
+    for message_byte in message_bytes {
+        let message = obj_field_to_field_elem!(cx, message_byte);
         messages.push(message);
     }
 
