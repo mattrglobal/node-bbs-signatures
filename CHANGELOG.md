@@ -1,3 +1,21 @@
+# [0.20.0](https://github.com/mattrglobal/node-bbs-signatures/compare/0.18.1...0.20.0) (2024-09-16)
+
+### Build System
+
+- **deps:** bump neon from 0.10.1 to 1.0.0 ([#239](https://github.com/mattrglobal/node-bbs-signatures/issues/239))
+  ([45fa9c6](https://github.com/mattrglobal/node-bbs-signatures/commit/45fa9c638375c381a1e0a737a7722950abce8ed2))
+
+### Features
+
+- remove support for node 16
+  ([45fa9c6](https://github.com/mattrglobal/node-bbs-signatures/commit/45fa9c638375c381a1e0a737a7722950abce8ed2))
+- adds support for node 20 and 22
+  ([45fa9c6](https://github.com/mattrglobal/node-bbs-signatures/commit/45fa9c638375c381a1e0a737a7722950abce8ed2))
+
+### BREAKING CHANGES
+
+- node 16.x no longer supported
+
 # [0.19.0](https://github.com/mattrglobal/node-bbs-signatures/compare/v0.17.0...v0.19.0) (2024-07-04)
 
 ### Features
