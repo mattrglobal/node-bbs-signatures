@@ -4,7 +4,7 @@
 
 This library has been deprecated in favor of the [Pairing Cryptography](https://github.com/mattrglobal/pairing_crypto)
 library which implements the more modern
-[BBS Signature Scheme](https://www.ietf.org/archive/id/draft-irtf-cfrg-bbs-signatures-03.html). There is no direct
+[BBS Signature Scheme](https://datatracker.ietf.org/doc/draft-irtf-cfrg-bbs-signatures/). There is no direct
 replacement, we recommend using
 [the WASM wrapper](https://github.com/mattrglobal/pairing_crypto/tree/master/wrappers/wasm).
 
