@@ -1,5 +1,14 @@
 [![MATTR](./docs/assets/mattr-logo-square.svg)](https://github.com/mattrglobal)
 
+## Deprecation Notice
+
+This library has been deprecated in favor of the [Pairing Cryptography](https://github.com/mattrglobal/pairing_crypto)
+library which implements the more modern
+[BBS Signature Scheme](https://datatracker.ietf.org/doc/draft-irtf-cfrg-bbs-signatures/).
+
+We recommend using the [WASM wrapper](https://github.com/mattrglobal/pairing_crypto/tree/master/wrappers/wasm). There is
+no direct replacement.
+
 # Node BBS Signatures
 
 ![npm-version](https://badgen.net/npm/v/@mattrglobal/node-bbs-signatures)
